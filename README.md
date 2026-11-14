@@ -8,7 +8,7 @@
 
 <p align="center">
   <b>A trading terminal in the browser, built for speed.</b><br>
-  Charts, market profile, footprints, a DOM and your own indicators, drawn by a Rust engine in WebAssembly, live from fourteen exchanges.
+  Charts, market profile, footprints, a DOM, your own indicators and backtests, drawn by a Rust engine in WebAssembly, live from fourteen exchanges.
 </p>
 
 <p align="center">
@@ -49,6 +49,8 @@
 
 **❄️ Your own indicators.** Frost Script, a small language that can only draw on its chart, with a Community to share scripts in.
 
+**🧪 Backtests in your browser.** Rules picked from lists or a Frost Script strategy, filled with each exchange's fees, slippage and funding, beside the chart or under it.
+
 **📓 Journal and training.** Every position you draw becomes a trade that price settles, and a paper account trades Binance's perpetuals at live prices.
 
 **🔓 Free and open.** AGPL-3.0, and one Docker image to host it yourself.
@@ -79,10 +81,10 @@ Binance, Bybit, OKX, Bitget, Kraken, Hyperliquid, Lighter, Gate, Aster, HTX, Bit
 ### Indicators
 
 <p align="center">
-  <img src="docs/screenshots/indicators.webp" alt="The indicator picker: a search box, favourites, then the indicators by what they are for" width="440">
+  <img src="docs/screenshots/indicators.webp" alt="The indicator picker: a search box, the Built-in, Community and My scripts tabs, favourites, the built-ins by what they are for, and New Frost Script" width="440">
 </p>
 
-Built-in, Community and My scripts in one searchable picker. EMA ribbon, EMA 200, RSI, Stoch RSI, MACD, Bollinger Bands, Keltner, Ichimoku, VWAP and VWAP levels, anchored VWAP, volume delta, volume profile, key levels, swing structure map, sessions, moon phases and open interest, each with its own settings.
+Built-in, Community and My scripts in one searchable picker, and New Frost Script to write your own. EMA ribbon, EMA 200, RSI, Stoch RSI, MACD, Bollinger Bands, Keltner, Ichimoku, VWAP and VWAP levels, anchored VWAP, volume delta, volume profile, key levels, swing structure map, sessions, moon phases and open interest, each with its own settings.
 
 ### DOM and tape
 
@@ -129,8 +131,18 @@ The order book by price on all fourteen exchanges: bids, asks, what traded at ea
 
 ### Strategy tester
 
-- Backtest under any chart, in your browser: rules picked from lists, or a Frost Script strategy
+<p align="center">
+  <img src="docs/screenshots/strategy.webp" alt="The strategy tester under a 4-hour ETHUSDT chart: MACD with the trend over two years, its longs and shorts drawn on the chart, and the summary: net profit, buy and hold, drawdown, profit factor, win rate, costs" width="100%">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/strategy-beside.webp" alt="The strategy tester beside the chart, on its Strategy tab: templates, which way it trades, and the buy and sell rules written out as sentences" width="100%">
+</p>
+
+- Backtest any chart in your browser: start from a template, pick rules from lists, or write a Frost Script strategy
+- Each rule set reads back as a sentence, and the tester sits beside the chart or under it
 - Filled at the next open, with each exchange's fees, slippage, funding and liquidation; a bar that hit both stop and target is decided by its 1m bars
+- What the chart holds, a few months, years, a market's whole history or from a date, up to 100,000 bars
 - Report: figures against buy and hold, trades on the chart, equity, drawdown, months, Monte Carlo
 - Optimizer with a held-out part of the bars, the same strategy on other markets, forward testing, order notices and shareable links
 
@@ -158,7 +170,7 @@ tradoor's own language for indicators.
 - **Settings:** numbers, tick boxes, colours, choices and dates, like any built-in.
 - **Built-ins as source:** 18 built-ins are written in Frost Script. Open one's settings and the Source tab shows it, giving the same numbers. The six that need more than candles say why.
 - **Strategies:** `long`, `short`, `exit`, `stop` and `target` make a script a strategy for the strategy tester.
-- **From Pine Script v6:** the editor copies instructions for an AI chat (Claude, ChatGPT, Gemini…) that converts a Pine v6 indicator or strategy.
+- **From Pine Script v6:** the editor copies instructions for an AI chat (Claude, ChatGPT, Gemini…) that converts a Pine v6 indicator or strategy. A conversion pasted with its line breaks lost, or with Pine left in it, is mended on the spot.
 - **Community:** share a script under a username chosen once, with a description. Every public one is drawn live on the [showcase](https://tradoorterminal.com/community.html).
 - **Docs:** the [reference](https://tradoorterminal.com/doc.html) has the whole language.
 
