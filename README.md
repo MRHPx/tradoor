@@ -22,6 +22,7 @@
 
 <p align="center">
   <a href="https://tradoorterminal.com/"><img alt="Open tradoor terminal" src="https://img.shields.io/badge/Open%20tradoor-tradoorterminal.com-aafd35?style=for-the-badge&labelColor=070907" height="36"></a>
+  <a href="https://discord.gg/c6hhmvXe"><img alt="Join the tradoor Discord" src="https://img.shields.io/badge/Discord-Join%20the%20server-5865F2?style=for-the-badge&logo=discord&logoColor=white&labelColor=070907" height="36"></a>
 </p>
 
 <p align="center">
@@ -31,7 +32,8 @@
   <a href="#self-hosting">Self-hosting</a> ·
   <a href="#security">Security</a> ·
   <a href="docs/architecture.md">Architecture</a> ·
-  <a href="https://github.com/tradoor-terminal/tradoor/discussions">Discussions</a>
+  <a href="https://github.com/tradoor-terminal/tradoor/discussions">Discussions</a> ·
+  <a href="https://discord.gg/c6hhmvXe">Discord</a>
 </p>
 
 <p align="center">
