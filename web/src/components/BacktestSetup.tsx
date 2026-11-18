@@ -14,6 +14,7 @@ import { canWrite, community, describe, formulas, loadCommunity, setEditing, typ
 import { Icon } from '../lib/icons';
 import { mendable, mendPaste, mendScript, type Mended } from '../lib/mend';
 import type { TesterProps } from './StrategyTester';
+import { tl } from '../lib/i18n';
 
 const SOURCES = [
   { id: 'rules', label: 'Build with rules', tip: 'Pick conditions from lists: no code' },
@@ -134,7 +135,7 @@ function Num(props: { value: number; min?: number; max?: number; step?: number; 
       class="box num bt-num"
       classList={{ wide: props.wide }}
       type="number"
-      aria-label={props.label}
+      aria-label={tl(props.label)}
       value={props.value}
       min={props.min}
       max={props.max}
@@ -153,11 +154,11 @@ function Num(props: { value: number; min?: number; max?: number; step?: number; 
 /** A row of choices, one on. */
 function Chips<T extends string | number>(props: { label: string; value: T; options: { value: T; label: string; tip?: string }[]; onChange(v: T): void }) {
   return (
-    <div class="bt-chips" role="radiogroup" aria-label={props.label}>
+    <div class="bt-chips" role="radiogroup" aria-label={tl(props.label)}>
       <For each={props.options}>
         {(o) => (
           <button role="radio" aria-checked={props.value === o.value} classList={{ on: props.value === o.value }} data-tip={o.tip} onClick={() => props.onChange(o.value)}>
-            {o.label}
+            {tl(o.label)}
           </button>
         )}
       </For>
@@ -171,9 +172,9 @@ function Step(props: { title: string; hint?: string; children: JSX.Element }) {
     <div class="bt-step">
       <div class="bt-step-head">
         <span class="bt-step-mark" aria-hidden="true" />
-        <b>{props.title}</b>
-        <Show when={props.hint}>
-          <span class="dim">{props.hint}</span>
+        <b>{tl(props.title)}</b>
+        <Show when={tl(props.hint)}>
+          <span class="dim">{tl(props.hint)}</span>
         </Show>
       </div>
       {props.children}
@@ -187,11 +188,11 @@ export function BacktestSetup(props: TesterProps) {
   return (
     <div class="bt-setup">
       <section class="bt-col">
-        <div class="bt-seg" role="radiogroup" aria-label="How the strategy is given">
+        <div class="bt-seg" role="radiogroup" aria-label={tl('How the strategy is given')}>
           <For each={SOURCES}>
             {(s) => (
               <button role="radio" aria-checked={st().source === s.id} classList={{ on: st().source === s.id }} data-tip={s.tip} onClick={() => props.onChange({ source: s.id, inputs: [] })}>
-                {s.label}
+                {tl(s.label)}
               </button>
             )}
           </For>
@@ -200,7 +201,7 @@ export function BacktestSetup(props: TesterProps) {
           <RulesEditor {...props} />
         </Show>
         <Show when={st().source === 'code'}>
-          <Step title="Which way it trades" hint="the code’s own orders, filtered here">
+          <Step title={tl('Which way it trades')} hint="the code’s own orders, filtered here">
             <SideChips {...props} />
           </Step>
           <CodeEditor {...props} />
@@ -212,7 +213,7 @@ export function BacktestSetup(props: TesterProps) {
       </section>
       <section class="bt-col">
         <Money {...props} set={set} />
-        <Step title="Tested over" hint={`${props.bars.toLocaleString('en-US')} bars held${props.loading ? ', loading more…' : props.exhausted ? ', the exchange’s whole history' : ''}`}>
+        <Step title={tl('Tested over')} hint={`${props.bars.toLocaleString('en-US')} bars held${props.loading ? ', loading more…' : props.exhausted ? ', the exchange’s whole history' : ''}`}>
           <Chips
             label="The stretch tested"
             value={st().settings.since > 0 ? -2 : st().settings.days}
@@ -221,11 +222,11 @@ export function BacktestSetup(props: TesterProps) {
           />
           <Show when={st().settings.since > 0}>
             <label class="bt-row">
-              <span>From</span>
+              <span>{tl('From')}</span>
               <input
                 class="box num bt-date"
                 type="date"
-                aria-label="Tested from this date, UTC"
+                aria-label={tl('Tested from this date, UTC')}
                 value={dayOf(st().settings.since)}
                 min="2009-01-03"
                 max={dayOf(Date.now())}
@@ -236,7 +237,7 @@ export function BacktestSetup(props: TesterProps) {
               />
             </label>
           </Show>
-          <p class="bt-hint dim">A longer stretch loads older bars, 100,000 at most: for a coin’s whole history, a daily or 4-hour chart holds it all.</p>
+          <p class="bt-hint dim">{tl('A longer stretch loads older bars, 100,000 at most: for a coin’s whole history, a daily or 4-hour chart holds it all.')}</p>
         </Step>
         <Realism {...props} set={set} />
       </section>
@@ -267,10 +268,10 @@ function OperandPicker(props: { value: Operand; label: string; onChange(o: Opera
   const info = () => OPERAND_INFO[props.value.kind];
   return (
     <span class="bt-operand">
-      <select value={props.value.kind} aria-label={props.label} onChange={(e) => props.onChange(operand(e.currentTarget.value))}>
+      <select value={props.value.kind} aria-label={tl(props.label)} onChange={(e) => props.onChange(operand(e.currentTarget.value))}>
         <For each={GROUPS}>
           {(g) => (
-            <optgroup label={g.label}>
+            <optgroup label={tl(g.label)}>
               <For each={g.kinds}>{([k, l]) => <option value={k}>{l}</option>}</For>
             </optgroup>
           )}
@@ -321,11 +322,11 @@ function RuleSetEditor(props: { verb: string; buying: boolean; set: RuleSet; opt
                 label="Value"
                 onChange={(a) => change(i, { ...c(), a, b: fits(a, c().b) ? c().b : against(a.kind, props.buying) })}
               />
-              <select value={c().op} aria-label="How they compare" onChange={(e) => change(i, { ...c(), op: e.currentTarget.value })}>
+              <select value={c().op} aria-label={tl('How they compare')} onChange={(e) => change(i, { ...c(), op: e.currentTarget.value })}>
                 <For each={OPS}>{(o) => <option value={o}>{OP_LABEL[o]}</option>}</For>
               </select>
               <OperandPicker value={c().b} label="Against" onChange={(b) => change(i, { ...c(), b })} />
-              <button class="iconbtn" aria-label="Remove this condition" data-tip="Remove" onClick={() => props.onChange({ ...props.set, list: props.set.list.filter((_, j) => j !== i) })}>
+              <button class="iconbtn" aria-label={tl('Remove this condition')} data-tip="Remove" onClick={() => props.onChange({ ...props.set, list: props.set.list.filter((_, j) => j !== i) })}>
                 <Icon name="close" size={11} />
               </button>
             </div>
@@ -359,7 +360,7 @@ function RulesEditor(props: TesterProps) {
   const exits = () => exitsOpen() || rules().exitLong.list.length > 0 || rules().exitShort.list.length > 0;
   return (
     <div class="bt-rules-all">
-      <Step title="Start from a template" hint="then change the rules as you like">
+      <Step title={tl('Start from a template')} hint="then change the rules as you like">
         <div class="bt-templates">
           <For each={TEMPLATES}>
             {(t) => (
@@ -374,16 +375,16 @@ function RulesEditor(props: TesterProps) {
           </For>
         </div>
       </Step>
-      <Step title="Which way it trades">
+      <Step title={tl('Which way it trades')}>
         <SideChips {...props} />
       </Step>
-      <Step title="When it trades" hint="read at each bar’s close, filled at the next open">
+      <Step title={tl('When it trades')} hint="read at each bar’s close, filled at the next open">
         <Show when={side() !== 'short'}>
-          <p class="bt-say">Buy when</p>
+          <p class="bt-say">{tl('Buy when')}</p>
           <RuleSetEditor verb="Buys" buying set={rules().long} onChange={(s) => put('long', s)} />
         </Show>
         <Show when={side() !== 'long'}>
-          <p class="bt-say">Sell short when</p>
+          <p class="bt-say">{tl('Sell short when')}</p>
           <RuleSetEditor verb="Sells short" buying={false} set={rules().short} onChange={(s) => put('short', s)} />
         </Show>
         <Show
@@ -392,22 +393,22 @@ function RulesEditor(props: TesterProps) {
             <p class="bt-hint dim">
               {side() === 'both' ? 'A trade closes when the other side’s signal comes, or at a stop or target below.' : 'A trade closes at a stop or target below.'}{' '}
               <button class="linkbtn" onClick={() => setExitsOpen(true)}>
-                Close it on a rule too
+                {tl('Close it on a rule too')}
               </button>
             </p>
           }
         >
           <Show when={side() !== 'short'}>
-            <p class="bt-say">Close a buy when</p>
+            <p class="bt-say">{tl('Close a buy when')}</p>
             <RuleSetEditor verb="Closes a buy" buying={false} optional set={rules().exitLong} onChange={(s) => put('exitLong', s)} />
           </Show>
           <Show when={side() !== 'long'}>
-            <p class="bt-say">Close a short when</p>
+            <p class="bt-say">{tl('Close a short when')}</p>
             <RuleSetEditor verb="Closes a short" buying optional set={rules().exitShort} onChange={(s) => put('exitShort', s)} />
           </Show>
         </Show>
         <button class="linkbtn" data-tip="The same strategy as Frost Script, to take further as code" onClick={() => props.onChange({ source: 'code', code: rulesSource(rules()), inputs: [] })}>
-          Open these rules as code
+          {tl('Open these rules as code')}
         </button>
       </Step>
     </div>
@@ -424,17 +425,17 @@ function ExitChoice(props: { label: string; value: ExitSetting; presets: { value
   const showCustom = () => custom() || picked() < 0;
   return (
     <div class="bt-exit">
-      <span class="bt-exit-label">{props.label}</span>
+      <span class="bt-exit-label">{tl(props.label)}</span>
       <div class="bt-chips">
         <For each={props.presets}>
           {(p, i) => (
             <button classList={{ on: !showCustom() && picked() === i() }} data-tip={p.tip} onClick={() => (setCustom(false), props.onChange(p.value))}>
-              {p.label}
+              {tl(p.label)}
             </button>
           )}
         </For>
         <button classList={{ on: showCustom() }} onClick={() => setCustom(true)}>
-          Other…
+          {tl('Other…')}
         </button>
       </div>
       <Show when={showCustom()}>
@@ -443,12 +444,12 @@ function ExitChoice(props: { label: string; value: ExitSetting; presets: { value
             <For each={props.kinds}>{([v, l]) => <option value={v}>{l}</option>}</For>
           </select>
           <Show when={props.value.kind !== 'none'}>
-            <Num value={props.value.v} min={0} max={10000} label={props.label} onChange={(v) => props.onChange({ ...props.value, v })} />
+            <Num value={props.value.v} min={0} max={10000} label={tl(props.label)} onChange={(v) => props.onChange({ ...props.value, v })} />
           </Show>
         </span>
       </Show>
-      <Show when={props.note}>
-        <span class="warn bt-exit-note">{props.note}</span>
+      <Show when={tl(props.note)}>
+        <span class="warn bt-exit-note">{tl(props.note)}</span>
       </Show>
     </div>
   );
@@ -460,7 +461,7 @@ function Protect(props: TesterProps) {
   const pct = (v: number): ExitSetting => ({ kind: 'pct', v });
   const off: ExitSetting = { kind: 'none', v: 0 };
   return (
-    <Step title="Close the trade, and guard it" hint="whichever comes first">
+    <Step title={tl('Close the trade, and guard it')} hint="whichever comes first">
       <ExitChoice
         label="Stop loss"
         value={s().stop}
@@ -514,17 +515,17 @@ function Money(props: TesterProps & { set(p: Partial<BacktestSettings>): void })
   // Roughly how far against a leveraged trade the margin is gone.
   const liquidation = () => (s().leverage > 1 ? Math.max(0, 100 / s().leverage - 0.5) : null);
   return (
-    <Step title="Your money">
+    <Step title={tl('Your money')}>
       <label class="bt-row">
-        <span>Starting with</span>
+        <span>{tl('Starting with')}</span>
         <Num value={s().capital} min={1} label="Starting balance" wide onChange={(capital) => props.set({ capital })} />
-        <span class="dim">in the market’s quote currency</span>
+        <span class="dim">{tl('in the market’s quote currency')}</span>
       </label>
       <div class="bt-row">
-        <span>Each trade uses</span>
+        <span>{tl('Each trade uses')}</span>
         <select
           value={per()}
-          aria-label="How much each trade uses"
+          aria-label={tl('How much each trade uses')}
           onChange={(e) => {
             const v = e.currentTarget.value;
             if (v === 'all') props.set({ sizeKind: 'equity', size: 100 });
@@ -534,11 +535,11 @@ function Money(props: TesterProps & { set(p: Partial<BacktestSettings>): void })
             else props.set({ sizeKind: 'risk', size: 1 });
           }}
         >
-          <option value="all">all of the balance</option>
-          <option value="half">half of the balance</option>
-          <option value="share">a share of the balance…</option>
-          <option value="fixed">a fixed amount…</option>
-          <option value="risk">as much as loses a set share at the stop…</option>
+          <option value="all">{tl('all of the balance')}</option>
+          <option value="half">{tl('half of the balance')}</option>
+          <option value="share">{tl('a share of the balance…')}</option>
+          <option value="fixed">{tl('a fixed amount…')}</option>
+          <option value="risk">{tl('as much as loses a set share at the stop…')}</option>
         </select>
         <Show when={per() === 'share' || per() === 'fixed' || per() === 'risk'}>
           <Num value={s().size} min={0} label="Order size" onChange={(size) => props.set({ size })} />
@@ -546,17 +547,17 @@ function Money(props: TesterProps & { set(p: Partial<BacktestSettings>): void })
         </Show>
       </div>
       <Show when={per() === 'risk'}>
-        <p class="bt-hint dim">Sized so that the stop loss, when hit, loses {s().size}% of the balance: it needs a stop loss.</p>
+        <p class="bt-hint dim">{tl('Sized so that the stop loss, when hit, loses')} {s().size}{tl('% of the balance: it needs a stop loss.')}</p>
       </Show>
       <div class="bt-row">
-        <span>Leverage</span>
+        <span>{tl('Leverage')}</span>
         <Chips label="Leverage" value={[1, 2, 3, 5, 10, 20].includes(s().leverage) ? s().leverage : -1} options={[1, 2, 3, 5, 10, 20].map((v) => ({ value: v, label: `${v}×` })).concat([{ value: -1, label: 'Other' }])} onChange={(v) => props.set({ leverage: v === -1 ? 50 : v })} />
         <Show when={![1, 2, 3, 5, 10, 20].includes(s().leverage)}>
           <Num value={s().leverage} min={1} max={200} step={1} label="Leverage" onChange={(leverage) => props.set({ leverage })} />
         </Show>
       </div>
       <Show when={liquidation()}>
-        {(l) => <p class="bt-hint warn">At {s().leverage}× a move of about {l().toFixed(1)}% against a trade loses its whole margin: the test counts that as liquidation.</p>}
+        {(l) => <p class="bt-hint warn">{tl('At')} {s().leverage}{tl('× a move of about')} {l().toFixed(1)}{tl('% against a trade loses its whole margin: the test counts that as liquidation.')}</p>}
       </Show>
     </Step>
   );
@@ -581,30 +582,30 @@ function Realism(props: TesterProps & { set(p: Partial<BacktestSettings>): void 
     <>
       <details class="bt-fold">
         <summary>
-          <b>Costs and realism</b> <span class="dim">{summary()}</span>
+          <b>{tl('Costs and realism')}</b> <span class="dim">{summary()}</span>
         </summary>
         <div class="bt-row">
-          <span>Fees</span>
+          <span>{tl('Fees')}</span>
           <label class="bt-check">
             <input type="checkbox" checked={s().autoFees} onChange={(e) => props.set({ autoFees: e.currentTarget.checked })} />
-            this exchange’s own ({venueFees(props.market)[0]}% a market order, {venueFees(props.market)[1]}% a limit one)
+            {tl('this exchange’s own (')}{venueFees(props.market)[0]}{tl('% a market order,')} {venueFees(props.market)[1]}{tl('% a limit one)')}
           </label>
         </div>
         <Show when={!s().autoFees}>
           <label class="bt-row">
-            <span>My fees</span>
+            <span>{tl('My fees')}</span>
             <Num value={s().taker} min={0} max={5} label="Market order fee, percent" onChange={(taker) => props.set({ taker })} />
             <Num value={s().maker} min={-1} max={5} label="Limit order fee, percent" onChange={(maker) => props.set({ maker })} />
-            <span class="dim">% market, limit</span>
+            <span class="dim">{tl('% market, limit')}</span>
           </label>
         </Show>
         <label class="bt-row" data-tip="What a market order loses to the order book: a fill a little worse than the price seen">
-          <span>Slippage</span>
+          <span>{tl('Slippage')}</span>
           <Num value={s().slippage} min={0} max={10} label="Slippage, percent" onChange={(slippage) => props.set({ slippage })} />
-          <span class="dim">% on each market or stop fill</span>
+          <span class="dim">{tl('% on each market or stop fill')}</span>
         </label>
         <div class="bt-row">
-          <span>Orders fill</span>
+          <span>{tl('Orders fill')}</span>
           <Chips
             label="Where orders fill"
             value={s().fill}
@@ -617,34 +618,34 @@ function Realism(props: TesterProps & { set(p: Partial<BacktestSettings>): void 
         </div>
         <Show when={isPerp(props.market)}>
           <label class="bt-row">
-            <span>Funding</span>
+            <span>{tl('Funding')}</span>
             <label class="bt-check">
               <input type="checkbox" checked={s().funding} onChange={(e) => props.set({ funding: e.currentTarget.checked })} />
-              paid and taken as the perpetual settles, from its exchange’s history
+              {tl('paid and taken as the perpetual settles, from its exchange’s history')}
             </label>
           </label>
         </Show>
         <label class="bt-row">
-          <span>Inside bars</span>
+          <span>{tl('Inside bars')}</span>
           <label class="bt-check">
             <input type="checkbox" checked={s().magnify} onChange={(e) => props.set({ magnify: e.currentTarget.checked })} />
-            where one bar hit both the stop and the target, its 1-minute bars say which came first
+            {tl('where one bar hit both the stop and the target, its 1-minute bars say which came first')}
           </label>
         </label>
       </details>
       <details class="bt-fold">
         <summary>
-          <b>More controls</b> <span class="dim">ATR {s().atr} · {s().maxBars > 0 ? `held ${s().maxBars} bars at most` : 'held as long as it takes'}</span>
+          <b>{tl('More controls')}</b> <span class="dim">ATR {s().atr} · {s().maxBars > 0 ? `held ${s().maxBars} bars at most` : 'held as long as it takes'}</span>
         </summary>
         <label class="bt-row">
-          <span>ATR length</span>
+          <span>{tl('ATR length')}</span>
           <Num value={s().atr} min={1} max={500} step={1} label="ATR length" onChange={(atr) => props.set({ atr: Math.round(atr) })} />
-          <span class="dim">bars, for stops set in ATRs</span>
+          <span class="dim">{tl('bars, for stops set in ATRs')}</span>
         </label>
         <label class="bt-row">
-          <span>Hold at most</span>
+          <span>{tl('Hold at most')}</span>
           <Num value={s().maxBars} min={0} max={100000} step={1} label="Bars held at most" onChange={(maxBars) => props.set({ maxBars: Math.round(maxBars) })} />
-          <span class="dim">bars · 0 for no limit</span>
+          <span class="dim">{tl('bars · 0 for no limit')}</span>
         </label>
       </details>
     </>
@@ -667,18 +668,18 @@ export function InputFields(props: { inputs: FormulaInput[]; values: number[]; o
           {(inp, i) => (
             <Show when={inp().kind !== 'colour'}>
               <label class="bt-row">
-                <span>{inp().label}</span>
+                <span>{tl(inp().label)}</span>
                 <Show
                   when={inp().kind === 'bool'}
                   fallback={
-                    <Show when={inp().kind === 'choice'} fallback={<Num value={value(i)} min={inp().min} max={inp().max} step={inp().step} label={inp().label} onChange={(v) => put(i, v)} />}>
-                      <select value={String(value(i))} aria-label={inp().label} onChange={(e) => put(i, Number(e.currentTarget.value))}>
+                    <Show when={inp().kind === 'choice'} fallback={<Num value={value(i)} min={inp().min} max={inp().max} step={inp().step} label={tl(inp().label)} onChange={(v) => put(i, v)} />}>
+                      <select value={String(value(i))} aria-label={tl(inp().label)} onChange={(e) => put(i, Number(e.currentTarget.value))}>
                         <For each={inp().options}>{(o, k) => <option value={String(k())}>{o}</option>}</For>
                       </select>
                     </Show>
                   }
                 >
-                  <input type="checkbox" checked={value(i) !== 0} aria-label={inp().label} onChange={(e) => put(i, e.currentTarget.checked ? 1 : 0)} />
+                  <input type="checkbox" checked={value(i) !== 0} aria-label={tl(inp().label)} onChange={(e) => put(i, e.currentTarget.checked ? 1 : 0)} />
                 </Show>
               </label>
             </Show>
@@ -691,14 +692,14 @@ export function InputFields(props: { inputs: FormulaInput[]; values: number[]; o
 
 function CheckLine(props: { check: FormulaDescription | undefined }) {
   return (
-    <Show when={props.check} fallback={<span class="dim">Checking…</span>}>
+    <Show when={props.check} fallback={<span class="dim">{tl('Checking…')}</span>}>
       {(c) => {
         const d = c();
         return d.ok ? (
           d.strategy ? (
-            <span class="ok">✓ A strategy · {d.inputs.length} {d.inputs.length === 1 ? 'setting' : 'settings'}</span>
+            <span class="ok">{tl('✓ A strategy ·')} {d.inputs.length} {d.inputs.length === 1 ? 'setting' : 'settings'}</span>
           ) : (
-            <span class="warn">▲ It gives no orders: a strategy enters with long(condition) or short(condition).</span>
+            <span class="warn">{tl('▲ It gives no orders: a strategy enters with long(condition) or short(condition).')}</span>
           )
         ) : (
           <span class="warn">
@@ -731,7 +732,7 @@ function CodeEditor(props: TesterProps) {
     <div class="bt-code">
       <div class="bt-bar">
         <select
-          aria-label="Start from an example"
+          aria-label={tl('Start from an example')}
           value=""
           onChange={(e) => {
             const ex = EXAMPLES.find((x) => x.id === e.currentTarget.value);
@@ -739,20 +740,20 @@ function CodeEditor(props: TesterProps) {
             e.currentTarget.value = '';
           }}
         >
-          <option value="">Start from an example…</option>
+          <option value="">{tl('Start from an example…')}</option>
           <For each={EXAMPLES}>{(x) => <option value={x.id}>{x.name}</option>}</For>
         </select>
         <span class="spacer" />
         <a class="linkbtn" href="/doc.html#strategies" target="_blank" rel="noopener">
-          Strategy words ↗
+          {tl('Strategy words ↗')}
         </a>
         <button class="dbtn" disabled={!canWrite() || !props.state.code} data-tip={canWrite() ? 'Save it to your scripts, in the script editor' : 'Sign in with Telegram to save scripts'} onClick={() => setEditing({ seed: { name: 'My strategy', source: props.state.code } })}>
-          Save as a script
+          {tl('Save as a script')}
         </button>
       </div>
       <Show when={!props.state.code}>
         <p class="bt-hint dim">
-          <code>long(condition)</code> and <code>short(condition)</code> enter, at the next open; <code>long(condition, price)</code> places a limit. <code>exit(condition)</code> closes, <code>stop(price)</code> and <code>target(price)</code> guard it. <code>inlong</code>, <code>inshort</code>, <code>entryprice</code> and <code>barsheld</code> read the position.
+          <code>long(condition)</code> {tl('and')} <code>short(condition)</code> {tl('enter, at the next open;')} <code>long(condition, price)</code> {tl('places a limit.')} <code>exit(condition)</code> {tl('closes,')} <code>stop(price)</code> {tl('and')} <code>target(price)</code> {tl('guard it.')} <code>inlong</code>, <code>inshort</code>, <code>entryprice</code> {tl('and')} <code>barsheld</code> {tl('read the position.')}
         </p>
       </Show>
       <textarea
@@ -777,7 +778,7 @@ function CodeEditor(props: TesterProps) {
       />
       <Show when={!mended() && props.state.code && mendable(props.state.code)}>
         <div class="bt-bar">
-          <span class="warn">This reads as a Pine Script conversion with Pine’s leftovers in it.</span>
+          <span class="warn">{tl('This reads as a Pine Script conversion with Pine’s leftovers in it.')}</span>
           <button
             class="dbtn"
             onClick={() => {
@@ -787,14 +788,14 @@ function CodeEditor(props: TesterProps) {
               props.onChange({ code: m.text.slice(0, MAX_CODE) });
             }}
           >
-            Mend it
+            {tl('Mend it')}
           </button>
         </div>
       </Show>
       <Show when={mended()}>
         {(m) => (
           <p class="bt-hint">
-            Mended: {m().changes.join(' · ') || 'nothing to change'}.
+            {tl('Mended:')} {m().changes.join(' · ') || 'nothing to change'}.
             <For each={m().left}>{(l) => <span class="warn"> {l}.</span>}</For>
           </p>
         )}
@@ -836,12 +837,12 @@ function LibraryPicker(props: TesterProps) {
   };
   return (
     <div class="bt-library">
-      <Show when={kinds()} fallback={<p class="dim">Reading your scripts and the Community’s…</p>}>
-        <Show when={strategies().length > 0} fallback={<p class="bt-hint dim">No strategy among your scripts or the Community’s yet: a script is one once it gives orders, with long(…) or short(…). Write one under Code.</p>}>
+      <Show when={kinds()} fallback={<p class="dim">{tl('Reading your scripts and the Community’s…')}</p>}>
+        <Show when={strategies().length > 0} fallback={<p class="bt-hint dim">{tl('No strategy among your scripts or the Community’s yet: a script is one once it gives orders, with long(…) or short(…). Write one under Code.')}</p>}>
           <label class="bt-row">
-            <span>Script</span>
-            <select value={props.state.script} aria-label="The script tested" onChange={(e) => props.onChange({ script: e.currentTarget.value, inputs: [] })}>
-              <option value="">Choose one…</option>
+            <span>{tl('Script')}</span>
+            <select value={props.state.script} aria-label={tl('The script tested')} onChange={(e) => props.onChange({ script: e.currentTarget.value, inputs: [] })}>
+              <option value="">{tl('Choose one…')}</option>
               <For each={strategies()}>{(f) => <option value={`fx-${f.id}`}>{f.name}{f.by ? ` · @${f.by}` : ''}</option>}</For>
             </select>
           </label>
@@ -853,7 +854,7 @@ function LibraryPicker(props: TesterProps) {
                 </Show>
                 <InputFields inputs={d()?.inputs ?? []} values={props.state.inputs} onChange={(values) => props.onChange({ inputs: values })} />
                 <button class="dbtn" onClick={() => props.onChange({ source: 'code', code: f().source, inputs: props.state.inputs })}>
-                  Copy into the code editor
+                  {tl('Copy into the code editor')}
                 </button>
               </>
             )}

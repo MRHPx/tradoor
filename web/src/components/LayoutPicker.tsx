@@ -8,6 +8,7 @@ import { For } from 'solid-js';
 import type { SyncState } from '../workspace/model';
 import { doc, setSync, update } from '../workspace/store';
 import { applyTemplate, cellRects, surplus, TEMPLATES, type Template } from '../workspace/templates';
+import { tl } from '../lib/i18n';
 
 /** The template's cells, drawn small. */
 function TemplateIcon(props: { template: Template }) {
@@ -37,14 +38,14 @@ export function LayoutPicker(props: { onClose(): void }) {
   };
   return (
     <div class="menu layout-menu" onPointerDown={(e) => e.stopPropagation()}>
-      <div class="cap">Charts on screen</div>
+      <div class="cap">{tl('Charts on screen')}</div>
       <For each={counts}>
         {(count) => (
           <div class="lm-row">
             <span class="lm-count num">{count}</span>
             <For each={TEMPLATES.filter((t) => t.count === count)}>
               {(t) => (
-                <button class="lm-tpl" data-tip={t.label} aria-label={`${t.label}: ${t.count} chart${t.count > 1 ? 's' : ''}`} onClick={() => pick(t)}>
+                <button class="lm-tpl" data-tip={tl(t.label)} aria-label={`${t.label}: ${t.count} chart${t.count > 1 ? 's' : ''}`} onClick={() => pick(t)}>
                   <TemplateIcon template={t} />
                 </button>
               )}
@@ -52,11 +53,11 @@ export function LayoutPicker(props: { onClose(): void }) {
           </div>
         )}
       </For>
-      <div class="cap lm-sync-cap">Keep in step</div>
+      <div class="cap lm-sync-cap">{tl('Keep in step')}</div>
       <For each={SYNCS}>
         {(s) => (
           <button class="lm-sync" role="switch" aria-checked={doc.sync[s.key]} data-tip={s.tip} onClick={() => setSync(s.key, !doc.sync[s.key])}>
-            <span>{s.label}</span>
+            <span>{tl(s.label)}</span>
             <span class="switch" classList={{ on: doc.sync[s.key] }} />
           </button>
         )}

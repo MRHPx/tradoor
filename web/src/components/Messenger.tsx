@@ -18,6 +18,7 @@ import { setPanelMarket, targetChart } from '../workspace/store';
 import { session } from '../lib/owner';
 import { noteOnline, online } from '../lib/presence';
 import { username } from '../lib/username';
+import { tl } from '../lib/i18n';
 
 const EVERY_MS = 2500;
 const MAX_CHARS = 300;
@@ -222,23 +223,23 @@ export function Messenger(props: { onClose(): void }) {
   const held = () => accountsOnly() && !as();
 
   return (
-    <section class="msgr" role="dialog" aria-label="tradoor messenger" onPointerDown={(e) => e.stopPropagation()}>
+    <section class="msgr" role="dialog" aria-label={tl('tradoor messenger')} onPointerDown={(e) => e.stopPropagation()}>
       <header>
         <Icon name="chat" size={14} />
-        <span class="title">tradoor messenger</span>
+        <span class="title">{tl('tradoor messenger')}</span>
         <span class="live">
           <span class="dot" aria-hidden="true" />
-          {online() || '·'} online
+          {online() || '·'} {tl('online')}
         </span>
-        <button class="x" aria-label="Close tradoor messenger" data-tip="Close · Esc" onClick={() => props.onClose()}>
+        <button class="x" aria-label={tl('Close tradoor messenger')} data-tip="Close · Esc" onClick={() => props.onClose()}>
           ✕
         </button>
       </header>
       {/* Said always: the bait a link cannot carry is talk, and talk is answered here. */}
-      <p class="msgr-safe">tradoor never asks for your keys, seed phrase or login. No one here is tradoor staff.</p>
+      <p class="msgr-safe">{tl('tradoor never asks for your keys, seed phrase or login. No one here is tradoor staff.')}</p>
       <div class="msgr-list" ref={list}>
-        <Show when={loaded()} fallback={<p class="msgr-note">Loading…</p>}>
-          <Show when={messages().length > 0} fallback={<p class="msgr-note">No messages yet. Say hello.</p>}>
+        <Show when={loaded()} fallback={<p class="msgr-note">{tl('Loading…')}</p>}>
+          <Show when={messages().length > 0} fallback={<p class="msgr-note">{tl('No messages yet. Say hello.')}</p>}>
             <For each={messages()}>
               {(m) => (
                 <div class="msgr-row">
@@ -268,7 +269,7 @@ export function Messenger(props: { onClose(): void }) {
         </Show>
       </div>
       <Show when={emoji()}>
-        <div class="msgr-emoji" role="listbox" aria-label="Emoji">
+        <div class="msgr-emoji" role="listbox" aria-label={tl('Emoji')}>
           <For each={EMOJI}>
             {(e) => (
               <button role="option" aria-label={e} onClick={() => insert(e)}>
@@ -280,7 +281,7 @@ export function Messenger(props: { onClose(): void }) {
       </Show>
       <Show when={error()}>{(e) => <p class="msgr-error">{e()}</p>}</Show>
       <footer>
-        <button class="msgr-tool" classList={{ on: emoji() }} aria-label="Emoji" data-tip="Emoji" disabled={held()} onClick={() => setEmoji((v) => !v)}>
+        <button class="msgr-tool" classList={{ on: emoji() }} aria-label={tl('Emoji')} data-tip="Emoji" disabled={held()} onClick={() => setEmoji((v) => !v)}>
           <Icon name="smile" size={16} />
         </button>
         <textarea
@@ -301,12 +302,12 @@ export function Messenger(props: { onClose(): void }) {
             }
           }}
         />
-        <button class="msgr-send" aria-label="Send" data-tip="Send · Enter" disabled={held() || sending() || !text().trim()} onClick={() => void post()}>
+        <button class="msgr-send" aria-label={tl('Send')} data-tip="Send · Enter" disabled={held() || sending() || !text().trim()} onClick={() => void post()}>
           <Icon name="send" size={15} />
         </button>
       </footer>
       <p class="msgr-hint">
-        $BTC shows its live price · no links
+        {tl('$BTC shows its live price · no links')}
         <Show when={!as()}>{session() ? ' · choose a username in Settings to write as @name' : ' · sign in with Telegram and choose a username to write as @name'}</Show>
       </p>
     </section>

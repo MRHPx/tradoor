@@ -1,6 +1,7 @@
 import { For, Show } from 'solid-js';
 import { Icon } from '../lib/icons';
 import { dismiss, toasts } from '../lib/toasts';
+import { tl } from '../lib/i18n';
 
 export function Toasts() {
   return (
@@ -23,13 +24,13 @@ export function Toasts() {
                 <Show when={t.way !== null && t.way !== undefined}>
                   <span class={t.way ? 'bull' : 'bear'}>{t.way ? '▲' : '▼'} </span>
                 </Show>
-                {t.title}
+                {tl(t.title)}
               </b>
-              {t.body ? <span>{t.body}</span> : null}
+              {t.body ? <span>{tl(t.body)}</span> : null}
             </span>
             <button
               class="x"
-              aria-label="Dismiss"
+              aria-label={tl('Dismiss')}
               onClick={(e) => {
                 e.stopPropagation();
                 dismiss(t.id);

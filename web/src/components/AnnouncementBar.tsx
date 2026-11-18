@@ -2,6 +2,7 @@
 import { Show } from 'solid-js';
 import { announcement, closeAnnouncement } from '../lib/announcement';
 import { Icon } from '../lib/icons';
+import { tl } from '../lib/i18n';
 
 export function AnnouncementBar() {
   return (
@@ -11,19 +12,19 @@ export function AnnouncementBar() {
           <span class="announce-mark" aria-hidden="true">
             ●
           </span>
-          <b>{a.title}</b>
+          <b>{tl(a.title)}</b>
           <Show when={a.body}>
             <span class="announce-body">{a.body}</span>
           </Show>
           <Show when={a.link}>
             {(href) => (
               <a href={href()} target="_blank" rel="noopener noreferrer">
-                Read more <Icon name="external" size={10} stroke={2} />
+                {tl('Read more')} <Icon name="external" size={10} stroke={2} />
               </a>
             )}
           </Show>
           <span class="spacer" />
-          <button class="x" aria-label="Close the announcement" data-tip="Close" onClick={closeAnnouncement}>
+          <button class="x" aria-label={tl('Close the announcement')} data-tip="Close" onClick={closeAnnouncement}>
             <Icon name="close" size={10} stroke={2.4} />
           </button>
         </div>

@@ -21,6 +21,7 @@ import { splitList, withLayer } from '../lib/study-style';
 import { toast } from '../lib/toasts';
 import type { ChartPanelState } from '../workspace/model';
 import { patchPanel } from '../workspace/store';
+import { tl } from '../lib/i18n';
 
 /** What the engine keeps of a chart's list (`parse_studies`). */
 const MOST_STUDIES = 12;
@@ -199,7 +200,7 @@ export function IndicatorPicker(props: { panel: ChartPanelState; onClose(): void
         </button>
         <span class="iname">{e.name}</span>
         <Show when={e.by}>
-          <span class="iby">by @{e.by}</span>
+          <span class="iby">{tl('by @')}{e.by}</span>
         </Show>
         <Show when={e.tag}>
           <span class="itag" classList={{ public: e.tag === 'public' }} data-tip={e.tag === 'public' ? 'Listed in the Community' : 'Yours alone: not in the Community'}>
@@ -215,7 +216,7 @@ export function IndicatorPicker(props: { panel: ChartPanelState; onClose(): void
               write(e.id.slice(3));
             }}
           >
-            Edit
+            {tl('Edit')}
           </button>
         </Show>
         <Show when={e.by && !own().has(e.id.slice(3))}>
@@ -227,7 +228,7 @@ export function IndicatorPicker(props: { panel: ChartPanelState; onClose(): void
               void copy(e);
             }}
           >
-            Copy
+            {tl('Copy')}
           </button>
         </Show>
         <Show when={e.short !== e.name}>
@@ -267,7 +268,7 @@ export function IndicatorPicker(props: { panel: ChartPanelState; onClose(): void
                 settings(e.id);
               }}
             >
-              On chart
+              {tl('On chart')}
               <Icon name="settings" size={11} />
             </button>
           </Show>
@@ -302,27 +303,27 @@ export function IndicatorPicker(props: { panel: ChartPanelState; onClose(): void
               when={tab() === 'community'}
               fallback={
                 <Show when={session()} fallback={<SignIn text="Sign in with Telegram to write Frost Scripts of your own, and to make them public." />}>
-                  <p>None yet. Write one with New Frost Script below, or open a copy of a built-in’s or a Community script’s.</p>
+                  <p>{tl('None yet. Write one with New Frost Script below, or open a copy of a built-in’s or a Community script’s.')}</p>
                 </Show>
               }
             >
-              <Show when={!communityError()} fallback={<p class="warn">▲ The Community did not load: {communityError()}</p>}>
+              <Show when={!communityError()} fallback={<p class="warn">{tl('▲ The Community did not load:')} {communityError()}</p>}>
                 <p>{community() ? 'No public scripts yet. Make one of yours public in the editor, and it is listed here under your username.' : 'Loading the Community…'}</p>
                 {/* The showcase is never empty: tradoor's own scripts are there, drawn live. */}
                 <a class="ind-hint" href="/community.html" target="_blank" rel="noopener">
-                  The showcase, with tradoor's own scripts ↗
+                  {tl('The showcase, with tradoor\'s own scripts ↗')}
                 </a>
               </Show>
             </Show>
           }
         >
           <p>
-            Nothing in {TABS.find((t) => t.id === tab())!.label} matches “{q()}”.
+            {tl('Nothing in')} {tl(TABS.find((t) => t.id === tab())!.label)} {tl('matches “')}{q()}”.
           </p>
           <For each={elsewhere()}>
             {(t) => (
               <button class="ind-hint" onClick={() => choose(t.id)}>
-                {t.label} has {found()[t.id].length} →
+                {tl(t.label)} {tl('has')} {found()[t.id].length} →
               </button>
             )}
           </For>
@@ -340,7 +341,7 @@ export function IndicatorPicker(props: { panel: ChartPanelState; onClose(): void
           setOverlay({ kind: 'settings' });
         }}
       >
-        Sign in
+        {tl('Sign in')}
       </button>
     </>
   );
@@ -365,19 +366,19 @@ export function IndicatorPicker(props: { panel: ChartPanelState; onClose(): void
       >
         <header>
           <Icon name="search" size={12} />
-          <input ref={input} class="q" value={query()} onInput={(e) => setQuery(e.currentTarget.value)} placeholder="Search indicators" aria-label="Search indicators" />
+          <input ref={input} class="q" value={query()} onInput={(e) => setQuery(e.currentTarget.value)} placeholder={tl('Search indicators')} aria-label={tl('Search indicators')} />
           <button class="x" onClick={() => props.onClose()}>
-            esc ✕
+            {tl('esc ✕')}
           </button>
         </header>
-        <nav class="ind-tabs" role="tablist" aria-label="Which indicators">
+        <nav class="ind-tabs" role="tablist" aria-label={tl('Which indicators')}>
           <For each={TABS}>
             {(t) => (
               <button role="tab" aria-selected={tab() === t.id} classList={{ on: tab() === t.id }} onClick={() => choose(t.id)}>
                 <Show when={t.id !== 'built-in'}>
                   <Icon name="ice" size={11} />
                 </Show>
-                {t.label}
+                {tl(t.label)}
                 <Show when={q()}>
                   <span class="n">{found()[t.id].length}</span>
                 </Show>
@@ -391,12 +392,12 @@ export function IndicatorPicker(props: { panel: ChartPanelState; onClose(): void
               <For each={sections()}>
                 {(section, s) => (
                   <>
-                    <Show when={section.title}>
+                    <Show when={tl(section.title)}>
                       <div class="ind-head">
-                        <span>{section.title}</span>
+                        <span>{tl(section.title)}</span>
                         <Show when={section.showcase}>
                           <a class="ind-hint" href="/community.html" target="_blank" rel="noopener" data-tip="Every public script, with its description and source, on a page of its own to share">
-                            The showcase ↗
+                            {tl('The showcase ↗')}
                           </a>
                         </Show>
                         <Show when={section.title === 'Favourites' && !session() && favourites().length > 0}>
@@ -408,14 +409,14 @@ export function IndicatorPicker(props: { panel: ChartPanelState; onClose(): void
                               setOverlay({ kind: 'settings' });
                             }}
                           >
-                            This browser only · sign in to keep them
+                            {tl('This browser only · sign in to keep them')}
                           </button>
                         </Show>
                       </div>
                     </Show>
                     <Show when={section.title === 'Favourites' && section.items.length === 0}>
                       <div class="ind-none">
-                        <Icon name="star" size={11} /> Star an indicator to keep it here
+                        <Icon name="star" size={11} /> {tl('Star an indicator to keep it here')}
                       </div>
                     </Show>
                     <For each={section.items}>{(entry, i) => <Row entry={entry} index={sections().slice(0, s()).reduce((n, x) => n + x.items.length, 0) + i()} />}</For>
@@ -428,7 +429,7 @@ export function IndicatorPicker(props: { panel: ChartPanelState; onClose(): void
         <footer class="ind-about">
           <span>{current()?.about ?? blurb()}</span>
           <button class="dbtn fx-write" data-tip="An indicator of your own, in a few lines of Frost Script" onClick={() => write()}>
-            <Icon name="ice" size={12} /> New Frost Script
+            <Icon name="ice" size={12} /> {tl('New Frost Script')}
           </button>
         </footer>
       </div>

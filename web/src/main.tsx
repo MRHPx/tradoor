@@ -4,12 +4,15 @@ import { warmEngine } from './engine/client';
 import { loadOtherStreams } from './engine/streams';
 import './styles.css';
 import { installTooltips } from './lib/tooltip';
+import { startLang } from './lib/i18n';
 
 // On the old address public/moved.js, read before this, is already sending the visitor on: nothing to start.
 const leaving = ['tradoor.rsalianto.com', 'www.tradoorterminal.com'].includes(location.hostname);
 if (!leaving) start();
 
 function start(): void {
+  // The language first: its words load while the page does.
+  startLang();
   installTooltips();
   render(() => <App />, document.getElementById('root')!);
 

@@ -17,6 +17,7 @@ import { book, FILL_LABEL, journalApi, localInput, money, pnl, rMultiple, rText,
 import { Readout } from '../journal/Readout';
 import { StrategyPicker } from '../journal/strategies';
 import { NumField } from './NumField';
+import { tl } from '../lib/i18n';
 
 const LEG_GROUPS: { kind: LegKind; title: string; tip: string }[] = [
   { kind: 'take', title: 'Partial take profit', tip: 'A partial take profit: part of the position off on the way to the target' },
@@ -157,7 +158,7 @@ export function PositionTicket(props: {
 
   return (
     <div class="ticket">
-      <Show when={signedIn() !== false} fallback={<p class="tnote">Strategy and notes go to the journal once you sign in with Telegram (Journal, in the top bar).</p>}>
+      <Show when={signedIn() !== false} fallback={<p class="tnote">{tl('Strategy and notes go to the journal once you sign in with Telegram (Journal, in the top bar).')}</p>}>
         <StrategyPicker value={strategy()} onChange={setStrategy} />
       </Show>
 
@@ -168,13 +169,13 @@ export function PositionTicket(props: {
       </div>
       <div class="tsize">
         <div class="tsize-head">
-          <span class="tlabel">When the stop moves, keep</span>
+          <span class="tlabel">{tl('When the stop moves, keep')}</span>
           <div class="tkeep">
             <button classList={{ on: byMargin() }} data-tip="The size stays; the risk is what the stop then costs" onClick={keepMargin}>
-              Margin
+              {tl('Margin')}
             </button>
             <button classList={{ on: !byMargin() }} data-tip="The risk stays; the size is what it then buys" onClick={keepRisk}>
-              Risk
+              {tl('Risk')}
             </button>
           </div>
         </div>
@@ -188,7 +189,7 @@ export function PositionTicket(props: {
               'Risk',
               <>
                 <NumField value={cents(props.num('risk', 1))} onValue={(v) => v > 0 && props.set('risk', v)} label="Risk" />
-                <select class="dinput tunit" aria-label="Risk in" value={props.str('riskUnit', '%')} onChange={(e) => props.merge({ riskUnit: e.currentTarget.value, risk: e.currentTarget.value === '%' ? Number(((riskAmount() / account()) * 100).toFixed(8)) : Number(riskAmount().toFixed(8)) })}>
+                <select class="dinput tunit" aria-label={tl('Risk in')} value={props.str('riskUnit', '%')} onChange={(e) => props.merge({ riskUnit: e.currentTarget.value, risk: e.currentTarget.value === '%' ? Number(((riskAmount() / account()) * 100).toFixed(8)) : Number(riskAmount().toFixed(8)) })}>
                   <option value="%">%</option>
                   <option value="cash">$</option>
                 </select>
@@ -203,7 +204,7 @@ export function PositionTicket(props: {
       </div>
       <details class="tmore">
         <summary class="num">
-          Account {account().toLocaleString('en-US')} · Lot {lot()} · Qty precision {props.str('qtyDecimals', '') === '' ? 'default' : props.str('qtyDecimals', '')}
+          {tl('Account')} {account().toLocaleString('en-US')} {tl('· Lot')} {lot()} {tl('· Qty precision')} {props.str('qtyDecimals', '') === '' ? 'default' : props.str('qtyDecimals', '')}
         </summary>
         <div class="tgrid">
           {field('Account size', <NumField value={account()} onValue={(v) => v > 0 && props.set('account', v)} label="Account size" />)}
@@ -211,7 +212,7 @@ export function PositionTicket(props: {
           {field(
             'Qty precision',
             <select class="dinput" value={props.str('qtyDecimals', '')} onChange={(e) => props.set('qtyDecimals', e.currentTarget.value)}>
-              <option value="">Default</option>
+              <option value="">{tl('Default')}</option>
               <For each={[0, 1, 2, 3, 4, 5, 6, 7, 8]}>{(d) => <option value={d}>{d}</option>}</For>
             </select>,
           )}
@@ -249,7 +250,7 @@ export function PositionTicket(props: {
                 <span class="thint num" data-tip={x().l.kind === 'add' ? 'Coins added' : 'Coins moved, and what they make against the entry'}>
                   {x().l.kind === 'add' ? `+${qtyText(moved() / lot())}` : money((x().l.price - entry()) * dir * moved())}
                 </span>
-                <button class="iconbtn" aria-label="Remove" onClick={() => removeLeg(x().i)}>
+                <button class="iconbtn" aria-label={tl('Remove')} onClick={() => removeLeg(x().i)}>
                   <Icon name="close" size={12} />
                 </button>
               </div>
@@ -259,7 +260,7 @@ export function PositionTicket(props: {
       </div>
 
       <Show when={signedIn()}>
-        <textarea class="dinput tnotes" rows={2} maxLength={4000} aria-label="Notes" placeholder="Notes: setup, emotions, lessons learned…" value={notes()} onInput={(e) => setNotes(e.currentTarget.value)} />
+        <textarea class="dinput tnotes" rows={2} maxLength={4000} aria-label={tl('Notes')} placeholder={tl('Notes: setup, emotions, lessons learned…')} value={notes()} onInput={(e) => setNotes(e.currentTarget.value)} />
         <Show
           when={!settled()}
           fallback={
@@ -269,7 +270,7 @@ export function PositionTicket(props: {
           }
         >
           <details class="tmore" open={exitPrice() !== ''}>
-            <summary>Close by hand</summary>
+            <summary>{tl('Close by hand')}</summary>
             <div class="tgrid two">
               {field('Exit price', <input class="dinput num" type="number" inputmode="decimal" step={tick()} placeholder="—" value={exitPrice()} onInput={(e) => setExitPrice(e.currentTarget.value)} />)}
               {field('Exit date', <input class="dinput" type="datetime-local" value={exitAt()} onInput={(e) => setExitAt(e.currentTarget.value)} />)}
@@ -281,13 +282,13 @@ export function PositionTicket(props: {
       <Show when={trade()}>
         {(t) => (
           <div class="tstatus num">
-            <span class="tlabel">Journal</span>
+            <span class="tlabel">{tl('Journal')}</span>
             <span>{STATUS_LABEL[t().status]}</span>
             <Show when={t().status === 'planned'}>
-              <span class="dim">waiting for the entry</span>
+              <span class="dim">{tl('waiting for the entry')}</span>
             </Show>
             <Show when={t().openedAt !== null}>
-              <span class="dim">opened {stamp(t().openedAt)}</span>
+              <span class="dim">{tl('opened')} {stamp(t().openedAt)}</span>
             </Show>
             <For each={t().fills.filter((f) => f.kind !== 'entry')}>
               {(f) => (
@@ -297,7 +298,7 @@ export function PositionTicket(props: {
               )}
             </For>
             <Show when={t().status === 'open' && t().fills.length > 0}>
-              <span class="dim">held {qtyText(book(t()).held / lot())}</span>
+              <span class="dim">{tl('held')} {qtyText(book(t()).held / lot())}</span>
             </Show>
           </div>
         )}

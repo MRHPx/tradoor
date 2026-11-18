@@ -41,6 +41,7 @@ import { TIMEFRAMES, tfLabel, tfMs, tfName } from '../lib/timeframes';
 import { tabsOf, TPO_SPLITS, tpoFits, type ChartPanelState } from '../workspace/model';
 import { canSplit, mergeLeft, mergeRight, splitProfile, toggleExpanded } from '../lib/tpo-edits';
 import { behindMaximized, doc, marketOf, maximized, patchPanel, setPanelMarket, setPanelTimeframe, timeframeOf, toggleFavoriteTimeframe, toggleMaximized } from '../workspace/store';
+import { tl } from '../lib/i18n';
 
 // Drawing settings load when a drawing is first selected: nobody needs them to see a chart.
 const DrawingSettings = lazy(() => import('../components/DrawingSettings').then((m) => ({ default: m.DrawingSettings })));
@@ -1421,7 +1422,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
   /** A study's row in a legend: its name, its figures, and its buttons. */
   const studyRow = (s: StudyMeta) => (
     <LayerRow
-      label={s.label}
+      label={tl(s.label)}
       off={s.hidden}
       onToggle={() => toggleLayer(s.id)}
       // The strategy tester's rows: taken off by the tester, set in it.
@@ -1487,7 +1488,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
         <For each={FOOTPRINT_MODES}>
           {(m) => (
             <option value={m.value} selected={props.panel.footprintMode === m.value}>
-              {m.label}
+              {tl(m.label)}
             </option>
           )}
         </For>
@@ -1499,7 +1500,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
         onChange={(e) => patchPanel(id, { footprintUnit: e.currentTarget.value })}
       >
         <option value="coins" selected={props.panel.footprintUnit !== 'usd'}>
-          Coins
+          {tl('Coins')}
         </option>
         <option value="usd" selected={props.panel.footprintUnit === 'usd'}>
           USD
@@ -1508,7 +1509,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
       <For each={FOOTPRINT_EXTRAS}>
         {(extra) => (
           <button class="tb" classList={{ on: props.panel[extra.key] }} data-tip={extra.tip} onClick={() => patchPanel(id, { [extra.key]: !props.panel[extra.key] })}>
-            {extra.label}
+            {tl(extra.label)}
           </button>
         )}
       </For>
@@ -1517,7 +1518,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
         style={{ width: '58px' }}
         data-tip={`Ticks a row covers — empty fits the rows to the zoom, so every row carries its number. One tick is ${recorded().get(market()) ?? 1}`}
         value={props.panel.footprintTicks || ''}
-        placeholder="auto"
+        placeholder={tl('auto')}
         onChange={(e) => {
           const ticks = Number(e.currentTarget.value);
           patchPanel(id, { footprintTicks: Number.isFinite(ticks) && ticks >= 0 ? Math.min(1_000, Math.round(ticks)) : 0 });
@@ -1539,7 +1540,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
         {/* On a phone this row is the whole top of the app, so it carries the
             menu the rest of the workspace waits behind. */}
         <Show when={mobile()}>
-          <button class="iconbtn burger" aria-label="Menu" onClick={() => setMobileMenu(true)}>
+          <button class="iconbtn burger" aria-label={tl('Menu')} onClick={() => setMobileMenu(true)}>
             <Icon name="menu" size={17} />
           </button>
         </Show>
@@ -1576,15 +1577,15 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
         <button
           class="tb"
           data-tip="Copy a 4K picture of this chart · alt K — hold shift to save the file"
-          aria-label="Copy a picture of this chart"
+          aria-label={tl('Copy a picture of this chart')}
           onClick={(e) => capture(e.shiftKey)}
         >
           <Icon name="camera" size={13} />
         </button>
         <span class="sep" />
-        <button class="tb" aria-label="Add an indicator" data-tip="Add an indicator" onClick={() => setOverlay({ kind: 'indicators', panelId: id })}>
+        <button class="tb" aria-label={tl('Add an indicator')} data-tip="Add an indicator" onClick={() => setOverlay({ kind: 'indicators', panelId: id })}>
           <Icon name="indicators" size={13} />
-          <span class="tb-word">Indicators</span>
+          <span class="tb-word">{tl('Indicators')}</span>
           <Show when={studyCount() > 0}>
             <span class="dim">{studyCount()}</span>
           </Show>
@@ -1593,16 +1594,16 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
           <button
             class="tb replay-btn"
             classList={{ on: replayOpen() }}
-            aria-label="Bar replay"
+            aria-label={tl('Bar replay')}
             data-tip="Bar replay — pick a bar, hide what came after it, and play the market forward from there"
             onClick={() => (replayOpen() ? replayToRealTime(true) : pickReplayBar())}
           >
             <Icon name="replay" size={13} />
-            <span>Replay</span>
+            <span>{tl('Replay')}</span>
           </button>
-          <button class="tb" classList={{ on: !!tester()?.open }} aria-label="Strategy tester" data-tip="Strategy tester — backtest a strategy on this chart’s bars, worked out in your browser" onClick={toggleTester}>
+          <button class="tb" classList={{ on: !!tester()?.open }} aria-label={tl('Strategy tester')} data-tip="Strategy tester — backtest a strategy on this chart’s bars, worked out in your browser" onClick={toggleTester}>
             <Icon name="flask" size={13} />
-            <span class="tb-word">Backtest</span>
+            <span class="tb-word">{tl('Backtest')}</span>
           </button>
         </Show>
         <Show when={!props.training}>
@@ -1612,17 +1613,17 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
           onChange={(e) => patchPanel(id, { tpo: e.currentTarget.value === 'footprint' ? '' : e.currentTarget.value, footprint: e.currentTarget.value === 'footprint' })}
         >
           <option value="" selected={!split() && !footprintOn()}>
-            Candles
+            {tl('Candles')}
           </option>
           <Show when={footprintable()}>
             <option value="footprint" selected={footprintOn()}>
-              Footprint
+              {tl('Footprint')}
             </option>
           </Show>
           <For each={TPO_SPLITS.filter((s) => tpoFits(s.value, timeframe()))}>
             {(s) => (
               <option value={s.value} selected={split() === s.value}>
-                TPO · {s.label}
+                TPO · {tl(s.label)}
               </option>
             )}
           </For>
@@ -1640,7 +1641,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
               setFootprintMenu((v) => (v === null ? left : null));
             }}
           >
-            <span>Options</span>
+            <span>{tl('Options')}</span>
             <Icon name="chevron" size={10} />
           </button>
         </Show>
@@ -1681,7 +1682,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
             >
               {(mode) => (
                 <button classList={{ cur: tpoValue(props.panel.tpoSettings, 'blockMode') === mode.value }} onClick={() => tpoSet('blockMode', mode.value)}>
-                  {mode.label}
+                  {tl(mode.label)}
                 </button>
               )}
             </For>
@@ -1701,7 +1702,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
             >
               {(item) => (
                 <button onClick={() => tpoSet(item.key, tpoOn(item.key) ? '0' : '1')}>
-                  {item.label}
+                  {tl(item.label)}
                   <span class={tpoOn(item.key) ? 'bull' : 'dim'}>{tpoOn(item.key) ? 'on' : 'off'}</span>
                 </button>
               )}
@@ -1713,7 +1714,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
                 setOverlay({ kind: 'tpoSettings', panelId: id });
               }}
             >
-              TPO settings…
+              {tl('TPO settings…')}
             </button>
           </div>
         )}
@@ -1739,7 +1740,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
                               setTfMenu(null);
                             }}
                           >
-                            {t.label}
+                            {tl(t.label)}
                           </button>
                           {/* A favourite is a button in the chart's bar; the menu stays open to star more. */}
                           <button
@@ -1894,7 +1895,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
             <div class="replay-bar" classList={{ top: footprintOn() && props.panel.footprintStats === true }} onPointerDown={(e) => e.stopPropagation()}>
               <button class="tb" classList={{ on: replayPicking() }} data-tip="Pick the bar to replay from" onClick={pickReplayBar}>
                 <Icon name="replay" size={13} />
-                <span class="label">Select bar</span>
+                <span class="label">{tl('Select bar')}</span>
               </button>
               <span class="sep" />
               <button
@@ -1906,26 +1907,26 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
               >
                 <Icon name={replayPlaying() ? 'pause' : 'play'} size={13} />
               </button>
-              <button class="tb" aria-label="Forward one step" data-tip="Forward one step" disabled={!replaying() || replayState().ended} onClick={() => send({ t: 'replayStep', id: sid, ms: replayStepMs() })}>
+              <button class="tb" aria-label={tl('Forward one step')} data-tip="Forward one step" disabled={!replaying() || replayState().ended} onClick={() => send({ t: 'replayStep', id: sid, ms: replayStepMs() })}>
                 <Icon name="stepForward" size={13} />
               </button>
-              <select class="box num" aria-label="Replay speed" data-tip="Steps a second" value={String(replaySpeed())} onChange={(e) => setReplaySpeed(Number(e.currentTarget.value))}>
-                <For each={REPLAY_SPEEDS}>{(speed) => <option value={String(speed)} selected={speed === replaySpeed()}>{speed}x</option>}</For>
+              <select class="box num" aria-label={tl('Replay speed')} data-tip="Steps a second" value={String(replaySpeed())} onChange={(e) => setReplaySpeed(Number(e.currentTarget.value))}>
+                <For each={REPLAY_SPEEDS}>{(speed) => <option value={String(speed)} selected={speed === replaySpeed()}>{speed}{tl('x')}</option>}</For>
               </select>
               <Show when={replaySteps().length > 0}>
-                <select class="box num" aria-label="Replay step" data-tip="How far a step goes: a whole bar of the chart, or part of one" onChange={(e) => setReplayStepMs(Number(e.currentTarget.value))}>
+                <select class="box num" aria-label={tl('Replay step')} data-tip="How far a step goes: a whole bar of the chart, or part of one" onChange={(e) => setReplayStepMs(Number(e.currentTarget.value))}>
                   <option value="0" selected={replayStepMs() === 0}>
                     {tfLabel(timeframe())}
                   </option>
-                  <For each={replaySteps()}>{(step) => <option value={String(step.ms)} selected={step.ms === replayStepMs()}>{step.label}</option>}</For>
+                  <For each={replaySteps()}>{(step) => <option value={String(step.ms)} selected={step.ms === replayStepMs()}>{tl(step.label)}</option>}</For>
                 </select>
               </Show>
               <Show when={replayAt()}>{(at) => <span class="num when">{formatDateTime(at()).slice(0, 16)}</span>}</Show>
               <span class="sep" />
-              <button class="tb" data-tip="Jump to real-time" aria-label="Jump to real-time" disabled={!replaying()} onClick={() => replayToRealTime(false)}>
+              <button class="tb" data-tip="Jump to real-time" aria-label={tl('Jump to real-time')} disabled={!replaying()} onClick={() => replayToRealTime(false)}>
                 <Icon name="realTime" size={13} />
               </button>
-              <button class="iconbtn" aria-label="Close replay" data-tip="Close the replay and go back to real-time" onClick={() => replayToRealTime(true)}>
+              <button class="iconbtn" aria-label={tl('Close replay')} data-tip="Close the replay and go back to real-time" onClick={() => replayToRealTime(true)}>
                 <Icon name="close" size={11} />
               </button>
             </div>
@@ -1939,15 +1940,15 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
           <Show when={pattern()}>
             {(p) => (
               <div class="pattern-bar" onPointerDown={(e) => e.stopPropagation()}>
-                <span class={p().side === 'bear' ? 'bear' : 'bull'}>{p().side === 'bear' ? '▼' : '▲'} Three drives</span>
+                <span class={p().side === 'bear' ? 'bear' : 'bull'}>{p().side === 'bear' ? '▼' : '▲'} {tl('Three drives')}</span>
                 <span class="dim">
                   {p().stage === 'line' ? 'at the line · not confirmed yet' : `score ${p().score}${p().divergence ? ' · RSI divergence' : ''}`}
                   {p().limit ? ` · limit ${formatPrice(p().limit!.price, digitsFor(p().market, p().limit!.price))}` : ''}
                 </span>
                 <button class="tb" data-tip="Save the line and the circles as drawings on this chart" onClick={() => keepPattern(p())}>
-                  Keep drawings
+                  {tl('Keep drawings')}
                 </button>
-                <button class="iconbtn" aria-label="Close the pattern" data-tip="Close — nothing is saved" onClick={() => setShownPattern(null)}>
+                <button class="iconbtn" aria-label={tl('Close the pattern')} data-tip="Close — nothing is saved" onClick={() => setShownPattern(null)}>
                   <Icon name="close" size={11} />
                 </button>
               </div>
@@ -1956,12 +1957,12 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
           <Show when={traded()}>
             {(s) => (
               <div class="pattern-bar" onPointerDown={(e) => e.stopPropagation()}>
-                <span>{s().title}</span>
+                <span>{tl(s().title)}</span>
                 <span class={s().tone}>{s().summary}</span>
                 <button class="tb" data-tip="Save them as drawings on this chart: pictures of these trades, not new ones" onClick={() => keepTrades(s())}>
-                  Save drawings
+                  {tl('Save drawings')}
                 </button>
-                <button class="iconbtn" aria-label="Close the trades" data-tip="Close — nothing is saved" onClick={() => setShownTrades(null)}>
+                <button class="iconbtn" aria-label={tl('Close the trades')} data-tip="Close — nothing is saved" onClick={() => setShownTrades(null)}>
                   <Icon name="close" size={11} />
                 </button>
               </div>
@@ -1995,9 +1996,9 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
               <div class="flow-label" classList={{ bull: h().buy > h().sell, bear: h().buy < h().sell }} style={{ left: `${h().x + 14}px`, top: `${h().y - 12}px` }}>
                 <span class="dim">{formatPrice(h().price, digitsFor(market(), h().price))}</span>
                 <b>{formatTurnover(h().buy)}</b>
-                <span class="dim">bought</span>
+                <span class="dim">{tl('bought')}</span>
                 <b>{formatTurnover(h().sell)}</b>
-                <span class="dim">sold</span>
+                <span class="dim">{tl('sold')}</span>
                 <span>{h().buy >= h().sell ? '+' : '-'}{formatTurnover(Math.abs(h().buy - h().sell))}</span>
                 <span class="dim">{formatClock(h().at)}</span>
               </div>
@@ -2013,7 +2014,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
           <Show when={hoveredFlow()}>
             {(h) => (
               <div class="flow-label" classList={{ bull: h().mark.deltaUsd > 0, bear: h().mark.deltaUsd < 0 }} style={{ left: `${h().x + 12}px`, top: `${h().y - 30}px` }}>
-                <span class="dim">Flow</span>
+                <span class="dim">{tl('Flow')}</span>
                 <b>
                   {h().mark.deltaUsd > 0 ? '+' : '-'}${formatTurnover(Math.abs(h().mark.deltaUsd))}
                 </b>
@@ -2036,7 +2037,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
                 <span>{titleOf(h().alert)}</span>
                 <button
                   data-tip="Line style — colour, opacity, thickness"
-                  aria-label="Style this alert's line"
+                  aria-label={tl('Style this alert\'s line')}
                   onClick={(e) => {
                     e.stopPropagation();
                     setAlertStyling(h().alert.id);
@@ -2046,7 +2047,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
                 </button>
                 <button
                   data-tip="Delete this alert"
-                  aria-label="Delete this alert"
+                  aria-label={tl('Delete this alert')}
                   onClick={(e) => {
                     e.stopPropagation();
                     setOverAlert(null);
@@ -2134,7 +2135,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
                       </button>
                     )}
                   </Show>
-                  <button data-tip="Remove this pane's indicators" aria-label="Remove this pane's indicators" onClick={() => removePane(group)}>
+                  <button data-tip="Remove this pane's indicators" aria-label={tl('Remove this pane\'s indicators')} onClick={() => removePane(group)}>
                     <Icon name="trash" size={15} />
                   </button>
                 </div>
@@ -2150,7 +2151,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
                     setAlertMenu(null);
                   }}
                 >
-                  Line style…<span class="dim">colour, opacity, thickness</span>
+                  {tl('Line style…')}<span class="dim">{tl('colour, opacity, thickness')}</span>
                 </button>
                 <hr />
                 <button
@@ -2160,7 +2161,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
                     deleteAlert(id).catch((err) => toast({ tone: 'warn', title: 'Alert not deleted', body: errorText(err) }));
                   }}
                 >
-                  Delete alert
+                  {tl('Delete alert')}
                 </button>
               </div>
             )}
@@ -2176,16 +2177,16 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
                         <span class="dim">{h().expanded ? 'back to its shape' : 'a column a bracket'}</span>
                       </button>
                       <button disabled={h().next === null} onClick={() => tpoEdit(mergeRight, h())}>
-                        Merge right<span class="dim">→|</span>
+                        {tl('Merge right')}<span class="dim">→|</span>
                       </button>
                       <button disabled={h().prev === null} onClick={() => tpoEdit(mergeLeft, h())}>
-                        Merge left<span class="dim">|←</span>
+                        {tl('Merge left')}<span class="dim">|←</span>
                       </button>
                       <button disabled={!canSplit(h())} onClick={() => tpoEdit(splitProfile, h())}>
-                        Split profile<span class="dim">{h().merged ? 'into its sessions' : h().splitAt !== null ? 'at the pointer' : 'expand it first'}</span>
+                        {tl('Split profile')}<span class="dim">{h().merged ? 'into its sessions' : h().splitAt !== null ? 'at the pointer' : 'expand it first'}</span>
                       </button>
                       <button classList={{ cur: tpoPrices() }} onClick={() => setTpoPrices((v) => !v)}>
-                        Prices<span class="dim">{tpoPrices() ? '▾' : '▸'}</span>
+                        {tl('Prices')}<span class="dim">{tpoPrices() ? '▾' : '▸'}</span>
                       </button>
                       <Show when={tpoPrices()}>
                         <For each={h().prices}>
@@ -2212,7 +2213,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
                           setMenu(null);
                         }}
                       >
-                        Reset chart<span class="dim">every profile as it was</span>
+                        {tl('Reset chart')}<span class="dim">{tl('every profile as it was')}</span>
                       </button>
                       <hr />
                     </>
@@ -2224,7 +2225,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
                     setMenu(null);
                   }}
                 >
-                  Reset chart view<span class="dim">auto-scale</span>
+                  {tl('Reset chart view')}<span class="dim">{tl('auto-scale')}</span>
                 </button>
                 <Show when={!autoScale()}>
                   <button
@@ -2233,7 +2234,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
                       setMenu(null);
                     }}
                   >
-                    Auto-scale price<span class="dim">follow the bars</span>
+                    {tl('Auto-scale price')}<span class="dim">{tl('follow the bars')}</span>
                   </button>
                 </Show>
                 <button
@@ -2250,7 +2251,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
                     setOverlay({ kind: 'indicators', panelId: id });
                   }}
                 >
-                  Add indicator…
+                  {tl('Add indicator…')}
                 </button>
                 <hr />
                 <button
@@ -2260,7 +2261,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
                     setTool('horizontal');
                   }}
                 >
-                  Draw a level<span class="dim">tool</span>
+                  {tl('Draw a level')}<span class="dim">{tl('tool')}</span>
                 </button>
               </div>
             )}
@@ -2326,7 +2327,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
         <For each={RANGES}>
           {(r) => (
             <button class="tb num range" data-tip={r.days === null ? 'Every loaded bar' : `Zoom to the last ${r.label}`} onClick={() => showRange(r.days)}>
-              {r.label}
+              {tl(r.label)}
             </button>
           )}
         </For>
@@ -2334,7 +2335,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
         <Show when={status().error}>{(err) => <span class="warn" data-tip={err()}>▲ {err()} · </span>}</Show>
         <span class="dim num bars-info" data-tip={status().source === 'archive' ? 'Stored history, with the exchange filling the newest bars' : status().source === 'ratio' ? 'One market priced in the other: each bar of the first divided by the same bar of the second' : 'Candles from the exchange; this market is not archived here'}>
           {status().loading ? 'loading… · ' : ''}
-          {status().bars.toLocaleString('en-US')} bars{status().source ? ` · ${status().source}` : ''} · {zoneLabel()}
+          {status().bars.toLocaleString('en-US')} {tl('bars')}{status().source ? ` · ${status().source}` : ''} · {zoneLabel()}
         </span>
         {/* With more than one thing on screen: this chart alone, and back. */}
         <Show when={!props.training && !mobile() && doc.root.kind === 'split'}>
@@ -2392,7 +2393,7 @@ function LayerRow(props: {
           props.onSettings?.();
         }}
       >
-        {props.label}
+        {tl(props.label)}
       </span>
       {/* After the first figure the rest are extra: a narrow chart leaves them out (styles.css). */}
       <For each={props.values ?? []}>
@@ -2405,7 +2406,7 @@ function LayerRow(props: {
       <For each={props.stats ?? []}>
         {(s) => (
           <span class="dim">
-            {s.label} <span class="val muted">{s.value}</span>
+            {tl(s.label)} <span class="val muted">{s.value}</span>
           </span>
         )}
       </For>
@@ -2417,14 +2418,14 @@ function LayerRow(props: {
         </button>
         <Show when={props.onSettings}>
           {(open) => (
-            <button data-tip="Settings" aria-label="Settings" onClick={() => open()()}>
+            <button data-tip="Settings" aria-label={tl('Settings')} onClick={() => open()()}>
               <Icon name="settings" size={15} />
             </button>
           )}
         </Show>
         <Show when={props.onRemove}>
           {(remove) => (
-            <button data-tip="Remove" aria-label="Remove" onClick={() => remove()()}>
+            <button data-tip="Remove" aria-label={tl('Remove')} onClick={() => remove()()}>
               <Icon name="trash" size={15} />
             </button>
           )}
@@ -2462,7 +2463,7 @@ function LiveBadge(props: { market: string; live: LiveStatus; relayed: boolean; 
   return (
     <span class="live" data-tip={props.relayed ? `${state().title} Through the tradoor server, because this network blocks the exchange.` : state().title}>
       <span class={`state ${state().tone}`} classList={{ pulse: props.live === 'connecting' || props.live === 'retrying' }}>
-        {state().label}
+        {tl(state().label)}
       </span>
       {/* Which way it came, where that is not the exchange itself. */}
       <Show when={props.relayed}>

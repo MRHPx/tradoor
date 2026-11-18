@@ -1,4 +1,5 @@
 import { lazy as solidLazy, type Component } from 'solid-js';
+import { tl } from '../lib/i18n';
 
 /**
  * In place of a part of the page whose code could not be fetched. A browser holds
@@ -8,9 +9,9 @@ import { lazy as solidLazy, type Component } from 'solid-js';
 function NotLoaded() {
   return (
     <div class="not-loaded" role="alert">
-      <span>This part of Tradoor did not load: the connection to the server dropped.</span>
+      <span>{tl('This part of Tradoor did not load: the connection to the server dropped.')}</span>
       <button class="tb" onClick={() => location.reload()}>
-        Reload the page
+        {tl('Reload the page')}
       </button>
     </div>
   );

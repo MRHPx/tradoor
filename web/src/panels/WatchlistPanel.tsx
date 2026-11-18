@@ -21,6 +21,7 @@ import { parseMarket, symbolOf, venueLabel } from '../lib/markets';
 import { blockOf, FLAG_COLORS, FLAGS, freshName, isSection, move, SECTION_NAME_MAX, sectionEnd, sectionName, sectionStops, visible } from '../lib/watchlist';
 import type { WatchlistPanelState } from '../workspace/model';
 import { doc, marketOf, patchPanel, setLinkMarket, setPanelMarket, targetChart, timeframeOf } from '../workspace/store';
+import { tl } from '../lib/i18n';
 
 interface Row {
   last: number;
@@ -288,7 +289,7 @@ export function WatchlistPanel(props: { panel: WatchlistPanelState }) {
     <div class="panelcol wl">
       <div class="toolbar">
         <span class="caps" style={{ padding: '0 4px' }}>
-          Watchlist
+          {tl('Watchlist')}
         </span>
         <span class="dim">{markets().length}</span>
         <span class="spacer" />
@@ -300,13 +301,13 @@ export function WatchlistPanel(props: { panel: WatchlistPanelState }) {
         </button>
       </div>
       <div class="wl-head">
-        <span>Symbol</span>
-        <span class="r">Last</span>
+        <span>{tl('Symbol')}</span>
+        <span class="r">{tl('Last')}</span>
         <span class="r chg" data-tip="Change since the day's open, 00:00 UTC — as TradingView counts it">
-          Chg%
+          {tl('Chg%')}
         </span>
         <span class="r vol" data-tip="Volume since 00:00 UTC, in the base coin">
-          Vol
+          {tl('Vol')}
         </span>
       </div>
       <div class="scroll wl-list" ref={list} onContextMenu={(e) => openMenu(e, null)}>
@@ -388,7 +389,7 @@ export function WatchlistPanel(props: { panel: WatchlistPanelState }) {
           }
         </For>
         <Show when={items().length === 0}>
-          <div class="empty">Empty. Add a market with + above.</div>
+          <div class="empty">{tl('Empty. Add a market with + above.')}</div>
         </Show>
         <Show when={drag()?.to != null}>
           <div class="wl-drop" style={{ top: `${Math.max(0, drag()!.lineY - 1)}px` }} />
@@ -397,7 +398,7 @@ export function WatchlistPanel(props: { panel: WatchlistPanelState }) {
       <Show when={drag()}>
         {(d) => (
           <div class="wl-ghost" style={{ left: `${d().x + 12}px`, top: `${d().y - 10}px` }}>
-            {d().label}
+            {tl(d().label)}
           </div>
         )}
       </Show>
@@ -424,24 +425,24 @@ export function WatchlistPanel(props: { panel: WatchlistPanelState }) {
                   </For>
                 </div>
                 <Show when={flags()[item!]}>
-                  <button onClick={run(() => setFlag(item!, null))}>Unflag {symbolOf(item!)}</button>
+                  <button onClick={run(() => setFlag(item!, null))}>{tl('Unflag')} {symbolOf(item!)}</button>
                 </Show>
               </Show>
               <Show when={anyFlag}>
-                <button onClick={run(() => patchPanel(id, { flags: {} }))}>Unflag all symbols</button>
+                <button onClick={run(() => patchPanel(id, { flags: {} }))}>{tl('Unflag all symbols')}</button>
               </Show>
               <Show when={item !== null && !isSection(item) && anyFlag}>
                 <hr />
               </Show>
               <Show when={item !== null && isSection(item)}>
-                <button onClick={run(() => setEditing(sectionName(item!)))}>Rename section</button>
+                <button onClick={run(() => setEditing(sectionName(item!)))}>{tl('Rename section')}</button>
                 <button onClick={run(() => toggle(sectionName(item!)))}>{collapsed().includes(sectionName(item!)) ? 'Expand section' : 'Collapse section'}</button>
               </Show>
               <button onClick={run(() => addSection(item))}>
-                Add section<span class="dim">{item === null ? 'at the end' : 'above'}</span>
+                {tl('Add section')}<span class="dim">{item === null ? 'at the end' : 'above'}</span>
               </button>
               <button onClick={run(() => addSymbol(item !== null && isSection(item) ? sectionEnd(items(), at) : item === null ? at : at + 1))}>
-                Add symbol…<span class="dim">{item !== null && isSection(item) ? 'to this section' : item === null ? '' : 'below'}</span>
+                {tl('Add symbol…')}<span class="dim">{item !== null && isSection(item) ? 'to this section' : item === null ? '' : 'below'}</span>
               </button>
               <Show when={item !== null}>
                 <hr />

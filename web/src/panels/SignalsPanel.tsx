@@ -24,6 +24,7 @@ import { formatDateTime, formatHm } from '../lib/timezone';
 import { toast } from '../lib/toasts';
 import type { SignalsPanelState } from '../workspace/model';
 import { patchPanel, targetChart } from '../workspace/store';
+import { tl } from '../lib/i18n';
 
 /** How often the list is asked for again; the scan itself runs every four hours. */
 const POLL_MS = 60_000;
@@ -194,21 +195,21 @@ export function SignalsPanel(props: { panel: SignalsPanelState }) {
     <div class="panelcol sig" ref={root}>
       <div class="toolbar">
         <span class="caps" style={{ padding: '0 4px' }}>
-          Signal
+          {tl('Signal')}
         </span>
-        <span class="dim what">Three drives · 4H · 1D · 1W</span>
+        <span class="dim what">{tl('Three drives · 4H · 1D · 1W')}</span>
         <span class="sep" />
         <button class="tb" classList={{ on: props.panel.view !== 'record' }} data-tip="The patterns now" onClick={() => patchPanel(props.panel.id, { view: 'list' })}>
-          Signals
+          {tl('Signals')}
         </button>
         <button class="tb" classList={{ on: props.panel.view === 'record' }} data-tip="How they went: the rules replayed over months of history, and the live patterns since" onClick={() => patchPanel(props.panel.id, { view: 'record' })}>
-          Record
+          {tl('Record')}
         </button>
         <span class="sep" />
         <For each={SIDES}>
           {(s) => (
             <button class="tb" classList={{ on: props.panel.side === s.value }} data-tip={s.tip} onClick={() => patchPanel(props.panel.id, { side: s.value })}>
-              {s.label}
+              {tl(s.label)}
             </button>
           )}
         </For>
@@ -222,18 +223,18 @@ export function SignalsPanel(props: { panel: SignalsPanelState }) {
             onClick={() => setTelegramMenu((v) => !v)}
           >
             <Icon name="alarm" size={12} />
-            <span>Telegram</span>
+            <span>{tl('Telegram')}</span>
           </button>
         </Show>
       </div>
       <Show when={telegramMenu()}>
         <div class="menu sig-tg" onPointerDown={(e) => e.stopPropagation()}>
           <button classList={{ cur: state()?.notify }} data-tip="Once per scan, the patterns scoring 70 or more whose Stochastic RSI turned" onClick={() => void setNotify({ notify: !state()?.notify })}>
-            <span>When a pattern scoring 70+ turns</span>
+            <span>{tl('When a pattern scoring 70+ turns')}</span>
             <span class="num">{state()?.notify ? 'on' : 'off'}</span>
           </button>
           <button classList={{ cur: state()?.notifyTouch }} data-tip="At once, when live price reaches the line of two drives — before the bars confirm a third" onClick={() => void setNotify({ touch: !state()?.notifyTouch })}>
-            <span>When price reaches the line</span>
+            <span>{tl('When price reaches the line')}</span>
             <span class="num">{state()?.notifyTouch ? 'on' : 'off'}</span>
           </button>
           <button
@@ -241,7 +242,7 @@ export function SignalsPanel(props: { panel: SignalsPanelState }) {
             data-tip="Once per scan, the limit entry for each bearish pattern first seen scoring 55 or more before the turn, with delta divergence — the entry the replay bore out best"
             onClick={() => void setNotify({ limits: !state()?.notifyLimits })}
           >
-            <span>Limit entry for a bearish 55+ with Δ div</span>
+            <span>{tl('Limit entry for a bearish 55+ with Δ div')}</span>
             <span class="num">{state()?.notifyLimits ? 'on' : 'off'}</span>
           </button>
         </div>
@@ -254,11 +255,11 @@ export function SignalsPanel(props: { panel: SignalsPanelState }) {
         <Show when={state()?.scannedAt} fallback={<span>{error() ?? 'The first scan runs a minute after the next four-hour close.'}</span>}>
           {(at) => (
             <span>
-              Scanned {formatHm(at())} · next {formatHm(state()!.nextAt)} · {state()!.markets} coins
+              {tl('Scanned')} {formatHm(at())} {tl('· next')} {formatHm(state()!.nextAt)} · {state()!.markets} {tl('coins')}
             </span>
           )}
         </Show>
-        <span class="dim">{signals().length} found</span>
+        <span class="dim">{signals().length} {tl('found')}</span>
       </div>
       <div class="scroll">
         <For each={touches()}>
@@ -295,7 +296,7 @@ export function SignalsPanel(props: { panel: SignalsPanelState }) {
             );
           }}
         </For>
-        <For each={signals()} fallback={<Show when={state()?.scannedAt}>{<div class="empty">No three drives on four-hour, daily or weekly bars right now.</div>}</Show>}>
+        <For each={signals()} fallback={<Show when={state()?.scannedAt}>{<div class="empty">{tl('No three drives on four-hour, daily or weekly bars right now.')}</div>}</Show>}>
           {(s) => {
             const turned = () => s.turnedAt !== null;
             const strong = s.timeframe !== '4h';
@@ -369,8 +370,8 @@ export function SignalsPanel(props: { panel: SignalsPanelState }) {
         </For>
         <Show when={ended().length + endedTouches().length > 0}>
           <div class="sig-cap">
-            <b>Ended</b>
-            <span class="dim">left the list in the last day</span>
+            <b>{tl('Ended')}</b>
+            <span class="dim">{tl('left the list in the last day')}</span>
           </div>
           <For each={endedTouches()}>
             {(t) => (
@@ -389,7 +390,7 @@ export function SignalsPanel(props: { panel: SignalsPanelState }) {
                   <b>{symbolOf(t.market)}</b>
                   <VenueTag market={t.market} />
                 </span>
-                <span class="sig-drives dim">at the line · {t.outcome === 'stop' ? 'hit the stop' : t.outcome === 'expired' ? 'neither take-profit nor stop' : `reached ${t.outcome?.toUpperCase()}`}</span>
+                <span class="sig-drives dim">{tl('at the line ·')} {t.outcome === 'stop' ? 'hit the stop' : t.outcome === 'expired' ? 'neither take-profit nor stop' : `reached ${t.outcome?.toUpperCase()}`}</span>
                 <span class="sig-score num" classList={{ bull: (t.ret ?? 0) > 0, bear: (t.ret ?? 0) < 0 }}>
                   {pct(t.ret)}
                 </span>
@@ -473,16 +474,16 @@ function Compare(props: { rows: SignalPlanRow[]; sides: ('bear' | 'bull')[] }) {
     <table class="grid sig-table sig-compare">
       <thead>
         <tr>
-          <th>Plan</th>
+          <th>{tl('Plan')}</th>
           <th />
-          <th class="num">n</th>
-          <th class="num" data-tip="Closed in profit">Win</th>
+          <th class="num">{tl('n')}</th>
+          <th class="num" data-tip="Closed in profit">{tl('Win')}</th>
           <th class="num">TP1</th>
           <th class="num">TP2</th>
           <th class="num">TP3</th>
           <th class="num">SL</th>
-          <th class="num" data-tip="The average result over the whole position">Avg</th>
-          <th class="num" data-tip="The average in the first half of the period, and in the second: a plan worth keeping holds up in both">Halves</th>
+          <th class="num" data-tip="The average result over the whole position">{tl('Avg')}</th>
+          <th class="num" data-tip="The average in the first half of the period, and in the second: a plan worth keeping holds up in both">{tl('Halves')}</th>
         </tr>
       </thead>
       <tbody>
@@ -492,7 +493,7 @@ function Compare(props: { rows: SignalPlanRow[]; sides: ('bear' | 'bull')[] }) {
               <td data-tip={`${PLANS[r.plan][1]} · ${PLANS[r.plan][2]}`}>
                 <Show when={r.side === props.sides[0]}>
                   <b>{PLANS[r.plan][0]}</b> <span class="dim">{PLANS[r.plan][1]} · {PLANS[r.plan][2]}</span>
-                  {r.plan === 'fib-atr' ? <span class="badge">live</span> : null}
+                  {r.plan === 'fib-atr' ? <span class="badge">{tl('live')}</span> : null}
                 </Show>
               </td>
               <td>
@@ -517,26 +518,26 @@ function Compare(props: { rows: SignalPlanRow[]; sides: ('bear' | 'bull')[] }) {
   return (
     <>
       <div class="sig-cap">
-        <b>Plans compared</b>
-        <span class="dim">the same patterns, each way of setting the take-profits and the stop</span>
+        <b>{tl('Plans compared')}</b>
+        <span class="dim">{tl('the same patterns, each way of setting the take-profits and the stop')}</span>
         <span class="spacer" />
         <For each={CUTS}>
           {(c) => (
             <button class="tb" classList={{ on: cut() === c.value }} onClick={() => setCut(c.value)}>
-              {c.label}
+              {tl(c.label)}
             </button>
           )}
         </For>
       </div>
       {table('pattern')}
       <div class="sig-cap">
-        <b>Plans compared · limit entry</b>
-        <span class="dim">filled limits; their score bands fifteen lower, set before the turn</span>
+        <b>{tl('Plans compared · limit entry')}</b>
+        <span class="dim">{tl('filled limits; their score bands fifteen lower, set before the turn')}</span>
       </div>
       {table('limit')}
       <div class="sig-cap">
-        <b>Plans compared · at the line</b>
-        <span class="dim">entered at the touch; A and D are the same there</span>
+        <b>{tl('Plans compared · at the line')}</b>
+        <span class="dim">{tl('entered at the touch; A and D are the same there')}</span>
       </div>
       {table('touch')}
     </>
@@ -551,11 +552,11 @@ function Record(props: { stats: SignalStats | null; sides: ('bear' | 'bull')[]; 
         {(st) => (
           <>
             <div class="sig-cap">
-              <b>Replayed</b>
-              <Show when={st().backtest} fallback={<span class="dim">the history is replayed a few minutes after the server starts</span>}>
+              <b>{tl('Replayed')}</b>
+              <Show when={st().backtest} fallback={<span class="dim">{tl('the history is replayed a few minutes after the server starts')}</span>}>
                 {(b) => (
                   <span class="dim">
-                    {day(b().from)} – {day(b().to)} · {b().markets} coins · the same rules, bar by bar, seeing nothing ahead
+                    {day(b().from)} – {day(b().to)} · {b().markets} {tl('coins · the same rules, bar by bar, seeing nothing ahead')}
                   </span>
                 )}
               </Show>
@@ -564,59 +565,59 @@ function Record(props: { stats: SignalStats | null; sides: ('bear' | 'bull')[]; 
             <Show when={st().backtest}>{(b) => <Table groups={b().groups} sides={props.sides} />}</Show>
             <Show when={st().backtest?.variants}>{(rows) => <Compare rows={rows()} sides={props.sides} />}</Show>
             <div class="sig-cap">
-              <b>Live</b>
+              <b>{tl('Live')}</b>
               <span class="dim">
                 {st().live.since ? `since ${day(st().live.since!)}` : 'from the first pattern that turns'}
                 {st().live.open ? ` · ${st().live.open} still open` : ''}
               </span>
             </div>
-            <Show when={st().live.groups.some((g) => g.n > 0)} fallback={<div class="sig-note dim">None has played out yet: a pattern is given {st().windowBars / 6} days.</div>}>
+            <Show when={st().live.groups.some((g) => g.n > 0)} fallback={<div class="sig-note dim">{tl('None has played out yet: a pattern is given')} {st().windowBars / 6} {tl('days.')}</div>}>
               <Table groups={st().live.groups} sides={props.sides} />
             </Show>
             <div class="sig-cap">
               <b>Live · 1D & 1W</b>
               <span class="dim">
-                the strong kind, each weighed over {st().windowBars} of its own bars
+                {tl('the strong kind, each weighed over')} {st().windowBars} {tl('of its own bars')}
                 {st().higher.since ? ` · since ${day(st().higher.since!)}` : ''}
                 {st().higher.open ? ` · ${st().higher.open} still open` : ''}
               </span>
             </div>
-            <Show when={st().higher.groups.some((g) => g.n > 0)} fallback={<div class="sig-note dim">None has played out yet: a daily pattern is given {st().windowBars} days, a weekly one as many weeks.</div>}>
+            <Show when={st().higher.groups.some((g) => g.n > 0)} fallback={<div class="sig-note dim">{tl('None has played out yet: a daily pattern is given')} {st().windowBars} {tl('days, a weekly one as many weeks.')}</div>}>
               <Table groups={st().higher.groups} sides={props.sides} />
             </Show>
             <div class="sig-cap">
-              <b>Limit entry · replayed</b>
-              <span class="dim">the same patterns, entered at a limit instead of at the turn</span>
+              <b>{tl('Limit entry · replayed')}</b>
+              <span class="dim">{tl('the same patterns, entered at a limit instead of at the turn')}</span>
             </div>
             <div class="sig-note dim">{LIMIT}</div>
-            <Show when={st().backtest?.limits.some((g) => g.seen > 0)} fallback={<div class="sig-note dim">Replayed with the patterns a few minutes after the server starts.</div>}>
+            <Show when={st().backtest?.limits.some((g) => g.seen > 0)} fallback={<div class="sig-note dim">{tl('Replayed with the patterns a few minutes after the server starts.')}</div>}>
               <Table groups={st().backtest!.limits} sides={props.sides} limits />
             </Show>
             <div class="sig-cap">
-              <b>Limit entry · live</b>
+              <b>{tl('Limit entry · live')}</b>
               <span class="dim">
-                patterns first seen since {day(st().limits.since)}
+                {tl('patterns first seen since')} {day(st().limits.since)}
                 {st().limits.open ? ` · ${st().limits.open} still open` : ''}
               </span>
             </div>
-            <Show when={st().limits.groups.some((g) => g.seen > 0)} fallback={<div class="sig-note dim">None has played out yet.</div>}>
+            <Show when={st().limits.groups.some((g) => g.seen > 0)} fallback={<div class="sig-note dim">{tl('None has played out yet.')}</div>}>
               <Table groups={st().limits.groups} sides={props.sides} limits />
             </Show>
             <div class="sig-cap">
-              <b>At the line · replayed</b>
-              <span class="dim">price reaching the line of two drives, entered there: the touch is the third drive so far</span>
+              <b>{tl('At the line · replayed')}</b>
+              <span class="dim">{tl('price reaching the line of two drives, entered there: the touch is the third drive so far')}</span>
             </div>
-            <Show when={st().touches.replayed.length > 0} fallback={<div class="sig-note dim">Replayed with the patterns a few minutes after the server starts.</div>}>
+            <Show when={st().touches.replayed.length > 0} fallback={<div class="sig-note dim">{tl('Replayed with the patterns a few minutes after the server starts.')}</div>}>
               <TouchTable groups={st().touches.replayed} sides={props.sides} />
             </Show>
             <div class="sig-cap">
-              <b>At the line · live</b>
+              <b>{tl('At the line · live')}</b>
               <span class="dim">
                 {st().touches.live.since ? `since ${day(st().touches.live.since!)}` : 'from the first touch'}
                 {st().touches.live.open ? ` · ${st().touches.live.open} still open` : ''}
               </span>
             </div>
-            <Show when={st().touches.live.groups.some((g) => g.n > 0)} fallback={<div class="sig-note dim">None has played out yet.</div>}>
+            <Show when={st().touches.live.groups.some((g) => g.n > 0)} fallback={<div class="sig-note dim">{tl('None has played out yet.')}</div>}>
               <TouchTable groups={st().touches.live.groups} sides={props.sides} />
             </Show>
             <For each={st().touches.recent.filter((t) => props.sides.includes(t.side))}>
@@ -639,10 +640,10 @@ function Record(props: { stats: SignalStats | null; sides: ('bear' | 'bull')[]; 
               )}
             </For>
             <div class="sig-cap">
-              <b>Latest</b>
-              <span class="dim">entered at the close the scan read when it turned</span>
+              <b>{tl('Latest')}</b>
+              <span class="dim">{tl('entered at the close the scan read when it turned')}</span>
             </div>
-            <For each={props.recent} fallback={<div class="sig-note dim">No pattern has turned yet.</div>}>
+            <For each={props.recent} fallback={<div class="sig-note dim">{tl('No pattern has turned yet.')}</div>}>
               {(s) => (
                 <button class="sig-row played" classList={{ shown: isShown(s) }} data-tip="Open it on the chart" onClick={() => props.onOpen(s)}>
                   <span class={`sig-out ${s.outcome ?? 'open'}`} data-tip={s.outcome ? OUTCOME[s.outcome][2] : 'Still open'}>
@@ -684,14 +685,14 @@ function TouchTable(props: { groups: SignalTouchGroup[]; sides: ('bear' | 'bull'
       <thead>
         <tr>
           <th />
-          <th class="num" data-tip="Times price reached a line">Touches</th>
-          <th class="num" data-tip="The two drives became three within four days">3 drives</th>
-          <th class="num" data-tip="Closed in profit">Win</th>
+          <th class="num" data-tip="Times price reached a line">{tl('Touches')}</th>
+          <th class="num" data-tip="The two drives became three within four days">{tl('3 drives')}</th>
+          <th class="num" data-tip="Closed in profit">{tl('Win')}</th>
           <th class="num" data-tip="Reached the first take-profit">TP1</th>
           <th class="num" data-tip="Reached the second">TP2</th>
           <th class="num" data-tip="Reached the third">TP3</th>
           <th class="num" data-tip="The stop, before the first take-profit">SL</th>
-          <th class="num" data-tip="The average result over the whole position">Avg</th>
+          <th class="num" data-tip="The average result over the whole position">{tl('Avg')}</th>
         </tr>
       </thead>
       <tbody>
@@ -725,16 +726,16 @@ function Table(props: { groups: SignalGroup[]; sides: ('bear' | 'bull')[]; limit
       <thead>
         <tr>
           <th />
-          <Show when={props.limits} fallback={<th class="num" data-tip="Patterns that turned">Patterns</th>}>
-            <th class="num" data-tip="Limits set, one per pattern">Set</th>
-            <th class="num" data-tip="Price came back to the limit within two days, before reaching TP1">Filled</th>
+          <Show when={props.limits} fallback={<th class="num" data-tip="Patterns that turned">{tl('Patterns')}</th>}>
+            <th class="num" data-tip="Limits set, one per pattern">{tl('Set')}</th>
+            <th class="num" data-tip="Price came back to the limit within two days, before reaching TP1">{tl('Filled')}</th>
           </Show>
-          <th class="num" data-tip="Closed in profit, of those entered">Win</th>
+          <th class="num" data-tip="Closed in profit, of those entered">{tl('Win')}</th>
           <th class="num" data-tip="Reached the first take-profit after the entry">TP1</th>
           <th class="num" data-tip="Reached the second">TP2</th>
           <th class="num" data-tip="Reached the third">TP3</th>
           <th class="num" data-tip="The stop, before the first take-profit">SL</th>
-          <th class="num" data-tip="The average result over the whole position: half at TP1, a quarter at each of the others, the rest at the entry, the stop, or the close four days on">Avg</th>
+          <th class="num" data-tip="The average result over the whole position: half at TP1, a quarter at each of the others, the rest at the entry, the stop, or the close four days on">{tl('Avg')}</th>
         </tr>
       </thead>
       <tbody>

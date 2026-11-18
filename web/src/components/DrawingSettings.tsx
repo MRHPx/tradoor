@@ -22,6 +22,7 @@ import { defaultStyle, factoryStyle, visibleOn, type Style } from '../lib/drawin
 import { useDismiss } from '../lib/dismiss';
 import { ColorField } from './ColorField';
 import { PositionTicket } from './PositionTicket';
+import { tl } from '../lib/i18n';
 
 export interface DrawingPatch {
   style: Style;
@@ -206,11 +207,11 @@ export function DrawingSettings(props: {
             </Row>
             <Row label="Stop color">
               <ColorField value={str('stopLine', '#f2364566')} onChange={(v) => set('stopLine', v)} />
-              <ColorField value={str('stopFill', '#f236451a')} onChange={(v) => set('stopFill', v)} title="Stop background" />
+              <ColorField value={str('stopFill', '#f236451a')} onChange={(v) => set('stopFill', v)} title={tl('Stop background')} />
             </Row>
             <Row label="Target color">
               <ColorField value={str('profitLine', '#d1d4dc')} onChange={(v) => set('profitLine', v)} />
-              <ColorField value={str('profitFill', '#d1d4dc1a')} onChange={(v) => set('profitFill', v)} title="Target background" />
+              <ColorField value={str('profitFill', '#d1d4dc1a')} onChange={(v) => set('profitFill', v)} title={tl('Target background')} />
             </Row>
             <Row label="Text">
               <ColorField value={str('textColor', '#ffffff')} onChange={(v) => set('textColor', v)} />
@@ -275,7 +276,7 @@ export function DrawingSettings(props: {
           <Show when={kind === 'measure'}>
             <Row label="Color">
               <ColorField value={str('color', '#2962ff')} onChange={(v) => set('color', v)} />
-              <ColorField value={str('fill', '#2962ff33')} onChange={(v) => set('fill', v)} title="Background" />
+              <ColorField value={str('fill', '#2962ff33')} onChange={(v) => set('fill', v)} title={tl('Background')} />
             </Row>
           </Show>
 
@@ -283,10 +284,10 @@ export function DrawingSettings(props: {
             <Row label="Line">
               <LineField color={str('color', '#2962ff')} width={num('width', 1.5)} dash={str('dash', 'solid') as Dash} set={set} />
               <Show when={kind === 'trendline'}>
-                <ArrowToggle title="Left end" on={flag('leftArrow')} left onChange={(v) => set('leftArrow', v)} />
+                <ArrowToggle title={tl('Left end')} on={flag('leftArrow')} left onChange={(v) => set('leftArrow', v)} />
               </Show>
               <Show when={kind === 'trendline' || kind === 'path'}>
-                <ArrowToggle title="Right end" on={flag('rightArrow')} onChange={(v) => set('rightArrow', v)} />
+                <ArrowToggle title={tl('Right end')} on={flag('rightArrow')} onChange={(v) => set('rightArrow', v)} />
               </Show>
             </Row>
             <Show when={kind === 'trendline'}>
@@ -297,7 +298,7 @@ export function DrawingSettings(props: {
               <Check label="Price labels" checked={flag('priceLabels')} onChange={(v) => set('priceLabels', v)} />
             </Show>
             <Show when={kind === 'trendline'}>
-              <div class="dsection">Info</div>
+              <div class="dsection">{tl('Info')}</div>
               <Check label="Stats — price change, percent and bars" checked={flag('stats')} onChange={(v) => set('stats', v)} />
             </Show>
           </Show>
@@ -308,7 +309,7 @@ export function DrawingSettings(props: {
             <ColorField value={str('textColor', str('color', '#2962ff'))} onChange={(v) => set('textColor', v)} />
             <SizeSelect value={num('textSize', 11)} onChange={(v) => set('textSize', v)} />
           </Row>
-          <textarea class="dtext" rows={3} placeholder="Add text" value={label() ?? ''} onInput={(e) => setLabel(e.currentTarget.value)} />
+          <textarea class="dtext" rows={3} placeholder={tl('Add text')} value={label() ?? ''} onInput={(e) => setLabel(e.currentTarget.value)} />
         </Show>
 
         <Show when={tab() === 'coordinates'}>
@@ -326,13 +327,13 @@ export function DrawingSettings(props: {
               </Row>
             )}
           </For>
-          <p class="dnote">Times are UTC.</p>
+          <p class="dnote">{tl('Times are UTC.')}</p>
         </Show>
 
         <Show when={tab() === 'visibility'}>
-          <p class="dnote">Show this drawing on timeframes in:</p>
+          <p class="dnote">{tl('Show this drawing on timeframes in:')}</p>
           <For each={VISIBILITY_UNITS}>
-            {(u) => <Check label={u.label} checked={visibleOn(style(), `1${u.unit}`)} onChange={(v) => setStyle(withHidden(style(), u.unit, !v))} />}
+            {(u) => <Check label={tl(u.label)} checked={visibleOn(style(), `1${u.unit}`)} onChange={(v) => setStyle(withHidden(style(), u.unit, !v))} />}
           </For>
         </Show>
       </div>
@@ -340,7 +341,7 @@ export function DrawingSettings(props: {
       <footer>
         <div class="dtemplate">
           <button class="dbtn" onClick={() => setTemplateMenu((v) => (v ? null : true))} onPointerDown={(e) => e.stopPropagation()}>
-            Template ▾
+            {tl('Template ▾')}
           </button>
           <Show when={templateMenu()}>
             <div class="menu up" onPointerDown={(e) => e.stopPropagation()}>
@@ -351,7 +352,7 @@ export function DrawingSettings(props: {
                   setTemplateMenu(null);
                 }}
               >
-                Save as default
+                {tl('Save as default')}
               </button>
               <button
                 onClick={() => {
@@ -359,7 +360,7 @@ export function DrawingSettings(props: {
                   setTemplateMenu(null);
                 }}
               >
-                Apply default
+                {tl('Apply default')}
               </button>
               <button
                 onClick={() => {
@@ -368,17 +369,17 @@ export function DrawingSettings(props: {
                   setTemplateMenu(null);
                 }}
               >
-                Reset to factory
+                {tl('Reset to factory')}
               </button>
             </div>
           </Show>
         </div>
         <span class="spacer" />
         <button class="dbtn" onClick={cancel}>
-          Cancel
+          {tl('Cancel')}
         </button>
         <button class="dbtn primary" onClick={ok}>
-          Ok
+          {tl('Ok')}
         </button>
       </footer>
     </div>
@@ -390,7 +391,7 @@ export function DrawingSettings(props: {
 function Row(props: { label: string; children: JSX.Element }) {
   return (
     <div class="drow">
-      <span class="dlabel">{props.label}</span>
+      <span class="dlabel">{tl(props.label)}</span>
       <div class="dctl">{props.children}</div>
     </div>
   );
@@ -400,7 +401,7 @@ function Check(props: { label: string; checked: boolean; onChange(v: boolean): v
   return (
     <label class="dcheck">
       <input type="checkbox" checked={props.checked} onChange={(e) => props.onChange(e.currentTarget.checked)} />
-      {props.label}
+      {tl(props.label)}
     </label>
   );
 }
@@ -426,10 +427,10 @@ function ExtendRow(props: { flag(key: string, fallback?: boolean): boolean; set(
           props.set('extendRight', v === 'right' || v === 'both');
         }}
       >
-        <option value="none">Don't extend</option>
-        <option value="left">Extend left</option>
-        <option value="right">Extend right</option>
-        <option value="both">Extend both</option>
+        <option value="none">{tl('Don\'t extend')}</option>
+        <option value="left">{tl('Extend left')}</option>
+        <option value="right">{tl('Extend right')}</option>
+        <option value="both">{tl('Extend both')}</option>
       </select>
     </Row>
   );
@@ -448,7 +449,7 @@ function LineField(props: { color: string; width: number; dash: Dash; set(key: s
     <>
       <ColorField value={props.color} onChange={(v) => props.set('color', v)} />
       <select class="dinput narrow" data-tip="Thickness" value={String(props.width)} onChange={(e) => props.set('width', Number(e.currentTarget.value))}>
-        <For each={[1, 1.5, 2, 3, 4]}>{(w) => <option value={w}>{w}px</option>}</For>
+        <For each={[1, 1.5, 2, 3, 4]}>{(w) => <option value={w}>{w}{tl('px')}</option>}</For>
       </select>
       <DashSelect value={props.dash} onChange={(v) => props.set('dash', v)} />
     </>

@@ -5,6 +5,7 @@
  * shows the value as it now is.
  */
 import { createEffect } from 'solid-js';
+import { tl } from '../lib/i18n';
 
 export function NumField(props: { value: number; onValue(v: number): void; class?: string; step?: number | string; label?: string }) {
   let el!: HTMLInputElement;
@@ -20,7 +21,7 @@ export function NumField(props: { value: number; onValue(v: number): void; class
       type="number"
       inputmode="decimal"
       step={props.step ?? 'any'}
-      aria-label={props.label}
+      aria-label={tl(props.label)}
       // Focusing a number selects it, so what is typed replaces it.
       onFocus={(e) => e.currentTarget.select()}
       onInput={(e) => {

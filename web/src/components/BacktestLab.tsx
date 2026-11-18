@@ -14,6 +14,7 @@ import { isChartMarket, isRatio, parseMarket, symbolOf } from '../lib/markets';
 import { optimize, type Cell } from '../lib/optimizer';
 import { doc } from '../workspace/store';
 import type { TesterProps } from './StrategyTester';
+import { tl } from '../lib/i18n';
 
 const METRICS: { id: string; label: string; get(s: Stats): number; show(v: number): string }[] = [
   { id: 'net', label: 'Net profit', get: (s) => s.netPct, show: (v) => pct(v) },
@@ -171,33 +172,33 @@ function Optimizer(props: TesterProps) {
 
   return (
     <div class="bt-lab">
-      <Show when={desc()} fallback={<p class="dim">Reading the strategy’s settings…</p>}>
-        <Show when={numbers().length > 0} fallback={<p class="bt-hint dim">This strategy has no number settings to try. A script’s are its <code>input</code> lines; the rule builder makes one of each length and level.</p>}>
+      <Show when={desc()} fallback={<p class="dim">{tl('Reading the strategy’s settings…')}</p>}>
+        <Show when={numbers().length > 0} fallback={<p class="bt-hint dim">{tl('This strategy has no number settings to try. A script’s are its')} <code>input</code> {tl('lines; the rule builder makes one of each length and level.')}</p>}>
           <div class="bt-opt-form">
-            <AxisRow title="Across" axis={x()} options={numbers()} onPick={(i) => pickAxis('x', i)} onChange={setX} />
-            <AxisRow title="Down" axis={y()} options={numbers().filter((n) => n.index !== x()?.index)} optional onPick={(i) => (i < 0 ? setY(null) : pickAxis('y', i))} onChange={setY} />
+            <AxisRow title={tl('Across')} axis={x()} options={numbers()} onPick={(i) => pickAxis('x', i)} onChange={setX} />
+            <AxisRow title={tl('Down')} axis={y()} options={numbers().filter((n) => n.index !== x()?.index)} optional onPick={(i) => (i < 0 ? setY(null) : pickAxis('y', i))} onChange={setY} />
             <label class="bt-row">
-              <span>Best by</span>
-              <select value={metric()} aria-label="What the best is" onChange={(e) => setMetric(e.currentTarget.value)}>
-                <For each={METRICS}>{(v) => <option value={v.id}>{v.label}</option>}</For>
+              <span>{tl('Best by')}</span>
+              <select value={metric()} aria-label={tl('What the best is')} onChange={(e) => setMetric(e.currentTarget.value)}>
+                <For each={METRICS}>{(v) => <option value={v.id}>{tl(v.label)}</option>}</For>
               </select>
             </label>
             <label class="bt-row">
-              <span>Tune on</span>
-              <input class="box num bt-num" type="number" min={0} max={95} step={5} value={props.state.settings.split} aria-label="Percent of the bars tuned on" onChange={(e) => props.onChange({ settings: { ...props.state.settings, split: Math.min(95, Math.max(0, Math.round(Number(e.currentTarget.value) || 0))) } })} />
-              <span class="dim">% of the bars, the rest kept back to judge the pick · 0 tunes on all of them</span>
+              <span>{tl('Tune on')}</span>
+              <input class="box num bt-num" type="number" min={0} max={95} step={5} value={props.state.settings.split} aria-label={tl('Percent of the bars tuned on')} onChange={(e) => props.onChange({ settings: { ...props.state.settings, split: Math.min(95, Math.max(0, Math.round(Number(e.currentTarget.value) || 0))) } })} />
+              <span class="dim">{tl('% of the bars, the rest kept back to judge the pick · 0 tunes on all of them')}</span>
             </label>
             <div class="bt-row">
               <Show
                 when={!running()}
                 fallback={
                   <button class="dbtn" onClick={() => abort?.abort()}>
-                    Stop · {done()} of {total()}
+                    {tl('Stop ·')} {done()} {tl('of')} {total()}
                   </button>
                 }
               >
                 <button class="dbtn primary" disabled={count() === 0 || !props.run} onClick={() => void run()}>
-                  Run {count()} tests
+                  {tl('Run')} {count()} {tl('tests')}
                 </button>
               </Show>
               <span class="dim">{count() > 300 ? 'a large grid: it takes a while on a long chart' : 'each over every bar the chart holds, several at once'}</span>
@@ -215,7 +216,7 @@ function Optimizer(props: TesterProps) {
                 <thead>
                   <tr>
                     <th class="dim">{grid().ys ? `${label(grid().yi!)} ↓ · ${label(grid().xi)} →` : label(grid().xi)}</th>
-                    <Show when={grid().ys} fallback={<th>{m().label}{props.state.settings.split > 0 ? ', tuned part' : ''}</th>}>
+                    <Show when={grid().ys} fallback={<th>{tl(m().label)}{props.state.settings.split > 0 ? ', tuned part' : ''}</th>}>
                       <For each={grid().xs}>{(v) => <th>{v}</th>}</For>
                     </Show>
                   </tr>
@@ -278,7 +279,7 @@ function Optimizer(props: TesterProps) {
                         <PickLine name="Kept back" s={c()!.test!} />
                       </Show>
                       <button class="dbtn primary" onClick={() => apply(c()!)}>
-                        Use these settings
+                        {tl('Use these settings')}
                       </button>
                     </div>
                   </Show>
@@ -286,7 +287,7 @@ function Optimizer(props: TesterProps) {
               }}
             </Show>
             <p class="bt-hint dim">
-              A broad area that does well is a pattern; a lone bright cell is most often luck. With part of the bars kept back, trust a pick that holds up there. Cells of fewer than {FEW} trades are faded and never the best.
+              {tl('A broad area that does well is a pattern; a lone bright cell is most often luck. With part of the bars kept back, trust a pick that holds up there. Cells of fewer than')} {FEW} {tl('trades are faded and never the best.')}
             </p>
           </Show>
         </Show>
@@ -298,7 +299,7 @@ function Optimizer(props: TesterProps) {
 function PickLine(props: { name: string; s: Stats }) {
   return (
     <span>
-      {props.name}: <b class={tone(props.s.net)}>{pct(props.s.netPct)}</b> · {props.s.trades} trades · win {pct(props.s.winRate, false)} · PF {ratio(props.s.profitFactor)} · DD {pct(-props.s.maxDdPct)} · Sharpe {ratio(props.s.sharpe)}
+      {props.name}: <b class={tone(props.s.net)}>{pct(props.s.netPct)}</b> · {props.s.trades} {tl('trades · win')} {pct(props.s.winRate, false)} · PF {ratio(props.s.profitFactor)} · DD {pct(-props.s.maxDdPct)} {tl('· Sharpe')} {ratio(props.s.sharpe)}
     </span>
   );
 }
@@ -309,19 +310,19 @@ function AxisRow(props: { title: string; axis: Axis | null; options: { inp: Form
   );
   return (
     <label class="bt-row">
-      <span>{props.title}</span>
+      <span>{tl(props.title)}</span>
       <select value={props.axis ? String(props.axis.index) : '-1'} aria-label={`${props.title}: which setting`} onChange={(e) => props.onPick(Number(e.currentTarget.value))}>
         <Show when={props.optional}>
-          <option value="-1">Nothing</option>
+          <option value="-1">{tl('Nothing')}</option>
         </Show>
-        <For each={props.options}>{(o) => <option value={String(o.index)}>{o.inp.label}</option>}</For>
+        <For each={props.options}>{(o) => <option value={String(o.index)}>{tl(o.inp.label)}</option>}</For>
       </select>
       <Show when={props.axis}>
-        <span class="dim">from</span>
+        <span class="dim">{tl('from')}</span>
         {field('from', 'from')}
-        <span class="dim">to</span>
+        <span class="dim">{tl('to')}</span>
         {field('to', 'to')}
-        <span class="dim">by</span>
+        <span class="dim">{tl('by')}</span>
         {field('by', 'step')}
       </Show>
     </label>
@@ -374,7 +375,7 @@ function Markets(props: TesterProps) {
   return (
     <div class="bt-lab">
       <p class="bt-hint dim">
-        The strategy as it stands, on other markets’ {props.timeframe} bars, {bars().toLocaleString('en-US')} of each at most, with each exchange’s own fees. A strategy that works on one coin alone is most often fitted to it.
+        {tl('The strategy as it stands, on other markets’')} {props.timeframe} {tl('bars,')} {bars().toLocaleString('en-US')} {tl('of each at most, with each exchange’s own fees. A strategy that works on one coin alone is most often fitted to it.')}
       </p>
       <div class="bt-markets-pick">
         <Index each={candidates()}>
@@ -400,30 +401,30 @@ function Markets(props: TesterProps) {
           when={!running()}
           fallback={
             <button class="dbtn" onClick={() => (stop = true)}>
-              Stop
+              {tl('Stop')}
             </button>
           }
         >
           <button class="dbtn primary" disabled={chosen().size === 0 || !props.run} onClick={() => void run()}>
-            Test on {chosen().size} markets
+            {tl('Test on')} {chosen().size} {tl('markets')}
           </button>
         </Show>
-        <span class="dim">Markets come from your watchlists and charts.</span>
+        <span class="dim">{tl('Markets come from your watchlists and charts.')}</span>
       </div>
       <Show when={rows().length > 0}>
         <div class="bt-table-wrap">
           <table class="bt-table num">
             <thead>
               <tr>
-                <th>Market</th>
-                <th>Net</th>
-                <th>Buy and hold</th>
-                <th>Max DD</th>
-                <th>Trades</th>
-                <th>Win</th>
+                <th>{tl('Market')}</th>
+                <th>{tl('Net')}</th>
+                <th>{tl('Buy and hold')}</th>
+                <th>{tl('Max DD')}</th>
+                <th>{tl('Trades')}</th>
+                <th>{tl('Win')}</th>
                 <th>PF</th>
-                <th>Sharpe</th>
-                <th>Net $</th>
+                <th>{tl('Sharpe')}</th>
+                <th>{tl('Net $')}</th>
               </tr>
             </thead>
             <tbody>

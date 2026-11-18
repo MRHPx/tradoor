@@ -15,6 +15,7 @@ import { tfLabel } from '../lib/timeframes';
 import { ChartPanel } from '../panels/ChartPanel';
 import { activate, addPanel, bareChart, LINK_COLORS, movePanel, newPanel, PANEL_TITLE, PANEL_TYPES, removePanel, setSizes, tabsOf, type DropZone, type LayoutNode, type Panel, type PanelType, type SplitNode, type TabsNode } from './model';
 import { doc, focusedPanelId, focusPanel, marketOf, maximized, setMaximized, setPanelLink, targetChart, timeframeOf, update } from './store';
+import { tl } from '../lib/i18n';
 
 // Side panels, fetched when a layout shows one: the chart and watchlist come first.
 const EconPanel = lazy(() => import('../panels/EconPanel').then((m) => ({ default: m.EconPanel })));
@@ -36,12 +37,12 @@ export function panelTitle(p: Panel): string {
   // Flow and Signal list what the server follows, whatever chart they drive.
   if (p.type === 'flow') return 'Flow';
   if (p.type === 'signals') return 'Signal';
-  if (p.type === 'econ') return PANEL_TITLE.econ;
+  if (p.type === 'econ') return tl(PANEL_TITLE.econ);
   // Every trade and the book now: no timeframe to them.
-  if (p.type === 'dom' || p.type === 'tape') return `${PANEL_TITLE[p.type]} · ${symbolOf(marketOf(p))}`;
+  if (p.type === 'dom' || p.type === 'tape') return `${tl(PANEL_TITLE[p.type])} · ${symbolOf(marketOf(p))}`;
   const label = `${symbolOf(marketOf(p))} ${tfLabel(timeframeOf(p))}`;
   if (p.type === 'chart') return p.tpo ? `TPO · ${label}` : label;
-  return `${PANEL_TITLE[p.type]} · ${label}`;
+  return `${tl(PANEL_TITLE[p.type])} · ${label}`;
 }
 
 /** Phones and narrow windows: one chart and a menu, not splits. A phone on its
@@ -154,8 +155,8 @@ function MobileShell() {
         keyed
         fallback={
           <div class="mempty">
-            <p>This workspace has no chart.</p>
-            <button class="tb" onClick={addChart}>Open one</button>
+            <p>{tl('This workspace has no chart.')}</p>
+            <button class="tb" onClick={addChart}>{tl('Open one')}</button>
           </div>
         }
       >
@@ -171,7 +172,7 @@ function MobileShell() {
           <section class="msheet">
             <header class="mhead">
               <span class="grow">{panelTitle(panel())}</span>
-              <button class="iconbtn" aria-label="Close" onClick={() => setSheet(null)}>
+              <button class="iconbtn" aria-label={tl('Close')} onClick={() => setSheet(null)}>
                 <Icon name="close" size={15} />
               </button>
             </header>
@@ -190,7 +191,7 @@ function MobileShell() {
           <For each={PANEL_TYPES.filter((t) => t !== 'chart' && t !== 'tpo')}>
             {(type) => (
               <button onClick={() => show(type)}>
-                <span class="grow">{PANEL_TITLE[type]}</span>
+                <span class="grow">{tl(PANEL_TITLE[type])}</span>
                 <Show when={type === 'alerts' && unread() > 0}>
                   <span class="al-badge">{unread()}</span>
                 </Show>
@@ -199,7 +200,7 @@ function MobileShell() {
           </For>
           <Show when={charts().length > 1}>
             <hr />
-            <div class="cap">Charts</div>
+            <div class="cap">{tl('Charts')}</div>
             <For each={charts()}>
               {(c) => (
                 <button
@@ -222,7 +223,7 @@ function MobileShell() {
               setMobileMenu(false);
             }}
           >
-            Journal
+            {tl('Journal')}
           </button>
           <button
             onClick={() => {
@@ -231,15 +232,15 @@ function MobileShell() {
               setMobileMenu(false);
             }}
           >
-            Training
+            {tl('Training')}
           </button>
-          <button onClick={overlay('palette')}>Commands</button>
-          <button onClick={overlay('settings')}>Settings</button>
-          <button onClick={overlay('help')}>Shortcuts</button>
+          <button onClick={overlay('palette')}>{tl('Commands')}</button>
+          <button onClick={overlay('settings')}>{tl('Settings')}</button>
+          <button onClick={overlay('help')}>{tl('Shortcuts')}</button>
           <hr />
           <button class="ref-item" onClick={overlay('referrals')}>
             <Icon name="gift" size={15} />
-            <span class="grow">Partners</span>
+            <span class="grow">{tl('Partners')}</span>
           </button>
         </nav>
       </Show>
@@ -411,8 +412,8 @@ function TabsView(props: { node: TabsNode }) {
               <For each={PANEL_TYPES}>
                 {(type) => (
                   <button onClick={() => addHere(type, 'center')}>
-                    {PANEL_TITLE[type]}
-                    <span class="dim">new tab</span>
+                    {tl(PANEL_TITLE[type])}
+                    <span class="dim">{tl('new tab')}</span>
                   </button>
                 )}
               </For>

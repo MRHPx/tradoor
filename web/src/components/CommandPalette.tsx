@@ -1,4 +1,5 @@
 import { createEffect, createMemo, createSignal, For, on, onMount } from 'solid-js';
+import { tl } from '../lib/i18n';
 
 export interface Command {
   group: string;
@@ -19,7 +20,7 @@ export function CommandPalette(props: { commands: Command[]; onClose(): void }) 
     const words = query().trim().toLowerCase().split(/\s+/).filter(Boolean);
     if (words.length === 0) return props.commands;
     return props.commands.filter((c) => {
-      const text = `${c.group} ${c.label} ${c.hint ?? ''}`.toLowerCase();
+      const text = `${c.group} ${c.label} ${tl(c.group)} ${tl(c.label)} ${c.hint ?? ''}`.toLowerCase();
       return words.every((w) => text.includes(w));
     });
   });
@@ -57,25 +58,25 @@ export function CommandPalette(props: { commands: Command[]; onClose(): void }) 
         }}
       >
         <header>
-          <span class="title caps">Command</span>
-          <input ref={input} class="q" value={query()} onInput={(e) => setQuery(e.currentTarget.value)} placeholder="new chart, 4 hours, log scale, link blue…" />
+          <span class="title caps">{tl('Command')}</span>
+          <input ref={input} class="q" value={query()} onInput={(e) => setQuery(e.currentTarget.value)} placeholder={tl('new chart, 4 hours, log scale, link blue…')} />
         </header>
         <div ref={list} class="list">
-          <For each={matches()} fallback={<div class="empty">No command matches “{query()}”.</div>}>
+          <For each={matches()} fallback={<div class="empty">{tl('No command matches “')}{query()}”.</div>}>
             {(c, i) => (
               <div class="row" classList={{ cur: i() === cursor() }} data-cur={i() === cursor() ? '' : undefined} onMouseMove={() => setCursor(i())} onClick={() => run(c)}>
                 <span class="dim" style={{ 'min-width': '90px' }}>
-                  {c.group}
+                  {tl(c.group)}
                 </span>
-                <span class="grow">{c.label}</span>
-                {c.hint ? <kbd>{c.hint}</kbd> : null}
+                <span class="grow">{tl(c.label)}</span>
+                {c.hint ? <kbd>{tl(c.hint)}</kbd> : null}
               </div>
             )}
           </For>
         </div>
         <footer>
-          <span>{matches().length} commands</span>
-          <span>↑↓ move · ↵ run · esc close</span>
+          <span>{matches().length} {tl('commands')}</span>
+          <span>{tl('↑↓ move · ↵ run · esc close')}</span>
         </footer>
       </div>
     </div>

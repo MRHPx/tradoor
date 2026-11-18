@@ -10,6 +10,7 @@ import { CHART_THEME } from '../lib/theme';
 import { parseSessions, serializeSessions, themedTpoColor, TPO_DEFAULTS, tpoValue, withTpoValue, type TpoSession } from '../lib/tpo-settings';
 import { TPO_SPLITS, tpoFits, type ChartPanelState } from '../workspace/model';
 import { doc, patchPanel, timeframeOf } from '../workspace/store';
+import { tl } from '../lib/i18n';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const clock = (m: number) => `${pad(Math.floor(m / 60) % 24)}:${pad(m % 60)}`;
@@ -35,7 +36,7 @@ export function TpoSettings(props: { panel: ChartPanelState; onClose(): void }) 
         <Index each={list()}>
           {(s, i) => (
             <div class="tpo-session">
-              <span class="name">Session {i + 1}</span>
+              <span class="name">{tl('Session')} {i + 1}</span>
               <input
                 class="box num"
                 value={clock(s().start)}
@@ -73,7 +74,7 @@ export function TpoSettings(props: { panel: ChartPanelState; onClose(): void }) 
               save([...list(), { start, end: (start + 360) % 1440, color: '#9a9a9a' }]);
             }}
           >
-            Add Session
+            {tl('Add Session')}
           </button>
         </Show>
       </div>
@@ -81,24 +82,24 @@ export function TpoSettings(props: { panel: ChartPanelState; onClose(): void }) 
   };
 
   const Control = (p: { field: TpoField }) => (
-    <div class="tpo-row" data-tip={p.field.hint}>
-      <span class="name">{p.field.label}</span>
+    <div class="tpo-row" data-tip={tl(p.field.hint)}>
+      <span class="name">{tl(p.field.label)}</span>
       <Switch>
         <Match when={p.field.kind === 'bool'}>
-          <input type="checkbox" aria-label={p.field.label} checked={value(p.field.key) === '1'} onChange={(e) => set(p.field.key, e.currentTarget.checked ? '1' : '0')} />
+          <input type="checkbox" aria-label={tl(p.field.label)} checked={value(p.field.key) === '1'} onChange={(e) => set(p.field.key, e.currentTarget.checked ? '1' : '0')} />
         </Match>
         <Match when={p.field.kind === 'color'}>
-          <ColorField value={shown(p.field.key)} onChange={(c) => set(p.field.key, c)} title={p.field.label} />
+          <ColorField value={shown(p.field.key)} onChange={(c) => set(p.field.key, c)} title={tl(p.field.label)} />
           <Show when={TPO_DEFAULTS[p.field.key] === '' && value(p.field.key) !== ''}>
             <button class="dim" data-tip="Back to the theme's colour" onClick={() => set(p.field.key, '')}>
-              theme
+              {tl('theme')}
             </button>
           </Show>
         </Match>
         <Match when={p.field.kind === 'ticks'}>
           <label class="tpo-auto">
             <input type="checkbox" checked={value('rowTicks') === '0'} onChange={(e) => set('rowTicks', e.currentTarget.checked ? '0' : '500')} />
-            <span class="dim">auto</span>
+            <span class="dim">{tl('auto')}</span>
           </label>
           <Show when={value('rowTicks') !== '0'}>
             <input
@@ -107,7 +108,7 @@ export function TpoSettings(props: { panel: ChartPanelState; onClose(): void }) 
               min={1}
               max={1_000_000}
               step={50}
-              aria-label="Ticks per row"
+              aria-label={tl('Ticks per row')}
               value={value('rowTicks')}
               onChange={(e) => {
                 const n = Math.round(Number(e.currentTarget.value));
@@ -121,11 +122,11 @@ export function TpoSettings(props: { panel: ChartPanelState; onClose(): void }) 
           <Sessions />
         </Match>
         <Match when={p.field.kind === 'period'}>
-          <select class="box" aria-label="Session Period" onChange={(e) => patchPanel(props.panel.id, { tpo: e.currentTarget.value })}>
+          <select class="box" aria-label={tl('Session Period')} onChange={(e) => patchPanel(props.panel.id, { tpo: e.currentTarget.value })}>
             <For each={TPO_SPLITS.filter((t) => tpoFits(t.value, timeframeOf(props.panel)))}>
               {(t) => (
                 <option value={t.value} selected={props.panel.tpo === t.value}>
-                  {t.label}
+                  {tl(t.label)}
                 </option>
               )}
             </For>
@@ -141,7 +142,7 @@ export function TpoSettings(props: { panel: ChartPanelState; onClose(): void }) 
                 min={field.min}
                 max={field.max}
                 step={field.step ?? 1}
-                aria-label={field.label}
+                aria-label={tl(field.label)}
                 value={value(field.key)}
                 onChange={(e) => {
                   const n = Number(e.currentTarget.value);
@@ -156,11 +157,11 @@ export function TpoSettings(props: { panel: ChartPanelState; onClose(): void }) 
           {(f) => {
             const field = f() as Extract<TpoField, { kind: 'choice' }>;
             return (
-              <select class="box" aria-label={field.label} onChange={(e) => set(field.key, e.currentTarget.value)}>
+              <select class="box" aria-label={tl(field.label)} onChange={(e) => set(field.key, e.currentTarget.value)}>
                 <For each={field.options}>
                   {(o) => (
                     <option value={o.value} selected={value(field.key) === o.value}>
-                      {o.label}
+                      {tl(o.label)}
                     </option>
                   )}
                 </For>
@@ -186,10 +187,10 @@ export function TpoSettings(props: { panel: ChartPanelState; onClose(): void }) 
         }}
       >
         <header>
-          <span class="title caps">TPO settings</span>
+          <span class="title caps">{tl('TPO settings')}</span>
           <span class="spacer" />
           <button class="x" onClick={() => props.onClose()}>
-            esc ✕
+            {tl('esc ✕')}
           </button>
         </header>
         <div class="set">
@@ -197,7 +198,7 @@ export function TpoSettings(props: { panel: ChartPanelState; onClose(): void }) 
             <For each={TPO_SECTIONS}>
               {(section, i) => (
                 <button classList={{ on: tab() === i() }} onClick={() => setTab(i())}>
-                  {section.title}
+                  {tl(section.title)}
                 </button>
               )}
             </For>
@@ -208,10 +209,10 @@ export function TpoSettings(props: { panel: ChartPanelState; onClose(): void }) 
         </div>
         <footer>
           <button class="btn" data-tip="Every TPO option back to its default, colours to the theme's" onClick={() => patchPanel(props.panel.id, { tpoSettings: {} })}>
-            Reset
+            {tl('Reset')}
           </button>
           <button class="btn primary" onClick={() => props.onClose()}>
-            Close
+            {tl('Close')}
           </button>
         </footer>
       </div>

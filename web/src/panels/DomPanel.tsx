@@ -25,6 +25,7 @@ import { MarketButton } from './common';
 import { compact, MIN_USD, minLabel, palette, sized, stepDecimals, useCanvas, type Palette } from './flow-canvas';
 import type { DomTrade } from './DomTrade';
 import { message } from './TapePanel';
+import { tl } from '../lib/i18n';
 
 const ROW = 16;
 const HEAD = 18;
@@ -517,12 +518,12 @@ export function DomPanel(props: { panel: DomPanelState; trade?: DomTrade; patch?
         <Show when={STATE_LABEL[state()]}>{(label) => <span class={`conn ${state()}`}>{label()}</span>}</Show>
         <select data-tip="Price a row spans" onChange={(e) => patch({ ticks: Number(e.currentTarget.value) })}>
           <option value={0} selected={props.panel.ticks === 0}>
-            Auto
+            {tl('Auto')}
           </option>
           <For each={rowChoices()}>
             {(c) => (
               <option value={c.value} selected={props.panel.ticks === c.value}>
-                {c.label}
+                {tl(c.label)}
               </option>
             )}
           </For>
@@ -540,28 +541,28 @@ export function DomPanel(props: { panel: DomPanelState; trade?: DomTrade; patch?
           {props.panel.unit === 'usd' ? 'USD' : 'Coins'}
         </button>
         <button class="tb dom-opt" classList={{ on: auto() }} data-tip="Keep the last price in the middle — or double-click the rows" onClick={center}>
-          Center
+          {tl('Center')}
         </button>
         <button class="tb dom-opt" classList={{ on: clearOpen() }} data-tip="Clear the volume profile, Bought and Sold, or Pull/Stack — right-click a row to clear above or below it" onClick={() => setClearOpen((v) => !v)}>
-          Clear
+          {tl('Clear')}
         </button>
         {/* Kept however narrow: the intervals are only here. */}
-        <button class="tb" classList={{ on: columnsOpen() }} aria-label="DOM options" data-tip="Columns, and when the volume profile and Bought and Sold start again" onClick={() => setColumnsOpen((v) => !v)}>
+        <button class="tb" classList={{ on: columnsOpen() }} aria-label={tl('DOM options')} data-tip="Columns, and when the volume profile and Bought and Sold start again" onClick={() => setColumnsOpen((v) => !v)}>
           <Icon name="settings" size={12} />
         </button>
       </div>
       <Show when={clearOpen()}>
         <div class="menu dom-menu" onPointerDown={(e) => e.stopPropagation()}>
-          <For each={PARTS}>{(p) => <button onClick={() => clear(p.part)}>{p.label}</button>}</For>
+          <For each={PARTS}>{(p) => <button onClick={() => clear(p.part)}>{tl(p.label)}</button>}</For>
         </div>
       </Show>
       <Show when={columnsOpen()}>
         <div class="menu dom-menu" onPointerDown={(e) => e.stopPropagation()}>
-          <div class="cap">Columns</div>
+          <div class="cap">{tl('Columns')}</div>
           <For each={OPTIONAL}>
             {(o) => (
               <button data-tip={o.tip} classList={{ cur: !hidden().has(o.key) }} onClick={() => toggleColumn(o.key)}>
-                <span>{o.label}</span>
+                <span>{tl(o.label)}</span>
                 <span>{hidden().has(o.key) ? 'Off' : 'On'}</span>
               </button>
             )}
@@ -637,16 +638,16 @@ export function DomPanel(props: { panel: DomPanelState; trade?: DomTrade; patch?
         <Show when={menu()}>
           {(m) => (
             <div class="menu" style={{ left: `${Math.max(0, m().x)}px`, top: `${m().y}px` }} onPointerDown={(e) => e.stopPropagation()}>
-              <button onClick={center}>Center on the last price</button>
-              <button onClick={() => clear('all', 'above', m().price)}>Clear above {formatPrice(m().price, m().decimals)}</button>
-              <button onClick={() => clear('all', 'below', m().price)}>Clear below {formatPrice(m().price, m().decimals)}</button>
+              <button onClick={center}>{tl('Center on the last price')}</button>
+              <button onClick={() => clear('all', 'above', m().price)}>{tl('Clear above')} {formatPrice(m().price, m().decimals)}</button>
+              <button onClick={() => clear('all', 'below', m().price)}>{tl('Clear below')} {formatPrice(m().price, m().decimals)}</button>
               {/* The toolbar's Clear, which a narrow DOM folds away. */}
-              <For each={PARTS}>{(p) => <button onClick={() => clear(p.part)}>Clear {p.label.toLowerCase()}</button>}</For>
+              <For each={PARTS}>{(p) => <button onClick={() => clear(p.part)}>{tl('Clear')} {p.label.toLowerCase()}</button>}</For>
               {/* The toolbar's column switches, which a narrow DOM folds away. */}
               <For each={OPTIONAL}>
                 {(o) => (
                   <button onClick={() => toggleColumn(o.key)}>
-                    <span>{o.label} column</span>
+                    <span>{tl(o.label)} {tl('column')}</span>
                     <span class="dim">{hidden().has(o.key) ? 'Off' : 'On'}</span>
                   </button>
                 )}
@@ -659,16 +660,16 @@ export function DomPanel(props: { panel: DomPanelState; trade?: DomTrade; patch?
         {(s) => (
           <div class="dom-foot num">
             <span data-tip="Volume traded since the profile was last cleared, of orders the filter lets through">
-              <span class="caps">Vol</span> {s().volume}
+              <span class="caps">{tl('Vol')}</span> {s().volume}
             </span>
             <span data-tip="Bought less sold since the profile was last cleared">
               <span class="caps">Δ</span> <span classList={{ bull: s().delta > 0, bear: s().delta < 0 }}>{s().deltaText}</span>
             </span>
             <span data-tip="Lowest and highest trade since the profile was last cleared, and the ticks between">
-              <span class="caps">Range</span> {s().range}
+              <span class="caps">{tl('Range')}</span> {s().range}
             </span>
             <span data-tip="Ticks between the best bid and the best ask">
-              <span class="caps">Spread</span> {s().spread}
+              <span class="caps">{tl('Spread')}</span> {s().spread}
             </span>
           </div>
         )}
@@ -682,13 +683,13 @@ function Resets(props: { label: string; tip: string; choices: readonly { value: 
   return (
     <>
       <div class="cap" data-tip={props.tip}>
-        {props.label}
+        {tl(props.label)}
       </div>
       <div class="group">
         <For each={props.choices}>
           {(c) => (
             <button classList={{ cur: props.value === c.value }} onClick={() => props.pick(c.value)}>
-              {c.label}
+              {tl(c.label)}
             </button>
           )}
         </For>

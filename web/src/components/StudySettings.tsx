@@ -18,6 +18,7 @@ import { formulaDefinition, formulaLabels, formulaOf, isFormulaKind, setEditing 
 import { SOURCES, UNWRITTEN } from '../lib/formula-sources';
 import { ColorField } from './ColorField';
 import { NumField } from './NumField';
+import { tl } from '../lib/i18n';
 
 const WIDTHS = [1, 1.5, 2, 3, 4];
 const PATTERNS = [
@@ -171,19 +172,19 @@ export function StudySettings(props: { panel: ChartPanelState; target: string; m
     // A Frost Script's setting of its own kind: a tick, a colour, one of a list, a moment.
     const row = (control: JSX.Element) => (
       <div class="drow">
-        <span class="dlabel">{ui.label}</span>
+        <span class="dlabel">{tl(ui.label)}</span>
         <div class="dctl">{control}</div>
       </div>
     );
-    if (p.param.kind === 'bool') return row(<input type="checkbox" aria-label={ui.label} checked={value() !== 0} onChange={(e) => set(e.currentTarget.checked ? 1 : 0)} />);
+    if (p.param.kind === 'bool') return row(<input type="checkbox" aria-label={tl(ui.label)} checked={value() !== 0} onChange={(e) => set(e.currentTarget.checked ? 1 : 0)} />);
     if (p.param.kind === 'colour') {
       // The colour's own opacity kept: the picker gives red, green and blue alone.
       const hex = () => `#${(Math.floor(value() / 256) >>> 0).toString(16).padStart(6, '0')}`;
-      return row(<input class="dswatch" type="color" aria-label={ui.label} value={hex()} onInput={(e) => set((parseInt(e.currentTarget.value.slice(1), 16) * 256 + (value() % 256)) >>> 0)} />);
+      return row(<input class="dswatch" type="color" aria-label={tl(ui.label)} value={hex()} onInput={(e) => set((parseInt(e.currentTarget.value.slice(1), 16) * 256 + (value() % 256)) >>> 0)} />);
     }
     if (p.param.kind === 'choice') {
       return row(
-        <select class="dinput" aria-label={ui.label} onChange={(e) => set(Number(e.currentTarget.value))}>
+        <select class="dinput" aria-label={tl(ui.label)} onChange={(e) => set(Number(e.currentTarget.value))}>
           <For each={p.param.options ?? []}>
             {(o, i) => (
               <option value={i()} selected={value() === i()}>
@@ -201,7 +202,7 @@ export function StudySettings(props: { panel: ChartPanelState; target: string; m
           <input
             class="dinput when"
             type="datetime-local"
-            aria-label={ui.label}
+            aria-label={tl(ui.label)}
             value={at()}
             onChange={(e) => {
               const t = Date.parse(`${e.currentTarget.value}:00Z`);
@@ -237,8 +238,8 @@ export function StudySettings(props: { panel: ChartPanelState; target: string; m
       );
     }
     return (
-      <div class="drow" data-tip={ui.hint}>
-        <span class="dlabel">{ui.label}</span>
+      <div class="drow" data-tip={tl(ui.hint)}>
+        <span class="dlabel">{tl(ui.label)}</span>
         <div class="dctl">
           <Show
             when={ui.options}
@@ -247,15 +248,15 @@ export function StudySettings(props: { panel: ChartPanelState; target: string; m
                 <Show when={ui.band !== undefined}>
                   <input type="checkbox" aria-label={`${ui.label} on`} checked={value() > 0} onChange={(e) => set(e.currentTarget.checked ? ui.band! : 0)} />
                 </Show>
-                <Show when={ui.band === undefined || value() > 0} fallback={<span class="dim">off</span>}>
+                <Show when={ui.band === undefined || value() > 0} fallback={<span class="dim">{tl('off')}</span>}>
                   {/* A 0 typed on the way to 0.5 must not turn the band off under the fingers. */}
-                  <NumField class="dinput narrow num" value={value()} step={p.param.step} label={ui.label} onValue={(v) => (ui.band !== undefined && v <= 0 ? undefined : set(v))} />
+                  <NumField class="dinput narrow num" value={value()} step={p.param.step} label={tl(ui.label)} onValue={(v) => (ui.band !== undefined && v <= 0 ? undefined : set(v))} />
                 </Show>
               </>
             }
           >
             {(options) => (
-              <select class="dinput" aria-label={ui.label} onChange={(e) => set(Number(e.currentTarget.value))}>
+              <select class="dinput" aria-label={tl(ui.label)} onChange={(e) => set(Number(e.currentTarget.value))}>
                 <For each={ui.order ?? options().map((_, i) => i)}>
                   {(i) => (
                     <option value={i} selected={value() === i}>
@@ -274,14 +275,14 @@ export function StudySettings(props: { panel: ChartPanelState; target: string; m
   const Num = (p: { input: NumberInput }) => {
     const i = p.input;
     return (
-      <div class="drow" data-tip={i.hint}>
-        <span class="dlabel">{i.label}</span>
+      <div class="drow" data-tip={tl(i.hint)}>
+        <span class="dlabel">{tl(i.label)}</span>
         <div class="dctl">
           <NumField
             class="dinput narrow num"
             value={numberOf(styles(), owner(i.owner), i.key, i.default)}
             step={i.step ?? 1}
-            label={i.label}
+            label={tl(i.label)}
             onValue={(v) => {
               if (v >= i.min && v <= i.max) {
                 setProblem(null);
@@ -311,10 +312,10 @@ export function StudySettings(props: { panel: ChartPanelState; target: string; m
       <Show when={row()}>
         {(r) => (
           <div class="dplot">
-            <Show when={!r().noToggle} fallback={<span class="dplot-name" classList={{ indent: r().indent }}>{r().label}</span>}>
+            <Show when={!r().noToggle} fallback={<span class="dplot-name" classList={{ indent: r().indent }}>{tl(r().label)}</span>}>
               <label class="dcheck dplot-name">
                 <input type="checkbox" checked={!own().off} onChange={(e) => set({ off: !e.currentTarget.checked })} />
-                {r().label}
+                {tl(r().label)}
               </label>
             </Show>
             <span class="spacer" />
@@ -336,7 +337,7 @@ export function StudySettings(props: { panel: ChartPanelState; target: string; m
                   <For each={WIDTHS}>
                     {(w) => (
                       <option value={w} selected={width() === String(w)}>
-                        {w} px
+                        {w} {tl('px')}
                       </option>
                     )}
                   </For>
@@ -362,28 +363,28 @@ export function StudySettings(props: { panel: ChartPanelState; target: string; m
         <header onPointerDown={startDrag}>
           <span class="title">{about()?.name ?? ''}</span>
           <span class="spacer" />
-          <button class="x" data-tip="Cancel (esc)" aria-label="Cancel" onClick={cancel}>
+          <button class="x" data-tip="Cancel (esc)" aria-label={tl('Cancel')} onClick={cancel}>
             ✕
           </button>
         </header>
         <nav class="dtabs">
           <Show when={hasInputs()}>
             <button classList={{ on: showing() === 'inputs' }} onClick={() => setTab('inputs')}>
-              Inputs
+              {tl('Inputs')}
             </button>
           </Show>
           <button classList={{ on: showing() === 'style' }} onClick={() => setTab('style')}>
-            Style
+            {tl('Style')}
           </button>
           <Show when={source() || unwritten()}>
             <button classList={{ on: showing() === 'source' }} onClick={() => setTab('source')}>
-              Source
+              {tl('Source')}
             </button>
           </Show>
         </nav>
         <div class="dbody">
           <Show when={showing() === 'source' && !source()}>
-            <p class="dnote">This one is not written in Frost Script. {unwritten()}</p>
+            <p class="dnote">{tl('This one is not written in Frost Script.')} {unwritten()}</p>
           </Show>
           <Show when={showing() === 'source' && source()}>
             <p class="dnote">
@@ -403,7 +404,7 @@ export function StudySettings(props: { panel: ChartPanelState; target: string; m
             when={showing() === 'inputs'}
             fallback={
               <>
-                <For each={plotKeys()} fallback={<p class="dnote">Nothing to style while it draws nothing.</p>}>
+                <For each={plotKeys()} fallback={<p class="dnote">{tl('Nothing to style while it draws nothing.')}</p>}>
                   {(key) => <Plot plotKey={key} />}
                 </For>
               </>
@@ -420,14 +421,14 @@ export function StudySettings(props: { panel: ChartPanelState; target: string; m
         </div>
         <footer>
           <button class="dbtn" data-tip="Its usual inputs and colours" onClick={defaults}>
-            Defaults
+            {tl('Defaults')}
           </button>
           <span class="spacer" />
           <button class="dbtn" onClick={cancel}>
-            Cancel
+            {tl('Cancel')}
           </button>
           <button class="dbtn primary" onClick={() => props.onClose()}>
-            Ok
+            {tl('Ok')}
           </button>
         </footer>
       </div>

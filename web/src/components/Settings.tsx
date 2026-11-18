@@ -14,13 +14,15 @@ import { AccountCard, clock } from './Account';
 import { forgetRecorded, KEEP_DAYS, recorderSettings, setRecorderSettings } from '../lib/fp-recorder';
 import { usage } from '../lib/fp-store';
 import { symbolOf, venueLabel } from '../lib/markets';
+import { tl } from '../lib/i18n';
+import { LANGS, useLang } from '../lib/i18n-load';
 
 function Swatch(props: { name: string; label: string; fallback: string }) {
   const value = () => doc.theme[props.name] ?? props.fallback;
   return (
     <label class="swatch">
       <input type="color" value={value()} onInput={(e) => setThemeValue(props.name, e.currentTarget.value)} />
-      <span class="name">{props.label}</span>
+      <span class="name">{tl(props.label)}</span>
       <span class="num dim">{value()}</span>
       <Show when={doc.theme[props.name]}>
         <button
@@ -65,7 +67,7 @@ function Row(props: { label: string; tip?: string; children: JSX.Element }) {
   return (
     <div class="set-row">
       <span class="label" data-tip={props.tip}>
-        {props.label}
+        {tl(props.label)}
       </span>
       <div class="grow">{props.children}</div>
     </div>
@@ -75,10 +77,9 @@ function Row(props: { label: string; tip?: string; children: JSX.Element }) {
 function AccountSection() {
   return (
     <>
-      <h2>Account</h2>
+      <h2>{tl('Account')}</h2>
       <p class="lead">
-        Your drawings, journal, layout, watchlists and alerts are kept on the server. Sign in with Telegram and they follow you — after clearing this browser's history,
-        or on another device, sign in again to have them back.
+        {tl('Your drawings, journal, layout, watchlists and alerts are kept on the server. Sign in with Telegram and they follow you — after clearing this browser\'s history, or on another device, sign in again to have them back.')}
       </p>
       <AccountCard />
     </>
@@ -144,21 +145,21 @@ function TelegramSection() {
 
   return (
     <>
-      <h2>Telegram alerts</h2>
-      <p class="lead">Price alerts and the signals you turn on fire on the server, so they reach these chats whether or not a tab is open.</p>
+      <h2>{tl('Telegram alerts')}</h2>
+      <p class="lead">{tl('Price alerts and the signals you turn on fire on the server, so they reach these chats whether or not a tab is open.')}</p>
       <Show when={status()} fallback={<div class="dim">{error() ?? 'Reading…'}</div>}>
         {(s) => (
-          <Show when={s().enabled} fallback={<div class="set-card dim">This server has no Telegram bot set up. Give it one with TRADOOR_TELEGRAM_TOKEN.</div>}>
+          <Show when={s().enabled} fallback={<div class="set-card dim">{tl('This server has no Telegram bot set up. Give it one with TRADOOR_TELEGRAM_TOKEN.')}</div>}>
             <div class="set-card">
-              <h3>Chats</h3>
-              <For each={s().chats} fallback={<div class="dim">No chat yet. Signing in with Telegram links yours, or connect one here.</div>}>
+              <h3>{tl('Chats')}</h3>
+              <For each={s().chats} fallback={<div class="dim">{tl('No chat yet. Signing in with Telegram links yours, or connect one here.')}</div>}>
                 {(chat) => (
                   <div class="set-row">
                     <Icon name="send" size={13} />
                     <span class="grow">{chat.name ?? `Chat ${chat.chatId}`}</span>
-                    <span class="num dim">linked {formatDateTime(chat.linkedAt).slice(0, 16)}</span>
+                    <span class="num dim">{tl('linked')} {formatDateTime(chat.linkedAt).slice(0, 16)}</span>
                     <button class="btn" onClick={() => void act(() => api.telegramUnlink(chat.chatId), 'Disconnected.')}>
-                      Disconnect
+                      {tl('Disconnect')}
                     </button>
                   </div>
                 )}
@@ -178,29 +179,29 @@ function TelegramSection() {
                 </Show>
                 <Show when={s().chats.length > 0}>
                   <button class="btn" onClick={() => void act(() => api.telegramTest(), 'Test message sent.')}>
-                    Send a test
+                    {tl('Send a test')}
                   </button>
                 </Show>
                 <Show when={waiting()}>
-                  <span class="warn">waiting for Telegram…</span>
+                  <span class="warn">{tl('waiting for Telegram…')}</span>
                 </Show>
               </div>
             </div>
             <Show when={s().chats.length > 0}>
               <div class="set-card">
-                <h3>Messages</h3>
+                <h3>{tl('Messages')}</h3>
                 <Row label="Messages stay" tip="The bot takes its own messages back when their time is up, so the chat does not fill with old alerts. Telegram only allows this within 48 hours of sending.">
                   <select class="box wide" onChange={(e) => void act(() => api.telegramClearing(e.currentTarget.value === 'keep' ? null : Number(e.currentTarget.value)), 'Saved.')}>
                     <For each={CLEARING}>
                       {(c) => (
                         <option value={c.value} selected={String(s().chats[0]?.clearAfterHours ?? 'keep') === c.value}>
-                          {c.label}
+                          {tl(c.label)}
                         </option>
                       )}
                     </For>
                   </select>
                 </Row>
-                <div class="dim">Times in them are written in {offsetLabel(clock().offsetMinutes)}, the zone set under General.</div>
+                <div class="dim">{tl('Times in them are written in')} {offsetLabel(clock().offsetMinutes)}{tl(', the zone set under General.')}</div>
               </div>
             </Show>
           </Show>
@@ -226,15 +227,15 @@ function TextCard() {
   const scale = () => doc.theme[TEXT_SCALE.name] ?? TEXT_SCALE.value;
   return (
     <>
-      <h3 class="set-sub">Text</h3>
-      <p class="lead">How big the writing is on the page and on the charts, and whether it is bold. It follows the workspace; a theme picked later leaves it as it is.</p>
+      <h3 class="set-sub">{tl('Text')}</h3>
+      <p class="lead">{tl('How big the writing is on the page and on the charts, and whether it is bold. It follows the workspace; a theme picked later leaves it as it is.')}</p>
       <div class="set-card">
         <Row label="Page text" tip="Every panel's writing — legends, tables, menus — larger or smaller, the layout around it unchanged">
           <select class="box wide" onChange={(e) => setThemeValue(TEXT_SCALE.name, e.currentTarget.value === TEXT_SCALE.value ? null : e.currentTarget.value)}>
             <For each={TEXT_SCALES}>
               {(s) => (
                 <option value={s.value} selected={scale() === s.value}>
-                  {s.label}
+                  {tl(s.label)}
                 </option>
               )}
             </For>
@@ -264,12 +265,38 @@ function TextCard() {
   );
 }
 
+/** The page's language: English, or one of the translations, kept in this browser. */
+function LanguageRow() {
+  const [code, setCode] = createSignal(document.documentElement.lang.slice(0, 2) || 'en');
+  return (
+    <Row label="Language" tip="The page's language. Prices and numbers keep their usual form; a phrase not translated yet shows in English">
+      <select
+        class="box wide"
+        onChange={(e) => {
+          const next = e.currentTarget.value;
+          setCode(next);
+          void useLang(next, true);
+        }}
+      >
+        <For each={LANGS}>
+          {(l) => (
+            <option value={l.code} selected={code() === l.code}>
+              {l.name}
+            </option>
+          )}
+        </For>
+      </select>
+    </Row>
+  );
+}
+
 function GeneralSection() {
   return (
     <>
-      <h2>General</h2>
-      <p class="lead">The workspace's name, the clock every time on the page is written in, and the size of its text.</p>
+      <h2>{tl('General')}</h2>
+      <p class="lead">{tl('The workspace\'s name, the clock every time on the page is written in, and the size of its text.')}</p>
       <div class="set-card">
+        <LanguageRow />
         <Row label="Workspace name">
           <input
             class="box wide"
@@ -286,7 +313,7 @@ function GeneralSection() {
             <For each={zoneChoices()}>
               {(z) => (
                 <option value={z.value} selected={timeZone() === z.value}>
-                  {z.label}
+                  {tl(z.label)}
                 </option>
               )}
             </For>
@@ -295,10 +322,10 @@ function GeneralSection() {
         <Row label="Mouse wheel zoom" tip="How a notch of a mouse wheel zooms a chart: at once, a step a notch, or eased out over a fifth of a second. A trackpad and a pinch are smooth either way.">
           <select class="box wide" onChange={(e) => setSmoothZoom(e.currentTarget.value === 'smooth')}>
             <option value="step" selected={!smoothZoom()}>
-              In steps (default)
+              {tl('In steps (default)')}
             </option>
             <option value="smooth" selected={smoothZoom()}>
-              Smooth
+              {tl('Smooth')}
             </option>
           </select>
         </Row>
@@ -333,8 +360,8 @@ function BrowserFootprints() {
   };
   return (
     <>
-      <h3 class="set-sub">Footprints in this browser</h3>
-      <p class="lead">For every market the server does not record, the footprint is recorded here, in this browser alone, while a chart shows it. Nothing is sent to the server, and another device keeps its own.</p>
+      <h3 class="set-sub">{tl('Footprints in this browser')}</h3>
+      <p class="lead">{tl('For every market the server does not record, the footprint is recorded here, in this browser alone, while a chart shows it. Nothing is sent to the server, and another device keeps its own.')}</p>
       <div class="set-card">
         <Row label="Record" tip="Off, footprints show only for the markets the server records">
           <label class="set-check">
@@ -356,10 +383,10 @@ function BrowserFootprints() {
         <Row label="Stored here">
           <div class="set-actions">
             <span class="num">{used() === null ? '…' : `${megabytes(total())} · ${used()!.length} market${used()!.length === 1 ? '' : 's'}`}</span>
-            <Show when={site()}>{(s) => <span class="dim">of {megabytes(s().usage)} this site uses; the browser allows {megabytes(s().quota)}</span>}</Show>
+            <Show when={site()}>{(s) => <span class="dim">{tl('of')} {megabytes(s().usage)} {tl('this site uses; the browser allows')} {megabytes(s().quota)}</span>}</Show>
             <Show when={(used() ?? []).length > 0}>
               <button class="btn danger" onClick={() => remove()}>
-                Delete all
+                {tl('Delete all')}
               </button>
             </Show>
           </div>
@@ -372,7 +399,7 @@ function BrowserFootprints() {
                   <span class="sym">
                     {symbolOf(m.market)} <span class="dim">{venueLabel(m.market)}</span>
                   </span>
-                  <span class="num dim">{Math.round(m.minutes / 60)} h</span>
+                  <span class="num dim">{Math.round(m.minutes / 60)} {tl('h')}</span>
                   <span class="num">{megabytes(m.bytes)}</span>
                   <button class="dim" data-tip={`Delete ${symbolOf(m.market)}'s footprint`} aria-label={`Delete ${symbolOf(m.market)}'s footprint`} onClick={() => remove(m.market)}>
                     ✕
@@ -404,37 +431,37 @@ function ThemesSection() {
   const pick = (t: ThemePreset) => update((d) => void (d.theme = withTheme(d.theme, t)));
   return (
     <>
-      <h2>Themes</h2>
-      <p class="lead">A theme colours the chart and the page around it, and is kept with the workspace, so it follows your account too.</p>
+      <h2>{tl('Themes')}</h2>
+      <p class="lead">{tl('A theme colours the chart and the page around it, and is kept with the workspace, so it follows your account too.')}</p>
       <div class="themes">
         <For each={THEMES}>
           {(t) => (
             <button class="theme-card" classList={{ on: current() === t.id }} aria-pressed={current() === t.id} onClick={() => pick(t)}>
               <ThemePreview theme={t} />
               <span class="theme-name">{t.name}</span>
-              <span class="theme-note">{t.note}</span>
+              <span class="theme-note">{tl(t.note)}</span>
             </button>
           )}
         </For>
       </div>
       <h3 class="set-sub">{current() ? 'Fine-tune it' : 'Your own colours'}</h3>
-      <p class="lead">Any colour changed here makes the theme your own; ↺ puts one back to the default.</p>
+      <p class="lead">{tl('Any colour changed here makes the theme your own; ↺ puts one back to the default.')}</p>
       <div class="set-card">
-        <h3>Chart</h3>
+        <h3>{tl('Chart')}</h3>
         <div class="swatches">
-          <For each={CHART_THEME}>{(t) => <Swatch name={t.name} label={t.label} fallback={t.value} />}</For>
+          <For each={CHART_THEME}>{(t) => <Swatch name={t.name} label={tl(t.label)} fallback={t.value} />}</For>
         </div>
-        <p class="lead">The size of the chart's text, and bold, are in General → Text.</p>
+        <p class="lead">{tl('The size of the chart\'s text, and bold, are in General → Text.')}</p>
       </div>
       <div class="set-card">
-        <h3>Page</h3>
+        <h3>{tl('Page')}</h3>
         <div class="swatches">
-          <For each={UI_THEME}>{(t) => <Swatch name={t.name} label={t.label} fallback={t.value} />}</For>
+          <For each={UI_THEME}>{(t) => <Swatch name={t.name} label={tl(t.label)} fallback={t.value} />}</For>
         </div>
       </div>
       <div class="set-actions">
         <button class="btn" onClick={() => pick(THEMES[0]!)}>
-          Back to tradoor dark
+          {tl('Back to tradoor dark')}
         </button>
       </div>
     </>
@@ -444,8 +471,8 @@ function ThemesSection() {
 function LayoutsSection() {
   return (
     <>
-      <h2>Layouts</h2>
-      <p class="lead">Start from a recommended layout, keep your own by name, or carry one as a file. The same as Layouts in the top bar.</p>
+      <h2>{tl('Layouts')}</h2>
+      <p class="lead">{tl('Start from a recommended layout, keep your own by name, or carry one as a file. The same as Layouts in the top bar.')}</p>
       <div class="set-card">
         <LayoutsMenu inSettings />
       </div>
@@ -456,14 +483,14 @@ function LayoutsSection() {
 function AdvancedSection(props: { onClose(): void }) {
   return (
     <>
-      <h2>Advanced</h2>
-      <p class="lead">What signing in does for you, by hand, and the switches to start over.</p>
+      <h2>{tl('Advanced')}</h2>
+      <p class="lead">{tl('What signing in does for you, by hand, and the switches to start over.')}</p>
       <div class="set-card">
-        <h3>Browser id</h3>
+        <h3>{tl('Browser id')}</h3>
         <OwnerRows />
       </div>
       <div class="set-card">
-        <h3>Exchanges</h3>
+        <h3>{tl('Exchanges')}</h3>
         <div class="swatches one">
           <For each={ALL_EXCHANGES}>
             {(x) => (
@@ -477,9 +504,9 @@ function AdvancedSection(props: { onClose(): void }) {
         </div>
       </div>
       <div class="set-card danger">
-        <h3>Start over</h3>
+        <h3>{tl('Start over')}</h3>
         <div class="set-row">
-          <span class="grow dim">Replace this workspace's panels and layout with the default. Drawings and alerts stay.</span>
+          <span class="grow dim">{tl('Replace this workspace\'s panels and layout with the default. Drawings and alerts stay.')}</span>
           <button
             class="btn danger"
             onClick={() => {
@@ -488,7 +515,7 @@ function AdvancedSection(props: { onClose(): void }) {
               props.onClose();
             }}
           >
-            Reset workspace
+            {tl('Reset workspace')}
           </button>
         </div>
       </div>
@@ -502,7 +529,7 @@ function OwnerRows() {
   const [other, setOther] = createSignal('');
   const [copied, setCopied] = createSignal(false);
   if (session()) {
-    return <p class="note">This browser is signed in: it opens the account with a session of its own, which signing out ends. There is no id to copy — sign in with Telegram on the other device instead.</p>;
+    return <p class="note">{tl('This browser is signed in: it opens the account with a session of its own, which signing out ends. There is no id to copy — sign in with Telegram on the other device instead.')}</p>;
   }
   return (
     <>
@@ -516,7 +543,7 @@ function OwnerRows() {
       </Row>
       <Row label="Use another id">
         <div class="set-inline">
-          <input class="box wide num" value={other()} placeholder="paste the id from your other device" onInput={(e) => setOther(e.currentTarget.value)} />
+          <input class="box wide num" value={other()} placeholder={tl('paste the id from your other device')} onInput={(e) => setOther(e.currentTarget.value)} />
           <button
             class="btn"
             disabled={!OWNER_PATTERN.test(other().trim())}
@@ -524,13 +551,12 @@ function OwnerRows() {
               if (confirm("Switch to that id's drawings and layout? This browser's stay under its own id.")) switchOwner(other().trim());
             }}
           >
-            Use
+            {tl('Use')}
           </button>
         </div>
       </Row>
       <p class="note">
-        Everything is kept on the server under this id, and only this browser sends it. Keep it to yourself — whoever has it can change your things. An account's id does not open the account: sign in with Telegram
-        for that.
+        {tl('Everything is kept on the server under this id, and only this browser sends it. Keep it to yourself — whoever has it can change your things. An account\'s id does not open the account: sign in with Telegram for that.')}
       </p>
     </>
   );
@@ -562,10 +588,10 @@ export function Settings(props: { onClose(): void }) {
         }}
       >
         <header>
-          <span class="title caps">Settings</span>
+          <span class="title caps">{tl('Settings')}</span>
           <span class="spacer" />
           <button class="x" onClick={() => props.onClose()}>
-            esc ✕
+            {tl('esc ✕')}
           </button>
         </header>
         <div class="set">
@@ -574,7 +600,7 @@ export function Settings(props: { onClose(): void }) {
               {(s) => (
                 <button classList={{ on: section() === s.id }} onClick={() => setSection(s.id)}>
                   <Icon name={s.icon} size={14} />
-                  <span>{s.label}</span>
+                  <span>{tl(s.label)}</span>
                 </button>
               )}
             </For>

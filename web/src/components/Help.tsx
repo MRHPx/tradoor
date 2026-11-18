@@ -1,4 +1,5 @@
 import { For } from 'solid-js';
+import { tl } from '../lib/i18n';
 
 const GROUPS: { title: string; keys: [string, string][] }[] = [
   {
@@ -91,10 +92,10 @@ export function Help(props: { onClose(): void }) {
         }}
       >
         <header>
-          <span class="title caps">Keyboard</span>
+          <span class="title caps">{tl('Keyboard')}</span>
           <span class="spacer" />
           <button class="x" onClick={() => props.onClose()}>
-            esc ✕
+            {tl('esc ✕')}
           </button>
         </header>
         <div class="keys">
@@ -102,7 +103,7 @@ export function Help(props: { onClose(): void }) {
             {(g) => (
               <div>
                 <h3 class="caps primary" style={{ margin: '0 0 6px', 'font-weight': '400' }}>
-                  {g.title}
+                  {tl(g.title)}
                 </h3>
                 <dl>
                   <For each={g.keys}>

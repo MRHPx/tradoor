@@ -10,6 +10,7 @@ import { arrange, countdown, dayName, isDue, nextOf, shiftDay, surprise } from '
 import { formatDateTime, formatHm, timeZone, zoneLabel } from '../lib/timezone';
 import type { EconPanelState } from '../workspace/model';
 import { patchPanel } from '../workspace/store';
+import { tl } from '../lib/i18n';
 
 const SETTLED_MS = 60_000;
 const WAITING_MS = 15_000;
@@ -144,7 +145,7 @@ export function EconPanel(props: { panel: EconPanelState }) {
         {(first) => (
           <div class="ec-next" classList={{ core: first().core, soon: first().at - now() < SOON_MS }} data-tip={tip(first())}>
             <span class="ec-next-name">
-              {first().title}
+              {tl(first().title)}
               <Show when={next().length > 1}>
                 <span class="ec-more"> +{next().length - 1}</span>
               </Show>
@@ -152,24 +153,24 @@ export function EconPanel(props: { panel: EconPanelState }) {
             <span class="ec-count num">{countdown(first().at - now())}</span>
             <span class="ec-sub">
               <span class="num">{when(first())}</span>
-              <Show when={first().forecast}>{(v) => <span>Forecast <b class="num">{v()}</b></span>}</Show>
-              <Show when={first().previous}>{(v) => <span>Previous <b class="num">{v()}</b></span>}</Show>
+              <Show when={first().forecast}>{(v) => <span>{tl('Forecast')} <b class="num">{v()}</b></span>}</Show>
+              <Show when={first().previous}>{(v) => <span>{tl('Previous')} <b class="num">{v()}</b></span>}</Show>
             </span>
           </div>
         )}
       </Show>
       <div class="toolbar">
         <button class="tb" classList={{ on: scope() === 'all' }} data-tip="CPI, PPI, the FOMC, jobs, retail sales, PMIs, PCE and GDP" onClick={() => setScope('all')}>
-          All
+          {tl('All')}
         </button>
         <button class="tb" classList={{ on: scope() === 'core' }} data-tip="Only the three releases markets wait for" onClick={() => setScope('core')}>
           CPI, PPI, FOMC
         </button>
         <span class="spacer" />
         <Show when={pending() > 0 && events() !== null}>
-          <span class="ec-note">Reading {pending()} more days</span>
+          <span class="ec-note">{tl('Reading')} {pending()} {tl('more days')}</span>
         </Show>
-        <button class="iconbtn ec-refresh" classList={{ busy: refreshing() }} data-tip="Refresh, and back to now" aria-label="Refresh, and back to now" onClick={() => void refresh()}>
+        <button class="iconbtn ec-refresh" classList={{ busy: refreshing() }} data-tip="Refresh, and back to now" aria-label={tl('Refresh, and back to now')} onClick={() => void refresh()}>
           <Icon name="reset" size={13} />
         </button>
       </div>
@@ -177,13 +178,13 @@ export function EconPanel(props: { panel: EconPanelState }) {
         <Show
           when={events() !== null}
           fallback={
-            <Show when={error()} fallback={<div class="empty">Reading the calendar</div>}>
+            <Show when={error()} fallback={<div class="empty">{tl('Reading the calendar')}</div>}>
               {(message) => (
                 <div class="empty warn">
-                  Calendar not loaded: {message()}
+                  {tl('Calendar not loaded:')} {message()}
                   <div>
                     <button class="tb" onClick={() => void load()}>
-                      Try again
+                      {tl('Try again')}
                     </button>
                   </div>
                 </div>
@@ -193,10 +194,10 @@ export function EconPanel(props: { panel: EconPanelState }) {
         >
           <div class="ec-cols">
             <span data-tip="Times in the zone set in Settings">{zoneLabel(timeZone())}</span>
-            <span>Release</span>
-            <span class="r">Actual</span>
-            <span class="r ec-f">Fcst</span>
-            <span class="r ec-p">Prev</span>
+            <span>{tl('Release')}</span>
+            <span class="r">{tl('Actual')}</span>
+            <span class="r ec-f">{tl('Fcst')}</span>
+            <span class="r ec-p">{tl('Prev')}</span>
           </div>
           <For each={rows()}>
             {(row) => {
@@ -222,9 +223,9 @@ export function EconPanel(props: { panel: EconPanelState }) {
               return (
                 <div class="ec-row" classList={{ past: row.past, core: e.core, fresh: fresh().has(keyOf(e)) }} data-tip={tip(e)}>
                   <span class="num ec-t">{e.allDay ? '–' : formatHm(e.at)}</span>
-                  <span class="ec-name">{e.title}</span>
+                  <span class="ec-name">{tl(e.title)}</span>
                   <span class="num r ec-a" classList={{ above: side > 0, below: side < 0 }}>
-                    <Show when={e.actual} fallback={<Show when={isDue(e, now())}><span class="ec-due">due</span></Show>}>
+                    <Show when={e.actual} fallback={<Show when={isDue(e, now())}><span class="ec-due">{tl('due')}</span></Show>}>
                       <Show when={side !== 0}>
                         <i>{side > 0 ? '▲' : '▼'}</i>
                       </Show>
@@ -238,7 +239,7 @@ export function EconPanel(props: { panel: EconPanelState }) {
             }}
           </For>
           <Show when={shown().length === 0 && pending() === 0}>
-            <div class="empty">No releases listed around today.</div>
+            <div class="empty">{tl('No releases listed around today.')}</div>
           </Show>
         </Show>
       </div>

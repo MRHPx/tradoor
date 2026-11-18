@@ -9,6 +9,7 @@ import { Dynamic } from 'solid-js/web';
 import { EXCHANGES, ExchangeLogo } from '../lib/exchanges';
 import { Icon } from '../lib/icons';
 import { dismissReferralCard } from '../lib/referral';
+import { tl } from '../lib/i18n';
 
 interface Partner {
   name: string;
@@ -78,15 +79,15 @@ export function ReferralDialog(props: { onClose(): void }) {
         }}
       >
         <header>
-          <span class="title caps">Partners</span>
+          <span class="title caps">{tl('Partners')}</span>
           <span class="spacer" />
           <button class="x" onClick={() => props.onClose()}>
-            esc ✕
+            {tl('esc ✕')}
           </button>
         </header>
         <div class="ref-body">
         <p class="ref-intro">
-          Sign up through these links and tradoor earns a share, at no extra cost to you — it keeps the charts free. Bybit and Binance add their new-user rewards.
+          {tl('Sign up through these links and tradoor earns a share, at no extra cost to you — it keeps the charts free. Bybit and Binance add their new-user rewards.')}
         </p>
         <div class="ref-list">
           <For each={PARTNERS}>
@@ -102,7 +103,7 @@ export function ReferralDialog(props: { onClose(): void }) {
                   {p.more && <span>{p.more}</span>}
                 </span>
                 <span class="go">
-                  Sign up <Icon name="external" size={11} stroke={2} />
+                  {tl('Sign up')} <Icon name="external" size={11} stroke={2} />
                 </span>
               </a>
             )}
@@ -113,16 +114,16 @@ export function ReferralDialog(props: { onClose(): void }) {
             ♥
           </span>
           <span class="who">
-            <b>Sponsor tradoor on GitHub</b>
-            <span>Free and open source, with nothing behind a paywall. If it helps your trading, a sponsorship keeps it that way and keeps it moving.</span>
+            <b>{tl('Sponsor tradoor on GitHub')}</b>
+            <span>{tl('Free and open source, with nothing behind a paywall. If it helps your trading, a sponsorship keeps it that way and keeps it moving.')}</span>
           </span>
           <span class="go">
-            Sponsor <Icon name="external" size={11} stroke={2} />
+            {tl('Sponsor')} <Icon name="external" size={11} stroke={2} />
           </span>
         </a>
         </div>
         <footer>
-          <span>Referral links · open in a new tab</span>
+          <span>{tl('Referral links · open in a new tab')}</span>
         </footer>
       </div>
     </div>
@@ -131,16 +132,16 @@ export function ReferralDialog(props: { onClose(): void }) {
 
 export function ReferralCard() {
   return (
-    <aside class="ref-card" aria-label="Partner exchanges">
+    <aside class="ref-card" aria-label={tl('Partner exchanges')}>
       <header>
         <span class="eyebrow">
-          <Icon name="gift" size={12} /> Partner offers
+          <Icon name="gift" size={12} /> {tl('Partner offers')}
         </span>
-        <button class="x" aria-label="Close" onClick={dismissReferralCard}>
+        <button class="x" aria-label={tl('Close')} onClick={dismissReferralCard}>
           <Icon name="close" size={10} stroke={2.4} />
         </button>
       </header>
-      <p>Sign up through tradoor's links — no extra cost, new-user rewards on Bybit and Binance, and it keeps the charts free.</p>
+      <p>{tl('Sign up through tradoor\'s links — no extra cost, new-user rewards on Bybit and Binance, and it keeps the charts free.')}</p>
       <For each={PARTNERS.filter((p) => p.lead)}>
         {(p) => (
           <a class="lead" href={p.url} target="_blank" rel="sponsored noopener" onClick={dismissReferralCard}>
@@ -169,7 +170,7 @@ export function ReferralCard() {
       </div>
       <footer>
         <button class="later" onClick={dismissReferralCard}>
-          Not now
+          {tl('Not now')}
         </button>
       </footer>
     </aside>

@@ -8,6 +8,7 @@
  */
 import { onCleanup, onMount } from 'solid-js';
 import { setOverlay } from '../app/ui';
+import { tl } from '../lib/i18n';
 
 const EVERY_MS = 10_000;
 const PLAY_MS = 3_600;
@@ -55,7 +56,7 @@ export function ChartMark(props: { x: number; y: number; accent: string; bear: s
     <button
       class="chart-mark"
       style={{ left: `${props.x}px`, top: `${props.y}px` }}
-      aria-label="Rewards from tradoor's partners"
+      aria-label={tl('Rewards from tradoor\'s partners')}
       data-tip="Rewards"
       onPointerDown={(e) => e.stopPropagation()}
       onClick={() => setOverlay({ kind: 'referrals' })}

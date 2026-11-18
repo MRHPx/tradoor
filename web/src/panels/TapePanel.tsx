@@ -15,6 +15,7 @@ import type { TapePanelState } from '../workspace/model';
 import { doc, marketOf, patchPanel } from '../workspace/store';
 import { MarketButton } from './common';
 import { compact, MIN_USD, minLabel, palette, stepDecimals, useCanvas, type Palette } from './flow-canvas';
+import { tl } from '../lib/i18n';
 
 const ROW = 16;
 const HEAD = 18;
@@ -144,7 +145,7 @@ export function TapePanel(props: { panel: TapePanelState }) {
         <span class="spacer" />
         <Show when={STATE_LABEL[state()]}>{(label) => <span class={`conn ${state()}`}>{label()}</span>}</Show>
         <Show when={paused()}>
-          <span class="conn" data-tip="The pointer is over the tape: it holds still to be read">Paused</span>
+          <span class="conn" data-tip="The pointer is over the tape: it holds still to be read">{tl('Paused')}</span>
         </Show>
         <select data-tip="Smallest order to show: trades at one time and side count as one" onChange={(e) => patchPanel(id, { minUsd: Number(e.currentTarget.value) })}>
           <For each={MIN_USD}>

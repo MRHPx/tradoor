@@ -2,6 +2,7 @@
 import { Show } from 'solid-js';
 import { money } from './model';
 import type { Figures } from './legs';
+import { tl } from '../lib/i18n';
 
 export function Readout(props: { figures: Figures; hasLegs?: boolean; avgEntry?: string | null }) {
   const f = () => props.figures;
@@ -12,20 +13,20 @@ export function Readout(props: { figures: Figures; hasLegs?: boolean; avgEntry?:
         <dd class="bear">{money(-f().loss)}</dd>
       </div>
       <div data-tip="What it makes if price reaches the target">
-        <dt>Profit at target</dt>
+        <dt>{tl('Profit at target')}</dt>
         <dd class="bull">{money(f().gain)}</dd>
       </div>
       <div data-tip="The target's distance over the stop's">
-        <dt>Reward : risk</dt>
+        <dt>{tl('Reward : risk')}</dt>
         <dd>{f().rr.toFixed(2)}</dd>
       </div>
       <div data-tip="The margin times the leverage: what the position is worth at its entry">
-        <dt>Position</dt>
+        <dt>{tl('Position')}</dt>
         <dd>{money(f().value).replace('+', '')}</dd>
       </div>
       <Show when={props.avgEntry}>
         <div data-tip="With every add filled">
-          <dt>Avg entry</dt>
+          <dt>{tl('Avg entry')}</dt>
           <dd>{props.avgEntry}</dd>
         </div>
       </Show>

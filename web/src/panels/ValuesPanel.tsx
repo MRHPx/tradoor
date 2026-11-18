@@ -21,6 +21,7 @@ import { tfLabel } from '../lib/timeframes';
 import type { ValuesPanelState } from '../workspace/model';
 import { marketOf, patchPanel, setPanelTimeframe, timeframeOf } from '../workspace/store';
 import { MarketButton, SESSION_NAME, TimeframeSelect } from './common';
+import { tl } from '../lib/i18n';
 
 /** Momentum is read on these, shortest first. */
 const FRAMES = ['15m', '1h', '4h', '1d', '1w'];
@@ -125,13 +126,13 @@ export function ValuesPanel(props: { panel: ValuesPanelState }) {
                 const chg = () => ((t().close - t().open) / t().open) * 100;
                 return (
                   <span class="num" classList={{ bull: chg() > 0, bear: chg() < 0 }} data-tip="Since 00:00 UTC, as TradingView counts the day">
-                    {formatPct(chg())} today
+                    {formatPct(chg())} {tl('today')}
                   </span>
                 );
               }}
             </Show>
             <span class="spacer" />
-            <Show when={day()}>{(t) => <span class="dim num" data-tip="Volume since 00:00 UTC">Vol {formatVolume(t().volume)}</span>}</Show>
+            <Show when={day()}>{(t) => <span class="dim num" data-tip="Volume since 00:00 UTC">{tl('Vol')} {formatVolume(t().volume)}</span>}</Show>
           </div>
           <Show when={day()}>
             {(t) => {
@@ -150,7 +151,7 @@ export function ValuesPanel(props: { panel: ValuesPanelState }) {
                   </div>
                   <Show when={used() !== null}>
                     <div class="vx-atr" data-tip="Today's high-to-low range against the average daily range of the last 14 days">
-                      Day range {px(t().high - t().low)} · <b classList={{ warn: used()! >= 100 }}>{used()!.toFixed(0)}%</b> of ATR 14D {px(dayAtr()!)}
+                      {tl('Day range')} {px(t().high - t().low)} · <b classList={{ warn: used()! >= 100 }}>{used()!.toFixed(0)}%</b> {tl('of ATR 14D')} {px(dayAtr()!)}
                     </div>
                   </Show>
                 </div>
@@ -165,7 +166,7 @@ export function ValuesPanel(props: { panel: ValuesPanelState }) {
                 <For each={performance(dd(), today(), price()!)}>
                   {(p) => (
                     <div classList={{ bull: (p.pct ?? 0) > 0, bear: (p.pct ?? 0) < 0 }}>
-                      <span class="caps">{p.label}</span>
+                      <span class="caps">{tl(p.label)}</span>
                       <span class="num">{p.pct === null ? '—' : formatPct(p.pct)}</span>
                     </div>
                   )}
@@ -176,15 +177,15 @@ export function ValuesPanel(props: { panel: ValuesPanelState }) {
 
           {/* ------------------------------------------------ momentum */}
           <div class="subhead">
-            <span class="caps">Momentum</span>
-            <span class="dim">last closed bar</span>
+            <span class="caps">{tl('Momentum')}</span>
+            <span class="dim">{tl('last closed bar')}</span>
           </div>
           <table class="vx-table">
             <thead>
               <tr>
                 <th />
                 <th data-tip="RSI 14 — above 70 overbought, below 30 oversold">RSI</th>
-                <th data-tip="Stochastic RSI %K, 14/14/3/3 — above 80 overbought, below 20 oversold">Stoch</th>
+                <th data-tip="Stochastic RSI %K, 14/14/3/3 — above 80 overbought, below 20 oversold">{tl('Stoch')}</th>
                 <th data-tip="Close against EMA 200: above is an uptrend">EMA 200</th>
                 <th data-tip="EMA 12 over EMA 25 is bullish, under it bearish">12/25</th>
               </tr>
@@ -213,14 +214,14 @@ export function ValuesPanel(props: { panel: ValuesPanelState }) {
           {/* ------------------------------------------------ levels */}
           <Show when={levels().length > 0}>
             <div class="subhead vx-levelhead">
-              <span class="caps">Levels</span>
+              <span class="caps">{tl('Levels')}</span>
               <span class="spacer" />
               <span class="dim" data-tip="The value area of the prior session of this timeframe's profile">
-                profile
+                {tl('profile')}
               </span>
               <TimeframeSelect value={timeframe()} onChange={(tf) => setPanelTimeframe(id, tf)} />
               <button class="tb" classList={{ on: props.panel.basis === 'volume' }} data-tip="Value area weighted by volume traded at each price" onClick={() => patchPanel(id, { basis: 'volume' })}>
-                Vol
+                {tl('Vol')}
               </button>
               <button class="tb" classList={{ on: props.panel.basis === 'tpo' }} data-tip="Value area weighted by time spent at each price" onClick={() => patchPanel(id, { basis: 'tpo' })}>
                 TPO
@@ -232,13 +233,13 @@ export function ValuesPanel(props: { panel: ValuesPanelState }) {
                   {(l) =>
                     l === null ? (
                       <tr class="here">
-                        <td>▸ Price</td>
+                        <td>{tl('▸ Price')}</td>
                         <td class="num">{px(price()!)}</td>
                         <td />
                       </tr>
                     ) : (
                       <tr>
-                        <td>{l.label}</td>
+                        <td>{tl(l.label)}</td>
                         <td class="num">{px(l.price)}</td>
                         <td class="num" classList={{ bull: l.price > price()!, bear: l.price < price()! }}>
                           {formatPct(((l.price - price()!) / price()!) * 100)}
@@ -254,13 +255,13 @@ export function ValuesPanel(props: { panel: ValuesPanelState }) {
           {/* ------------------------------------------------ derivatives */}
           <Show when={isPerp(market())}>
             <div class="subhead">
-              <span class="caps">Derivatives</span>
-              <span class="dim">all exchanges</span>
+              <span class="caps">{tl('Derivatives')}</span>
+              <span class="dim">{tl('all exchanges')}</span>
             </div>
             <Show when={openInterest()}>
               {(oi) => (
                 <div class="vx-row">
-                  <span class="caps">Open interest</span>
+                  <span class="caps">{tl('Open interest')}</span>
                   <span class="num">
                     {formatVolume(oi().coins)} {coinOf(symbolOf(market()))} · ${formatTurnover(oi().coins * price()!)}
                   </span>
@@ -297,14 +298,14 @@ function Liquidations(props: { stats: LiquidationStats | null }) {
     <Show when={props.stats}>
       {(s) => {
         const st = s();
-        if (!st.tracked) return <div class="note">Liquidation totals are kept for {st.tickers.join(', ')} only.</div>;
+        if (!st.tracked) return <div class="note">{tl('Liquidation totals are kept for')} {st.tickers.join(', ')} {tl('only.')}</div>;
         return (
           <table class="vx-table">
             <thead>
               <tr>
-                <th>Liquidated</th>
-                <th>Longs</th>
-                <th>Shorts</th>
+                <th>{tl('Liquidated')}</th>
+                <th>{tl('Longs')}</th>
+                <th>{tl('Shorts')}</th>
               </tr>
             </thead>
             <tbody>

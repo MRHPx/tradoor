@@ -9,6 +9,7 @@ import { distribution, monteCarlo, monthly, pct, ratio, type Stats, type TradeRo
 import type { BacktestState } from '../lib/backtest-state';
 import { formatAlertTime } from '../lib/timezone';
 import type { Ok } from './StrategyTester';
+import { tl } from '../lib/i18n';
 
 const W = 1000;
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -70,8 +71,8 @@ function Equity(props: { result: Ok; state: BacktestState }) {
   return (
     <figure class="bt-chart">
       <figcaption>
-        Equity <span class="key eq" /> against holding the coin <span class="key hold" />
-        <span class="dim num"> · {formatAlertTime(first())} to {formatAlertTime(last())}</span>
+        {tl('Equity')} <span class="key eq" /> {tl('against holding the coin')} <span class="key hold" />
+        <span class="dim num"> · {formatAlertTime(first())} {tl('to')} {formatAlertTime(last())}</span>
       </figcaption>
       <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" class="bt-svg" role="img" aria-label="The equity over the test, and holding the coin">
         <path d={path(data().hold, data().lo, data().hi, H)} class="hold" vector-effect="non-scaling-stroke" />
@@ -84,12 +85,12 @@ function Equity(props: { result: Ok; state: BacktestState }) {
         <span>{Math.round(data().lo).toLocaleString('en-US')}</span>
       </div>
       <figcaption>
-        Drawdown <span class="dim num">· deepest {pct(data().worst)}</span>
+        {tl('Drawdown')} <span class="dim num">{tl('· deepest')} {pct(data().worst)}</span>
         <Show when={split()}>
-          <span class="dim"> · the dashed line: tuned on the left, kept back on the right</span>
+          <span class="dim"> {tl('· the dashed line: tuned on the left, kept back on the right')}</span>
         </Show>
         <Show when={fwd()}>
-          <span class="dim"> · the dotted line: the forward test’s start</span>
+          <span class="dim"> {tl('· the dotted line: the forward test’s start')}</span>
         </Show>
       </figcaption>
       <svg viewBox={`0 0 ${W} 60`} preserveAspectRatio="none" class="bt-svg dd" role="img" aria-label="How far the equity was under its high">
@@ -117,14 +118,14 @@ function Months(props: { result: Ok }) {
   };
   return (
     <figure class="bt-chart">
-      <figcaption>Returns by month, UTC</figcaption>
+      <figcaption>{tl('Returns by month, UTC')}</figcaption>
       <div class="bt-table-wrap">
         <table class="bt-months num">
           <thead>
             <tr>
               <th />
               <For each={MONTHS}>{(m) => <th>{m}</th>}</For>
-              <th>Year</th>
+              <th>{tl('Year')}</th>
             </tr>
           </thead>
           <tbody>
@@ -152,9 +153,9 @@ function Spread(props: { rows: TradeRow[] }) {
   return (
     <figure class="bt-chart half">
       <figcaption>
-        How the results spread <span class="dim">· in {d().unit === 'R' ? 'R, multiples of the first stop’s loss' : 'percent of the equity'}</span>
+        {tl('How the results spread')} <span class="dim">{tl('· in')} {d().unit === 'R' ? 'R, multiples of the first stop’s loss' : 'percent of the equity'}</span>
       </figcaption>
-      <Show when={d().bins.length > 0} fallback={<p class="dim">No closed trades.</p>}>
+      <Show when={d().bins.length > 0} fallback={<p class="dim">{tl('No closed trades.')}</p>}>
         <svg viewBox="0 0 400 120" class="bt-svg" role="img" aria-label="How many trades ended at each result">
           <For each={d().bins}>
             {(b, i) => {
@@ -163,7 +164,7 @@ function Spread(props: { rows: TradeRow[] }) {
               return (
                 <rect x={i() * w + 1} width={Math.max(1, w - 2)} y={112 - h} height={h} class={b.to <= 0 ? 'neg' : b.from >= 0 ? 'pos' : 'mid'}>
                   <title>
-                    {ratio(b.from)} to {ratio(b.to)}
+                    {ratio(b.from)} {tl('to')} {ratio(b.to)}
                     {d().unit === 'R' ? 'R' : '%'}: {b.count}
                   </title>
                 </rect>
@@ -199,16 +200,16 @@ function Excursion(props: { rows: TradeRow[] }) {
   return (
     <figure class="bt-chart half">
       <figcaption>
-        How far each went against it <span class="dim">· across, before it closed; up, what it made. Winners far right say the stop sits too close.</span>
+        {tl('How far each went against it')} <span class="dim">{tl('· across, before it closed; up, what it made. Winners far right say the stop sits too close.')}</span>
       </figcaption>
-      <Show when={pts().length > 0} fallback={<p class="dim">No closed trades.</p>}>
+      <Show when={pts().length > 0} fallback={<p class="dim">{tl('No closed trades.')}</p>}>
         <svg viewBox="0 0 400 120" class="bt-svg" role="img" aria-label="Each trade's adverse excursion against its result">
           <line x1={0} x2={400} y1={60} y2={60} class="zero" />
           <For each={pts()}>{(t) => <circle cx={Math.min(1, t.mae / most()) * 392 + 4} cy={60 - clip(t.ret / range()) * 54} r={2.2} class={t.pnl > 0 ? 'pos' : 'neg'} />}</For>
         </svg>
         <div class="bt-axis row num dim">
           <span>0%</span>
-          <span>{pct(-most())} against, and past</span>
+          <span>{pct(-most())} {tl('against, and past')}</span>
         </div>
       </Show>
     </figure>
@@ -220,19 +221,19 @@ function Shuffled(props: { rows: TradeRow[]; stats: Stats | null }) {
   return (
     <figure class="bt-chart">
       <figcaption>
-        The trades drawn again at random, 1,000 times <span class="dim">· the same edge, other luck</span>
+        {tl('The trades drawn again at random, 1,000 times')} <span class="dim">{tl('· the same edge, other luck')}</span>
       </figcaption>
-      <Show when={mc()} fallback={<p class="dim">Five closed trades at least are needed.</p>}>
+      <Show when={mc()} fallback={<p class="dim">{tl('Five closed trades at least are needed.')}</p>}>
         {(m) => (
           <div class="bt-mc num">
             <span>
-              Drawdown: half the runs reach <b class="bear">{pct(-m().dd[1])}</b>, one in twenty <b class="bear">{pct(-m().dd[2])}</b>
+              {tl('Drawdown: half the runs reach')} <b class="bear">{pct(-m().dd[1])}</b>{tl(', one in twenty')} <b class="bear">{pct(-m().dd[2])}</b>
               {props.stats ? ` (the test’s own: ${pct(-props.stats.maxDdPct)})` : ''}
             </span>
             <span>
-              Return: <b>{pct(m().ret[0])}</b> to <b>{pct(m().ret[2])}</b> for nine runs in ten, the middle one {pct(m().ret[1])} · {pct(m().losing, false)} of the runs lost money
+              {tl('Return:')} <b>{pct(m().ret[0])}</b> {tl('to')} <b>{pct(m().ret[2])}</b> {tl('for nine runs in ten, the middle one')} {pct(m().ret[1])} · {pct(m().losing, false)} {tl('of the runs lost money')}
             </span>
-            <span class="dim">Plan for the deeper drawdown, not the one this stretch of history happened to give.</span>
+            <span class="dim">{tl('Plan for the deeper drawdown, not the one this stretch of history happened to give.')}</span>
           </div>
         )}
       </Show>

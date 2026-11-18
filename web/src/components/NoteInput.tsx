@@ -1,4 +1,5 @@
 import { createSignal, onMount } from 'solid-js';
+import { tl } from '../lib/i18n';
 
 /** The text of a note whose anchor is already placed. Cancelling drops it —
  *  a note nobody wrote is not a drawing. */
@@ -25,7 +26,7 @@ export function NoteInput(props: { initial?: string; onSave(label: string): void
         }}
       >
         <header>
-          <span class="title caps">Note</span>
+          <span class="title caps">{tl('Note')}</span>
         </header>
         <input
           ref={input}
@@ -40,12 +41,12 @@ export function NoteInput(props: { initial?: string; onSave(label: string): void
             e.stopPropagation();
             props.onClose();
           }}
-          placeholder="what this bar is about…"
+          placeholder={tl('what this bar is about…')}
         />
         <footer>
-          <span>↵ save · esc cancel</span>
+          <span>{tl('↵ save · esc cancel')}</span>
           <button class="btn" type="submit" disabled={text().trim() === ''}>
-            Save
+            {tl('Save')}
           </button>
         </footer>
       </form>

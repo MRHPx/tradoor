@@ -10,6 +10,7 @@ import { createEffect, createSignal, Show, type Accessor, type JSX } from 'solid
 import { formatPrice } from '../lib/format';
 import { readJson, writePref } from '../lib/prefs';
 import { coinOf, coins, trainingApi, unrealized, usd, type Order, type Position, type State } from '../training/model';
+import { tl } from '../lib/i18n';
 
 /** What a click orders, in USDT: kept in this browser. */
 const SIZE_KEY = 'domTradeUsd';
@@ -73,16 +74,16 @@ export function domTrade(account: TradeAccount): DomTrade {
           <span class="dim">USDT</span>
         </label>
         <button class="tb dom-buy" disabled={busy()} data-tip="Buy at the market" onClick={() => order(true, 'market', last())}>
-          Buy
+          {tl('Buy')}
         </button>
         <button class="tb dom-sell" disabled={busy()} data-tip="Sell at the market" onClick={() => order(false, 'market', last())}>
-          Sell
+          {tl('Sell')}
         </button>
         <button class="tb" disabled={busy() || !position()} data-tip="Close the position at the market" onClick={() => void act(() => trainingApi.close(symbol()))}>
-          Flat
+          {tl('Flat')}
         </button>
         <button class="tb" disabled={busy() || !position()} data-tip="Close it and open as much the other way, at the market" onClick={() => void act(() => trainingApi.reverse(symbol()))}>
-          Reverse
+          {tl('Reverse')}
         </button>
         <button
           class="tb"
@@ -94,7 +95,7 @@ export function domTrade(account: TradeAccount): DomTrade {
             })
           }
         >
-          Cancel all
+          {tl('Cancel all')}
         </button>
         <span class="spacer" />
         <Held position={position()} last={last()} />
@@ -106,7 +107,7 @@ export function domTrade(account: TradeAccount): DomTrade {
 /** The position, and what it makes at the last price. */
 function Held(props: { position: Position | undefined; last: number }) {
   return (
-    <Show when={props.position} fallback={<span class="dim" data-tip="Click your order to cancel it, drag it to move it; Shift-click a row for the stop loss, Ctrl-click for the take profit">Click a bid to buy, an ask to sell</span>}>
+    <Show when={props.position} fallback={<span class="dim" data-tip="Click your order to cancel it, drag it to move it; Shift-click a row for the stop loss, Ctrl-click for the take profit">{tl('Click a bid to buy, an ask to sell')}</span>}>
       {(p) => {
         const pnl = () => unrealized(p(), props.last);
         return (

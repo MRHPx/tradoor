@@ -5,6 +5,7 @@ import { holdSession, startOver } from '../lib/owner';
 import { noteUsername, username } from '../lib/username';
 import { UsernameClaim } from './Username';
 import { deviceZone, formatDateTime, LOCAL_ZONE, offsetMinutes, timeZone } from '../lib/timezone';
+import { tl } from '../lib/i18n';
 
 /** The clock the reader reads the page in, which their Telegram messages follow. */
 export const clock = () => {
@@ -110,11 +111,11 @@ export function AccountCard(props: { onSignedIn?: () => void }) {
                     <Icon name="user" size={18} />
                   </span>
                   <div class="who">
-                    <b>Not signed in</b>
-                    <span class="dim">This browser keeps its things under its own id only.</span>
+                    <b>{tl('Not signed in')}</b>
+                    <span class="dim">{tl('This browser keeps its things under its own id only.')}</span>
                   </div>
                 </div>
-                <Show when={s().telegram} fallback={<div class="dim">This server has no Telegram bot set up, so signing in is not on offer here.</div>}>
+                <Show when={s().telegram} fallback={<div class="dim">{tl('This server has no Telegram bot set up, so signing in is not on offer here.')}</div>}>
                   <div class="set-actions">
                     <Show when={invite()} fallback={<span class="dim">{s().bot ? 'Making a link…' : 'The bot has not answered yet.'}</span>}>
                       {(link) => (
@@ -129,17 +130,16 @@ export function AccountCard(props: { onSignedIn?: () => void }) {
                           }}
                         >
                           <Icon name="send" size={13} />
-                          <span>Sign in with Telegram</span>
+                          <span>{tl('Sign in with Telegram')}</span>
                         </a>
                       )}
                     </Show>
                     <Show when={waiting()}>
-                      <span class="warn">Waiting — press “Yes, sign in” in the Telegram chat.</span>
+                      <span class="warn">{tl('Waiting — press “Yes, sign in” in the Telegram chat.')}</span>
                     </Show>
                   </div>
                   <p class="note">
-                    No password and no phone number: the tradoor bot asks you to confirm in Telegram, and your alerts then come to that chat. If you already have an account,
-                    this browser switches to it; anything made here before signing in stays behind.
+                    {tl('No password and no phone number: the tradoor bot asks you to confirm in Telegram, and your alerts then come to that chat. If you already have an account, this browser switches to it; anything made here before signing in stays behind.')}
                   </p>
                 </Show>
               </div>
@@ -151,19 +151,19 @@ export function AccountCard(props: { onSignedIn?: () => void }) {
                   <span class="avatar">{(a().name ?? '?').replace(/^@/, '').slice(0, 1).toUpperCase()}</span>
                   <div class="who">
                     <b>{a().name ?? 'Telegram account'}</b>
-                    <span class="dim">Signed in with Telegram · since {formatDateTime(a().since).slice(0, 10)}</span>
+                    <span class="dim">{tl('Signed in with Telegram · since')} {formatDateTime(a().since).slice(0, 10)}</span>
                   </div>
                   <button class="btn" disabled={leaving()} onClick={() => void signOut()}>
-                    Sign out of this browser
+                    {tl('Sign out of this browser')}
                   </button>
                 </div>
                 <div class="set-username">
                   <div class="set-username-head">
-                    <b>Username</b>
-                    <Show when={username()} fallback={<span class="dim">not chosen yet</span>}>
+                    <b>{tl('Username')}</b>
+                    <Show when={username()} fallback={<span class="dim">{tl('not chosen yet')}</span>}>
                       {(u) => (
                         <span class="uname-kept">
-                          @{u()} <span class="dim">· yours for good</span>
+                          @{u()} <span class="dim">{tl('· yours for good')}</span>
                         </span>
                       )}
                     </Show>
@@ -173,27 +173,25 @@ export function AccountCard(props: { onSignedIn?: () => void }) {
                     fallback={
                       <>
                         <p class="note">
-                          What you go by where others see you, such as the Frost Scripts you share — in place of your Telegram name, so you can stay anonymous. You choose it once: it can never be changed,
-                          and stays with this Telegram account.
+                          {tl('What you go by where others see you, such as the Frost Scripts you share — in place of your Telegram name, so you can stay anonymous. You choose it once: it can never be changed, and stays with this Telegram account.')}
                         </p>
                         <UsernameClaim />
                       </>
                     }
                   >
-                    <p class="note">Shown with the Frost Scripts you share, in place of your Telegram name. It is bound to this Telegram account and cannot be changed.</p>
+                    <p class="note">{tl('Shown with the Frost Scripts you share, in place of your Telegram name. It is bound to this Telegram account and cannot be changed.')}</p>
                   </Show>
                 </div>
                 <div class="set-actions">
                   <span class="dim">
-                    Signed in on {a().devices ?? 1} browser{(a().devices ?? 1) === 1 ? '' : 's'}.
+                    {tl('Signed in on')} {a().devices ?? 1} {tl('browser')}{(a().devices ?? 1) === 1 ? '' : 's'}.
                   </span>
                   <button class="btn" disabled={leaving()} onClick={() => void signOutEverywhere()}>
-                    Sign out everywhere
+                    {tl('Sign out everywhere')}
                   </button>
                 </div>
                 <p class="note">
-                  Sign in on any other browser or device to have the same drawings, journal, layout, watchlists and alerts there. Lost a phone? Sign out everywhere here, or send /signout to the bot
-                  in Telegram.
+                  {tl('Sign in on any other browser or device to have the same drawings, journal, layout, watchlists and alerts there. Lost a phone? Sign out everywhere here, or send /signout to the bot in Telegram.')}
                 </p>
               </div>
             )}

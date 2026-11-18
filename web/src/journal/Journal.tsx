@@ -63,6 +63,7 @@ import {
   type Trade,
   type TradePatch,
 } from './model';
+import { tl } from '../lib/i18n';
 
 type Tab = 'dashboard' | 'history' | 'review';
 const TABS: [Tab, string][] = [
@@ -191,7 +192,7 @@ export function Journal() {
   return (
     <section class="journal">
       <header class="jr-head">
-        <span class="jr-title">Journal</span>
+        <span class="jr-title">{tl('Journal')}</span>
         <Show when={signedIn()}>
           <nav class="chips jr-tabs">
             <For each={TABS}>
@@ -207,10 +208,10 @@ export function Journal() {
         <Show when={signedIn()}>
           <button class="tb" data-tip="Add a trade by hand" onClick={() => setAdding(true)}>
             <Icon name="plus" size={12} />
-            <span>Trade</span>
+            <span>{tl('Trade')}</span>
           </button>
         </Show>
-        <button class="iconbtn" aria-label="Close the journal" data-tip="Back to the charts (Esc)" onClick={() => setJournalOpen(false)}>
+        <button class="iconbtn" aria-label={tl('Close the journal')} data-tip="Back to the charts (Esc)" onClick={() => setJournalOpen(false)}>
           <Icon name="close" size={15} />
         </button>
       </header>
@@ -219,7 +220,7 @@ export function Journal() {
           <div class="banner jr-fail">
             <span>▲ {e()}</span>
             <button class="tb" onClick={() => void refresh()}>
-              Try again
+              {tl('Try again')}
             </button>
           </div>
         )}
@@ -230,10 +231,9 @@ export function Journal() {
             <Show when={!loaded() && tab() !== 'review'}>{waiting()}</Show>
             <Show when={loaded() && trades().length === 0 && tab() !== 'review'}>
               <div class="jr-empty">
-                <p>No trades yet.</p>
+                <p>{tl('No trades yet.')}</p>
                 <p class="muted">
-                  Draw a Long or Short position on a chart (Alt+L, Alt+S): it lands here, and price decides how it went — open at the entry, then the target or the stop. Or
-                  add one by hand.
+                  {tl('Draw a Long or Short position on a chart (Alt+L, Alt+S): it lands here, and price decides how it went — open at the entry, then the target or the stop. Or add one by hand.')}
                 </p>
               </div>
             </Show>
@@ -283,10 +283,9 @@ export function Journal() {
 function SignInFirst(props: { onSignedIn(): void }) {
   return (
     <div class="jr-gate">
-      <h2>Sign in with Telegram to keep a journal</h2>
+      <h2>{tl('Sign in with Telegram to keep a journal')}</h2>
       <p class="muted">
-        Once you are signed in, every Long or Short position you draw on a chart lands here, and price decides how it went — open at the entry, then the target or the stop.
-        The journal is kept with your account, so it follows you to any device you sign in on.
+        {tl('Once you are signed in, every Long or Short position you draw on a chart lands here, and price decides how it went — open at the entry, then the target or the stop. The journal is kept with your account, so it follows you to any device you sign in on.')}
       </p>
       <AccountCard onSignedIn={props.onSignedIn} />
     </div>
@@ -337,76 +336,76 @@ function Dashboard(props: { trades: Trade[]; price: (market: string, v: number |
           </For>
         </div>
         <span class="dim num">
-          {s().closed} closed · {s().open} open · {s().planned} planned
+          {s().closed} {tl('closed ·')} {s().open} {tl('open ·')} {s().planned} {tl('planned')}
         </span>
       </div>
-      <Show when={s().closed > 0} fallback={<p class="jh-none dim">Nothing closed in this period.</p>}>
+      <Show when={s().closed > 0} fallback={<p class="jh-none dim">{tl('Nothing closed in this period.')}</p>}>
         <section class="jx-summary">
           <div class="jx-hero">
             <span class="jx-cap">Net P&L</span>
             <span class={`jx-net ${tone(s().totalPnl)}`}>{money(s().totalPnl)}</span>
             <span class="muted num">
-              {rText(s().totalR)} over {s().closed} trade{s().closed === 1 ? '' : 's'}
+              {rText(s().totalR)} {tl('over')} {s().closed} {tl('trade')}{s().closed === 1 ? '' : 's'}
             </span>
           </div>
           <div class="jx-kpi" data-tip="Trades that made money, of those closed">
-            <span class="jx-cap">Win rate</span>
+            <span class="jx-cap">{tl('Win rate')}</span>
             <span class="jx-value">{s().winRate.toFixed(0)}%</span>
             <div class="jx-meter" role="img" aria-label={`${s().wins} won, ${s().losses} lost, ${s().breakEven} even`}>
               <For each={(['up', 'down', 'even'] as const).filter((k) => share(k) > 0)}>{(k) => <i class={k} style={{ 'flex-grow': share(k) }} />}</For>
             </div>
             <span class="dim num">
-              {s().wins} won · {s().losses} lost · {s().breakEven} even
+              {s().wins} {tl('won ·')} {s().losses} {tl('lost ·')} {s().breakEven} {tl('even')}
             </span>
           </div>
           <div class="jx-kpi" data-tip="What the winners made for each dollar the losers lost; above 1 is making money">
-            <span class="jx-cap">Profit factor</span>
+            <span class="jx-cap">{tl('Profit factor')}</span>
             <span class="jx-value">{s().profitFactor === null ? '—' : s().profitFactor!.toFixed(2)}</span>
             <span class="dim num">
-              {money(s().grossProfit)} won · {money(-s().grossLoss)} lost
+              {money(s().grossProfit)} {tl('won ·')} {money(-s().grossLoss)} {tl('lost')}
             </span>
           </div>
           <div class="jx-kpi" data-tip="What a trade makes on average, in dollars and in what it risked">
-            <span class="jx-cap">Average trade</span>
+            <span class="jx-cap">{tl('Average trade')}</span>
             <span class={`jx-value ${tone(s().expectancy)}`}>{money(s().expectancy)}</span>
-            <span class="dim num">{rText(s().avgR)} a trade</span>
+            <span class="dim num">{rText(s().avgR)} {tl('a trade')}</span>
           </div>
           <div class="jx-kpi" data-tip="The deepest the running total has fallen from a high">
-            <span class="jx-cap">Max drawdown</span>
+            <span class="jx-cap">{tl('Max drawdown')}</span>
             <span class={`jx-value ${s().maxDrawdown > 0 ? 'bear' : ''}`}>{money(-s().maxDrawdown)}</span>
-            <span class="dim">from a high</span>
+            <span class="dim">{tl('from a high')}</span>
           </div>
         </section>
 
         <dl class="jx-facts num">
           <div>
-            <dt>Best trade</dt>
+            <dt>{tl('Best trade')}</dt>
             <dd class={tone(s().best)}>{money(s().best)}</dd>
           </div>
           <div>
-            <dt>Worst trade</dt>
+            <dt>{tl('Worst trade')}</dt>
             <dd class={tone(s().worst)}>{money(s().worst)}</dd>
           </div>
           <div>
-            <dt>Average win</dt>
+            <dt>{tl('Average win')}</dt>
             <dd>{money(s().avgWin)}</dd>
           </div>
           <div>
-            <dt>Average loss</dt>
+            <dt>{tl('Average loss')}</dt>
             <dd>{money(-s().avgLoss)}</dd>
           </div>
           <div>
-            <dt>Streak now</dt>
+            <dt>{tl('Streak now')}</dt>
             <dd class={s().streakKind === 'win' ? 'bull' : s().streakKind === 'loss' ? 'bear' : ''}>{streak()}</dd>
           </div>
           <div>
-            <dt>Average hold</dt>
+            <dt>{tl('Average hold')}</dt>
             <dd>{s().avgHoldHours === null ? '—' : hold(s().avgHoldHours!)}</dd>
           </div>
         </dl>
 
         <section class="jx-box">
-          <h3>Equity</h3>
+          <h3>{tl('Equity')}</h3>
           <Equity trades={list()} />
         </section>
 
@@ -422,9 +421,9 @@ function Dashboard(props: { trades: Trade[]; price: (market: string, v: number |
 
         <section class="jx-box jx-latest">
           <header class="jx-head">
-            <h3>Latest trades</h3>
+            <h3>{tl('Latest trades')}</h3>
             <button class="jx-link" onClick={props.onAll}>
-              All trades
+              {tl('All trades')}
             </button>
           </header>
           <For each={latest()}>{(t) => <Row trade={t} price={props.price} onSelect={props.onSelect} dated />}</For>
@@ -439,7 +438,7 @@ const hold = (hours: number): string => (hours < 1 ? `${Math.round(hours * 60)}m
 function Card(props: { label: string; value: string; sub?: string; tone?: string }) {
   return (
     <div class="jr-card">
-      <span class="cap">{props.label}</span>
+      <span class="cap">{tl(props.label)}</span>
       <span class={`jr-value num ${props.tone ?? ''}`}>{props.value}</span>
       <Show when={props.sub}>
         <span class="dim num">{props.sub}</span>
@@ -542,7 +541,7 @@ function Equity(props: { trades: Trade[] }) {
         </Show>
       </div>
       <div class="jx-eq-x num">
-        <For each={shape().days}>{(d) => <span style={{ left: `${d.x}%` }}>{d.label}</span>}</For>
+        <For each={shape().days}>{(d) => <span style={{ left: `${d.x}%` }}>{tl(d.label)}</span>}</For>
       </div>
     </div>
   );
@@ -595,13 +594,13 @@ function Calendar(props: { trades: Trade[] }) {
   return (
     <div class="jx-cal">
       <div class="jx-cal-head">
-        <button class="iconbtn" aria-label="Previous month" onClick={() => step(-1)}>
+        <button class="iconbtn" aria-label={tl('Previous month')} onClick={() => step(-1)}>
           ‹
         </button>
         <span class="jx-cal-month">
           {MONTHS[month().m]} {month().y}
         </span>
-        <button class="iconbtn" aria-label="Next month" onClick={() => step(1)}>
+        <button class="iconbtn" aria-label={tl('Next month')} onClick={() => step(1)}>
           ›
         </button>
         <span class="grow" />
@@ -617,7 +616,7 @@ function Calendar(props: { trades: Trade[] }) {
       </div>
       <div class="jx-cal-grid">
         <For each={WEEKDAYS}>{(d) => <span class="jx-wd">{d}</span>}</For>
-        <span class="jx-wd">Week</span>
+        <span class="jx-wd">{tl('Week')}</span>
         <For each={weeks()}>
           {(week) => (
             <>
@@ -686,12 +685,12 @@ function Breakdown(props: { trades: Trade[]; onFocus: (f: Focus) => void }) {
   return (
     <>
       <header class="jx-head">
-        <h3>Where it was made</h3>
+        <h3>{tl('Where it was made')}</h3>
         <div class="jh-sides">
           <For each={BREAKDOWNS}>
             {(b) => (
               <button classList={{ on: by().id === b.id }} onClick={() => setBy(b)}>
-                {b.label}
+                {tl(b.label)}
               </button>
             )}
           </For>
@@ -702,8 +701,8 @@ function Breakdown(props: { trades: Trade[]; onFocus: (f: Focus) => void }) {
         <thead>
           <tr>
             <th />
-            <th>Trades</th>
-            <th>Win</th>
+            <th>{tl('Trades')}</th>
+            <th>{tl('Win')}</th>
             <th class="wide" />
             <th>P&L</th>
           </tr>
@@ -840,7 +839,7 @@ function History(props: { trades: Trade[]; price: (market: string, v: number | n
         <Show when={focused()}>
           {(f) => (
             <button class="jh-focus" aria-label={`Show every trade, not only ${f().label}`} data-tip={`Only ${f().by.toLowerCase()} ${f().label}: show every trade`} onClick={() => props.onUnfocus()}>
-              <span class="dim">{f().by}</span> {f().label}
+              <span class="dim">{f().by}</span> {tl(f().label)}
               <Icon name="close" size={11} />
             </button>
           )}
@@ -852,11 +851,11 @@ function History(props: { trades: Trade[]; price: (market: string, v: number | n
           onClick={() => props.onChart(listed())}
         >
           <Icon name="long" size={12} />
-          <span>Show on chart</span>
+          <span>{tl('Show on chart')}</span>
         </button>
         <label class="jh-search">
           <Icon name="search" size={12} />
-          <input placeholder="Search market, strategy, notes" value={query()} onInput={(e) => setQuery(e.currentTarget.value)} />
+          <input placeholder={tl('Search market, strategy, notes')} value={query()} onInput={(e) => setQuery(e.currentTarget.value)} />
         </label>
       </div>
       <div class="jh-list">
@@ -885,7 +884,7 @@ function History(props: { trades: Trade[]; price: (market: string, v: number | n
           )}
         </For>
         <Show when={live().length === 0 && days().length === 0}>
-          <p class="jh-none dim">No trades match.</p>
+          <p class="jh-none dim">{tl('No trades match.')}</p>
         </Show>
       </div>
     </div>
@@ -955,10 +954,10 @@ function held(ms: number): string {
 function PriceField(props: { label: string; value: string; onInput: (v: string) => void; hint?: string; tone?: string; required?: boolean }) {
   return (
     <label class="jd-field">
-      <span class="jd-label">{props.label}</span>
+      <span class="jd-label">{tl(props.label)}</span>
       <input class="jr-in num" inputmode="decimal" required={props.required} value={props.value} onInput={(e) => props.onInput(e.currentTarget.value)} />
-      <Show when={props.hint}>
-        <span class={`jd-hint num ${props.tone ?? 'dim'}`}>{props.hint}</span>
+      <Show when={tl(props.hint)}>
+        <span class={`jd-hint num ${props.tone ?? 'dim'}`}>{tl(props.hint)}</span>
       </Show>
     </label>
   );
@@ -1186,7 +1185,7 @@ function Editor(props: {
           <span class="dim">{venueLabel(t().market)}</span>
           <Badge trade={t()} />
           <span class="grow" />
-          <button class="iconbtn" aria-label="Close" onClick={props.onClose}>
+          <button class="iconbtn" aria-label={tl('Close')} onClick={props.onClose}>
             <Icon name="close" size={15} />
           </button>
         </header>
@@ -1202,7 +1201,7 @@ function Editor(props: {
           </div>
 
           <section class="jd-section">
-            <h3>Plan</h3>
+            <h3>{tl('Plan')}</h3>
             <div class="jd-grid">
               <PriceField label="Entry" value={entry()} onInput={setEntry} />
               <PriceField label="Stop loss" value={stop()} onInput={setStop} hint={fromEntry(stop(), entry())} tone="bear" />
@@ -1218,14 +1217,14 @@ function Editor(props: {
           </section>
 
           <section class="jd-section">
-            <h3>Size</h3>
+            <h3>{tl('Size')}</h3>
             <SizeFields entry={Number(entry())} stop={Number(stop())} target={Number(target())} dir={dir()} coin={coin()} margin={margin()} setMargin={setMargin} leverage={leverage()} setLeverage={setLeverage} legs={legs()}>
               <PriceField label="Fees $" value={fees()} onInput={setFees} />
             </SizeFields>
           </section>
 
           <section class="jd-section">
-            <h3>Outcome</h3>
+            <h3>{tl('Outcome')}</h3>
             <div class="jd-modes">
               <For each={modes()}>
                 {([id, label]) => (
@@ -1252,15 +1251,15 @@ function Editor(props: {
           <section class="jd-section">
             <StrategyPicker value={strategy()} onChange={setStrategy} />
             <label class="jd-field">
-              <span class="jd-label">Notes</span>
-              <textarea class="jr-in" rows={4} placeholder="Setup, emotions, lessons learned…" value={notes()} onInput={(e) => setNotes(e.currentTarget.value)} />
+              <span class="jd-label">{tl('Notes')}</span>
+              <textarea class="jr-in" rows={4} placeholder={tl('Setup, emotions, lessons learned…')} value={notes()} onInput={(e) => setNotes(e.currentTarget.value)} />
             </label>
           </section>
 
           <Show when={t().fills.length > 1 || t().legs.length > 0}>
             <details class="jd-section jd-fills">
               <summary>
-                <h3>Fills</h3>
+                <h3>{tl('Fills')}</h3>
               </summary>
               <ol class="jr-fills num">
                 <For each={t().fills}>
@@ -1304,7 +1303,7 @@ function Editor(props: {
             </button>
             <button class="tb" onClick={openChart}>
               <Icon name="external" size={12} />
-              <span>Open chart</span>
+              <span>{tl('Open chart')}</span>
             </button>
             <span class="grow" />
             <button
@@ -1388,15 +1387,15 @@ function AddTrade(props: { onClose: () => void; onAdd: (t: Trade) => void }) {
     <div class="backdrop" onClick={(e) => e.target === e.currentTarget && props.onClose()}>
       <form class="dialog jr-form" onSubmit={submit}>
         <header class="jr-head">
-          <span class="jr-title">Add a trade</span>
+          <span class="jr-title">{tl('Add a trade')}</span>
           <span class="grow" />
-          <button type="button" class="iconbtn" aria-label="Close" onClick={props.onClose}>
+          <button type="button" class="iconbtn" aria-label={tl('Close')} onClick={props.onClose}>
             <Icon name="close" size={15} />
           </button>
         </header>
         <div class="jr-drawer-body">
           <div class="jr-label">
-            Market
+            {tl('Market')}
             <button type="button" class="jr-in jr-market" data-tip="Search every market, as the chart's symbol search does" onClick={() => setPicking(true)}>
               <span class="sym">{symbolOf(market())}</span>
               <VenueTag market={market()} name />
@@ -1409,7 +1408,7 @@ function AddTrade(props: { onClose: () => void; onAdd: (t: Trade) => void }) {
             <Portal>
               <SymbolSearch
                 initial=""
-                title="Market"
+                title={tl('Market')}
                 current={market()}
                 onClose={() => setPicking(false)}
                 onSelect={(m) => {
@@ -1421,10 +1420,10 @@ function AddTrade(props: { onClose: () => void; onAdd: (t: Trade) => void }) {
           </Show>
           <div class="chips">
             <button type="button" classList={{ on: side() === 'long' }} onClick={() => setSide('long')}>
-              Long
+              {tl('Long')}
             </button>
             <button type="button" classList={{ on: side() === 'short' }} onClick={() => setSide('short')}>
-              Short
+              {tl('Short')}
             </button>
           </div>
           <div class="jd-grid">
@@ -1434,37 +1433,37 @@ function AddTrade(props: { onClose: () => void; onAdd: (t: Trade) => void }) {
           </div>
           <SizeFields entry={Number(entry())} stop={Number(stop())} target={Number(target())} dir={side() === 'long' ? 1 : -1} coin={coinOf(market())} margin={margin()} setMargin={setMargin} leverage={leverage()} setLeverage={setLeverage}>
             <label class="jd-field jd-wide">
-              <span class="jd-label">Entered</span>
+              <span class="jd-label">{tl('Entered')}</span>
               <input class="jr-in" type="datetime-local" value={at()} onInput={(e) => setAt(e.currentTarget.value)} />
             </label>
           </SizeFields>
           <label class="jr-check">
-            <input type="checkbox" checked={closed()} onChange={(e) => setClosed(e.currentTarget.checked)} /> Already closed
+            <input type="checkbox" checked={closed()} onChange={(e) => setClosed(e.currentTarget.checked)} /> {tl('Already closed')}
           </label>
           <Show when={closed()}>
             <div class="jd-grid">
               <PriceField label="Exit price" value={exit()} onInput={setExit} required />
               <label class="jd-field jd-wide">
-                <span class="jd-label">Closed</span>
+                <span class="jd-label">{tl('Closed')}</span>
                 <input class="jr-in" type="datetime-local" value={closedAt()} onInput={(e) => setClosedAt(e.currentTarget.value)} />
               </label>
             </div>
             <Show when={Number(exit()) > 0 && Number(entry()) > 0}>
               <p class="jd-hint num">
-                Comes to <b class={tone(closedTo())}>{money(closedTo())}</b>
+                {tl('Comes to')} <b class={tone(closedTo())}>{money(closedTo())}</b>
               </p>
             </Show>
           </Show>
           <StrategyPicker value={strategy()} onChange={setStrategy} />
           <label class="jr-label">
-            Notes
+            {tl('Notes')}
             <textarea class="jr-in" rows={3} value={notes()} onInput={(e) => setNotes(e.currentTarget.value)} />
           </label>
           <p class="dim jr-note">{closed() ? 'Kept as you set it.' : 'Price decides it from when it was entered, where this market’s prices are read.'}</p>
           <Show when={error()}>{(e) => <p class="bear">{e()}</p>}</Show>
           <div class="jr-actions">
             <button class="tb on" type="submit" disabled={busy()}>
-              Add to the journal
+              {tl('Add to the journal')}
             </button>
           </div>
         </div>
@@ -1519,7 +1518,7 @@ function ReviewTab(props: { trades: Trade[] }) {
               <span class="grow">{w.key.replace('-W', ' · W')}</span>
               <span class="dim">{w.start.slice(5)}</span>
               <Show when={reviews().has(w.key)}>
-                <span class="bull" aria-label="reviewed">
+                <span class="bull" aria-label={tl('reviewed')}>
                   ✓
                 </span>
               </Show>
@@ -1559,7 +1558,7 @@ function ReviewTab(props: { trades: Trade[] }) {
             {state() === 'saving' ? 'Saving…' : 'Save the review'}
           </button>
           <Show when={state() === 'saved'}>
-            <span class="dim">Saved.</span>
+            <span class="dim">{tl('Saved.')}</span>
           </Show>
         </div>
       </div>

@@ -6,6 +6,7 @@
 import { createSignal, For, onCleanup, onMount } from 'solid-js';
 import type { AlertStyle } from '../lib/api';
 import { ColorField } from './ColorField';
+import { tl } from '../lib/i18n';
 
 /** The line every alert has until given another: the theme's alert green, dashed, a pixel wide. */
 const DEFAULT = { color: '#22ab94', dash: 'dashed', width: 1 } as const;
@@ -51,25 +52,25 @@ export function AlertStyleSettings(props: { title: string; style: AlertStyle | u
       }}
     >
       <header>
-        <span class="title">Alert line</span>
+        <span class="title">{tl('Alert line')}</span>
         <span class="spacer" />
         <button class="x" data-tip="Cancel (esc)" onClick={() => props.onCancel()}>
           ✕
         </button>
       </header>
       <div class="dbody">
-        <p class="dnote">{props.title}</p>
+        <p class="dnote">{tl(props.title)}</p>
         <div class="drow">
-          <span class="dlabel">Colour</span>
+          <span class="dlabel">{tl('Colour')}</span>
           <div class="dctl">
-            <ColorField value={style().color ?? DEFAULT.color} title="Colour and opacity" onChange={(color) => set({ ...style(), color })} />
+            <ColorField value={style().color ?? DEFAULT.color} title={tl('Colour and opacity')} onChange={(color) => set({ ...style(), color })} />
           </div>
         </div>
         <div class="drow">
-          <span class="dlabel">Line</span>
+          <span class="dlabel">{tl('Line')}</span>
           <div class="dctl">
             <select class="dinput narrow" data-tip="Thickness" value={String(style().width ?? DEFAULT.width)} onChange={(e) => set({ ...style(), width: Number(e.currentTarget.value) })}>
-              <For each={WIDTHS}>{(w) => <option value={w}>{w}px</option>}</For>
+              <For each={WIDTHS}>{(w) => <option value={w}>{w}{tl('px')}</option>}</For>
             </select>
             <select class="dinput narrow" data-tip="Line style" value={style().dash ?? DEFAULT.dash} onChange={(e) => set({ ...style(), dash: e.currentTarget.value as AlertStyle['dash'] })}>
               <option value="solid">───</option>
@@ -81,14 +82,14 @@ export function AlertStyleSettings(props: { title: string; style: AlertStyle | u
       </div>
       <footer>
         <button class="dbtn" data-tip="The chart's own: green, dashed, a pixel" onClick={() => set({})}>
-          Defaults
+          {tl('Defaults')}
         </button>
         <span class="spacer" />
         <button class="dbtn" onClick={() => props.onCancel()}>
-          Cancel
+          {tl('Cancel')}
         </button>
         <button class="dbtn primary" onClick={ok}>
-          Ok
+          {tl('Ok')}
         </button>
       </footer>
     </div>

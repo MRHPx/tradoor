@@ -50,6 +50,7 @@ import {
   update,
 } from '../workspace/store';
 import { CAPTURE_KEY, chartControllers, closeOverlay, covered, cycleMagnet, isTypingTarget, journalOpen, MAGNET_KEY, mobile, mobileMenu, overlay, panelSteps, setJournalOpen, setOverlay, setTrainingOpen, TOOL_KEYS, TRAINING_CHART, trainingOpen } from './ui';
+import { tl } from '../lib/i18n';
 
 // Dialogs opened now and then load when first opened: nobody needs them to see a chart.
 const SymbolSearch = lazy(() => import('../components/SymbolSearch').then((m) => ({ default: m.SymbolSearch })));
@@ -111,7 +112,7 @@ function commands(): Command[] {
     ['right', 'split right'],
     ['bottom', 'split down'],
   ];
-  for (const type of PANEL_TYPES) for (const [zone, where] of zones) list.push({ group: 'New panel', label: `${PANEL_TITLE[type]} — ${where}`, run: () => addNear(type, zone) });
+  for (const type of PANEL_TYPES) for (const [zone, where] of zones) list.push({ group: 'New panel', label: `${tl(PANEL_TITLE[type])} — ${tl(where)}`, run: () => addNear(type, zone) });
   if (focus) {
     list.push({ group: 'Link', label: 'Unlink this panel', run: () => setPanelLink(focus.id, null) });
     for (const color of LINK_COLORS) list.push({ group: 'Link', label: `Link this panel to ${color}`, run: () => setPanelLink(focus.id, color) });
@@ -401,10 +402,10 @@ function StatusBar() {
         <Icon name="chat" size={13} />
         <span class="dot" aria-hidden="true" />
         <span class="num">{online() || '·'}</span>
-        <span class="lbl">online</span>
+        <span class="lbl">{tl('online')}</span>
       </button>
-      <a class="dc" href="https://discord.gg/c6hhmvXe" target="_blank" rel="noopener" data-tip="tradoor on Discord — come and talk" aria-label="tradoor on Discord" />
-      <a class="gh" href="https://github.com/tradoor-terminal/tradoor" target="_blank" rel="noopener" data-tip="tradoor on GitHub — open source, AGPL-3.0" aria-label="tradoor on GitHub" />
+      <a class="dc" href="https://discord.gg/c6hhmvXe" target="_blank" rel="noopener" data-tip="tradoor on Discord — come and talk" aria-label={tl('tradoor on Discord')} />
+      <a class="gh" href="https://github.com/tradoor-terminal/tradoor" target="_blank" rel="noopener" data-tip="tradoor on GitHub — open source, AGPL-3.0" aria-label={tl('tradoor on GitHub')} />
       <Show when={messengerOpen()}>
         <Messenger onClose={() => setMessengerOpen(false)} />
       </Show>
@@ -545,17 +546,17 @@ export function App() {
           <span>TRADOOR</span>
         </div>
         <button class="item" data-tip="Commands (/ or Ctrl K)" onClick={() => setOverlay({ kind: 'palette' })}>
-          <Icon name="command" size={12} /> <span>Commands</span> <kbd>/</kbd>
+          <Icon name="command" size={12} /> <span>{tl('Commands')}</span> <kbd>/</kbd>
         </button>
         <button class="item" classList={{ on: journalOpen() }} data-tip="Trading journal: every long and short position you draw" onClick={() => (setTrainingOpen(false), setJournalOpen(!journalOpen()))}>
-          <Icon name="pencil" size={12} /> <span>Journal</span>
+          <Icon name="pencil" size={12} /> <span>{tl('Journal')}</span>
         </button>
         <button class="item" classList={{ on: trainingOpen() }} data-tip="Paper trading at live prices" onClick={() => (setJournalOpen(false), setTrainingOpen(!trainingOpen()))}>
-          <Icon name="indicators" size={12} /> <span>Training</span>
+          <Icon name="indicators" size={12} /> <span>{tl('Training')}</span>
         </button>
         <span class="layout-at">
           <button class="item" classList={{ on: topMenu() === 'layouts' }} data-tip={`Layouts: recommended, your own, and as a file — ${doc.name} in use`} onPointerDown={(e) => e.stopPropagation()} onClick={() => toggle('layouts')}>
-            <Icon name="layout" size={12} /> <span>Layouts</span>
+            <Icon name="layout" size={12} /> <span>{tl('Layouts')}</span>
           </button>
           <Show when={topMenu() === 'layouts'}>
             <LayoutsMenu onClose={() => setTopMenu(null)} />
@@ -563,7 +564,7 @@ export function App() {
         </span>
         <span class="spacer" />
         <span class="layout-at end">
-          <button class="item icon" classList={{ on: topMenu() === 'grid' }} data-tip="Charts on screen, and what they keep in step" aria-label="Charts on screen" onPointerDown={(e) => e.stopPropagation()} onClick={() => toggle('grid')}>
+          <button class="item icon" classList={{ on: topMenu() === 'grid' }} data-tip="Charts on screen, and what they keep in step" aria-label={tl('Charts on screen')} onPointerDown={(e) => e.stopPropagation()} onClick={() => toggle('grid')}>
             <LayoutIcon />
           </button>
           <Show when={topMenu() === 'grid'}>
@@ -571,7 +572,7 @@ export function App() {
           </Show>
         </span>
         <button class="item ref-btn" data-tip="Partners: Lighter, Nado, Bybit and Binance" onClick={() => setOverlay({ kind: 'referrals' })}>
-          <Icon name="gift" size={13} /> <span>Rewards</span>
+          <Icon name="gift" size={13} /> <span>{tl('Rewards')}</span>
         </button>
         <Health />
         <button class="item icon alerts-btn" data-tip="Price alerts" onClick={showAlertsPanel}>
@@ -591,11 +592,11 @@ export function App() {
       <main style={{ display: 'flex', 'flex-direction': 'column', 'min-height': '0', overflow: 'hidden', position: 'relative' }}>
         {/* Atop the workspace, inside its row of the shell's grid: shown or not, the rows stay. */}
         <AnnouncementBar />
-        <Show when={engineError()}>{(message) => <div class="banner">▲ Charts cannot be drawn: {message()}</div>}</Show>
+        <Show when={engineError()}>{(message) => <div class="banner">{tl('▲ Charts cannot be drawn:')} {message()}</div>}</Show>
         <Layout />
         {/* Under the journal or training, which cover it the moment their code has arrived. */}
         <Show when={covered()}>
-          <p class="opening muted">Opening…</p>
+          <p class="opening muted">{tl('Opening…')}</p>
         </Show>
         <Show when={journalOpen()}>
           <Journal />

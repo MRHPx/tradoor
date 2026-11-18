@@ -32,6 +32,7 @@ import { formatAlertTime } from '../lib/timezone';
 import { toast } from '../lib/toasts';
 import type { AlertSort, AlertsPanelState } from '../workspace/model';
 import { marketOf, patchPanel, targetChart } from '../workspace/store';
+import { tl } from '../lib/i18n';
 
 const SORTS: { value: AlertSort; label: string }[] = [
   { value: 'newest', label: 'Newest first' },
@@ -176,10 +177,10 @@ export function AlertsPanel(props: { panel: AlertsPanelState }) {
     <div class="panelcol al">
       <div class="al-tabs">
         <button classList={{ on: tab() === 'alerts' }} onClick={() => setTab('alerts')}>
-          Alerts
+          {tl('Alerts')}
         </button>
         <button classList={{ on: tab() === 'log' }} onClick={() => setTab('log')}>
-          Log
+          {tl('Log')}
           <Show when={unread() > 0}>
             <span class="al-badge">{unread()}</span>
           </Show>
@@ -187,7 +188,7 @@ export function AlertsPanel(props: { panel: AlertsPanelState }) {
       </div>
       <Show when={telegramMissing()}>
         <button class="al-notice" onClick={() => setOverlay({ kind: 'settings' })}>
-          ▲ Alerts are not going to Telegram — this browser has no chat linked. Connect it in Settings.
+          {tl('▲ Alerts are not going to Telegram — this browser has no chat linked. Connect it in Settings.')}
         </button>
       </Show>
       <div class="toolbar">
@@ -197,7 +198,7 @@ export function AlertsPanel(props: { panel: AlertsPanelState }) {
           </button>
         </Show>
         <Show when={searching()} fallback={<span class="spacer" />}>
-          <input class="al-search" placeholder="Search" value={query()} ref={(el) => setTimeout(() => el.focus())} onInput={(e) => setQuery(e.currentTarget.value)} onKeyDown={(e) => e.key === 'Escape' && (setQuery(''), setSearching(false))} />
+          <input class="al-search" placeholder={tl('Search')} value={query()} ref={(el) => setTimeout(() => el.focus())} onInput={(e) => setQuery(e.currentTarget.value)} onKeyDown={(e) => e.key === 'Escape' && (setQuery(''), setSearching(false))} />
         </Show>
         <button class="iconbtn" classList={{ on: searching() }} data-tip="Search" onClick={() => (setSearching(!searching()), setQuery(''))}>
           <Icon name="search" size={13} />
@@ -218,13 +219,13 @@ export function AlertsPanel(props: { panel: AlertsPanelState }) {
           <Show when={menu()}>
             <div class="menu" style={{ right: '0', top: '24px' }} onPointerDown={(e) => e.stopPropagation()}>
               <button disabled={!stopped()} onClick={restartTriggered}>
-                Restart all triggered
+                {tl('Restart all triggered')}
               </button>
               <button disabled={!stopped()} onClick={deleteTriggered}>
-                Delete all triggered
+                {tl('Delete all triggered')}
               </button>
               <button disabled={!alertState.log.length} onClick={clearLog}>
-                Clear log
+                {tl('Clear log')}
               </button>
               <hr />
               <button
@@ -234,7 +235,7 @@ export function AlertsPanel(props: { panel: AlertsPanelState }) {
                   run(() => clearAlerts('all'), 'Alerts not deleted')();
                 }}
               >
-                Delete all alerts
+                {tl('Delete all alerts')}
               </button>
             </div>
           </Show>
@@ -247,7 +248,7 @@ export function AlertsPanel(props: { panel: AlertsPanelState }) {
           <span>{alertState.log.length === 1 ? '1 entry' : `${alertState.log.length} entries`}</span>
           <button class="del" onClick={clearLog}>
             <Icon name="trash" size={12} />
-            <span>Clear log</span>
+            <span>{tl('Clear log')}</span>
           </button>
         </div>
       </Show>
@@ -265,22 +266,22 @@ export function AlertsPanel(props: { panel: AlertsPanelState }) {
               {f().id === null ? 'New alert' : 'Edit alert'} · <MarketTag market={f().market} />
             </div>
             <label>
-              Condition
+              {tl('Condition')}
               <select value={f().condition} onChange={(e) => setForm({ ...f(), condition: e.currentTarget.value as AlertCondition })}>
-                <For each={CONDITIONS}>{(c) => <option value={c.value}>{c.label}</option>}</For>
+                <For each={CONDITIONS}>{(c) => <option value={c.value}>{tl(c.label)}</option>}</For>
               </select>
             </label>
             <label>
-              Price
+              {tl('Price')}
               <input inputmode="decimal" value={f().price} onInput={(e) => setForm({ ...f(), price: e.currentTarget.value })} />
             </label>
             <label>
-              Message
-              <input placeholder="Optional" maxLength={280} value={f().message} onInput={(e) => setForm({ ...f(), message: e.currentTarget.value })} />
+              {tl('Message')}
+              <input placeholder={tl('Optional')} maxLength={280} value={f().message} onInput={(e) => setForm({ ...f(), message: e.currentTarget.value })} />
             </label>
             <div class="al-form-actions">
               <button type="button" class="tb" onClick={() => setForm(null)}>
-                Cancel
+                {tl('Cancel')}
               </button>
               <button type="submit" class="tb on">
                 {f().id === null ? 'Create' : 'Save'}
@@ -305,8 +306,8 @@ export function AlertsPanel(props: { panel: AlertsPanelState }) {
                 <div class="al-sub">
                   <MarketTag market={a.market} />
                   <span class="dim">•</span>
-                  <Show when={a.active} fallback={<span class="al-state stopped">Stopped — Triggered</span>}>
-                    <span class="al-state active">Active</span>
+                  <Show when={a.active} fallback={<span class="al-state stopped">{tl('Stopped — Triggered')}</span>}>
+                    <span class="al-state active">{tl('Active')}</span>
                   </Show>
                   <Show when={!a.active && a.triggeredAt}>
                     <span class="dim">• {formatAlertTime(a.triggeredAt!)}</span>
@@ -314,14 +315,14 @@ export function AlertsPanel(props: { panel: AlertsPanelState }) {
                 </div>
                 <div class="al-actions" onClick={(e) => e.stopPropagation()}>
                   <Show when={!a.active}>
-                    <button data-tip="Restart" aria-label="Restart" onClick={() => restartAlert(a.id).catch(failed('Alert not restarted'))}>
+                    <button data-tip="Restart" aria-label={tl('Restart')} onClick={() => restartAlert(a.id).catch(failed('Alert not restarted'))}>
                       <Icon name="reset" size={13} />
                     </button>
                   </Show>
-                  <button data-tip="Edit" aria-label="Edit" onClick={() => edit(a)}>
+                  <button data-tip="Edit" aria-label={tl('Edit')} onClick={() => edit(a)}>
                     <Icon name="pencil" size={13} />
                   </button>
-                  <button class="del" data-tip="Delete" aria-label="Delete" onClick={() => deleteAlert(a.id).catch(failed('Alert not deleted'))}>
+                  <button class="del" data-tip="Delete" aria-label={tl('Delete')} onClick={() => deleteAlert(a.id).catch(failed('Alert not deleted'))}>
                     <Icon name="trash" size={13} />
                   </button>
                 </div>
@@ -330,7 +331,7 @@ export function AlertsPanel(props: { panel: AlertsPanelState }) {
           </For>
         </Show>
         <Show when={tab() === 'log'}>
-          <For each={log()} fallback={<div class="empty">Nothing has triggered yet.</div>}>
+          <For each={log()} fallback={<div class="empty">{tl('Nothing has triggered yet.')}</div>}>
             {(l) => (
               <div class="al-row" onClick={() => openMarket(l.market)}>
                 <div class="al-title">
@@ -344,7 +345,7 @@ export function AlertsPanel(props: { panel: AlertsPanelState }) {
                   <MarketTag market={l.market} />
                   <span class="dim">•</span>
                   <span>
-                    {conditionLabel(l.condition)} at {formatPrice(l.value, digitsFor(l.market, l.value))}
+                    {conditionLabel(l.condition)} {tl('at')} {formatPrice(l.value, digitsFor(l.market, l.value))}
                   </span>
                   <span class="dim">• {formatAlertTime(l.time)}</span>
                 </div>

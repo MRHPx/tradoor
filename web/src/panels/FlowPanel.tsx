@@ -26,6 +26,7 @@ import { formatClock, formatDateTime } from '../lib/timezone';
 import { toast } from '../lib/toasts';
 import type { FlowPanelState } from '../workspace/model';
 import { patchPanel } from '../workspace/store';
+import { tl } from '../lib/i18n';
 
 /** How often the flow is asked for again: the server weighs it this often too. */
 const POLL_MS = 5_000;
@@ -223,7 +224,7 @@ export function FlowPanel(props: { panel: FlowPanelState }) {
     <div class="panelcol flow">
       <div class="toolbar">
         <span class="caps" style={{ padding: '0 4px' }}>
-          Flow
+          {tl('Flow')}
         </span>
         <span class="fl-chips" ref={chips}>
           <For each={coins()}>
@@ -311,7 +312,7 @@ export function FlowPanel(props: { panel: FlowPanelState }) {
               <For each={SPANS}>
                 {(s, i) => (
                   <button class="tb" classList={{ on: i() === 0 }} type="submit" value={s.span} disabled={busy()} data-tip={`Follow it ${s.told}`}>
-                    {s.label}
+                    {tl(s.label)}
                   </button>
                 )}
               </For>
@@ -336,7 +337,7 @@ export function FlowPanel(props: { panel: FlowPanelState }) {
             <span class="grow">
               {c().until === null ? `You follow ${c().coin} until you stop it` : `You follow ${c().coin} for ${left(c().until!, now())} more`}
             </span>
-            <span class="dim">Keep</span>
+            <span class="dim">{tl('Keep')}</span>
             <For each={SPANS}>
               {(s) => (
                 <button
@@ -346,12 +347,12 @@ export function FlowPanel(props: { panel: FlowPanelState }) {
                   disabled={busy()}
                   onClick={() => void follow(c().coin, s.span)}
                 >
-                  {s.label}
+                  {tl(s.label)}
                 </button>
               )}
             </For>
             <button class="tb danger" data-tip="Stop following it now" onClick={() => void stop(c().coin)}>
-              Stop
+              {tl('Stop')}
             </button>
           </div>
         )}
@@ -359,7 +360,7 @@ export function FlowPanel(props: { panel: FlowPanelState }) {
 
       <Show when={settings()}>
         <div class="menu fl-menu" onPointerDown={(e) => e.stopPropagation()}>
-          <div class="cap">Tell me when a minute’s flow passes</div>
+          <div class="cap">{tl('Tell me when a minute’s flow passes')}</div>
           <For each={markets()} fallback={<div class="empty">{error() ?? 'This server follows no market’s flow.'}</div>}>
             {(m) => (
               <div class="row">
@@ -399,18 +400,18 @@ export function FlowPanel(props: { panel: FlowPanelState }) {
               </div>
             )}
           </For>
-          <div class="cap note">A market stays quiet after a crossing until its flow falls back to half that size, so one push does not ring over.</div>
+          <div class="cap note">{tl('A market stays quiet after a crossing until its flow falls back to half that size, so one push does not ring over.')}</div>
         </div>
       </Show>
 
       <div class="flow-table">
         <div class="flow-head">
-          <span>{shown()} · net taker flow</span>
-          <span class="r">1m</span>
-          <span class="r">1h</span>
-          <span class="r">4h</span>
-          <span class="r">12h</span>
-          <span class="r">24h</span>
+          <span>{shown()} {tl('· net taker flow')}</span>
+          <span class="r">{tl('1m')}</span>
+          <span class="r">{tl('1h')}</span>
+          <span class="r">{tl('4h')}</span>
+          <span class="r">{tl('12h')}</span>
+          <span class="r">{tl('24h')}</span>
         </div>
         <For each={markets()} fallback={<div class="empty">{error() ?? 'This server follows no market’s flow.'}</div>}>
           {(m) => (
@@ -427,7 +428,7 @@ export function FlowPanel(props: { panel: FlowPanelState }) {
       </div>
 
       <div class="flow-sub">
-        <span>Crossings</span>
+        <span>{tl('Crossings')}</span>
         <span class="dim">{told() ? `${told()} market${told() > 1 ? 's' : ''} watched · 48h` : 'none set'}</span>
       </div>
       <div class="scroll">

@@ -49,6 +49,7 @@ import {
   type Position,
   type State,
 } from './model';
+import { tl } from '../lib/i18n';
 
 /** The chart's own settings, kept in this browser: its coin, indicators and view. */
 const PANEL_KEY = 'trainingChart';
@@ -252,9 +253,9 @@ export function Training(props: { chart: typeof ChartPanel }) {
           </button>
         )}
       </For>
-      <span class="dim tr-venue">Binance perp</span>
+      <span class="dim tr-venue">{tl('Binance perp')}</span>
       <span class="sep" />
-      <span class="tb num on">1m</span>
+      <span class="tb num on">{tl('1m')}</span>
       <span class="sep" />
       <button class="tb tr-dom-toggle" classList={{ on: domShown() }} data-tip="The order book beside the chart: click a bid or an ask to rest an order there" onClick={() => setDomShown((v) => !v)}>
         DOM
@@ -286,16 +287,16 @@ export function Training(props: { chart: typeof ChartPanel }) {
                   <b class={p().side === 'long' ? 'bull' : 'bear'}>
                     {p().side === 'long' ? '▲' : '▼'} {coinOf(p().symbol)} {p().side} {p().leverage}×
                   </b>
-                  <span class="dim">open</span>
+                  <span class="dim">{tl('open')}</span>
                 </div>
                 <div>
-                  <span class="dim">Entry</span> {fmt(p().entry, d)} <span class="dim">{stamp(p().openedAt)}</span>
+                  <span class="dim">{tl('Entry')}</span> {fmt(p().entry, d)} <span class="dim">{stamp(p().openedAt)}</span>
                 </div>
                 <div>
-                  <span class="dim">Size</span> {coins(p().qty)} {coinOf(p().symbol)} · <span class="dim">margin</span> {usd(p().margin)}
+                  <span class="dim">{tl('Size')}</span> {coins(p().qty)} {coinOf(p().symbol)} · <span class="dim">{tl('margin')}</span> {usd(p().margin)}
                 </div>
                 <div>
-                  <span class="dim">Now</span> <b classList={{ bull: made() > 0, bear: made() < 0 }}>{money(made())}</b> ({percent(roe(p(), priceOf(p().symbol) ?? p().entry))})
+                  <span class="dim">{tl('Now')}</span> <b classList={{ bull: made() > 0, bear: made() < 0 }}>{money(made())}</b> ({percent(roe(p(), priceOf(p().symbol) ?? p().entry))})
                 </div>
               </div>
             );
@@ -311,17 +312,17 @@ export function Training(props: { chart: typeof ChartPanel }) {
                 <span class="dim">{REASON_LABEL[t.reason]}</span>
               </div>
               <div>
-                <span class="dim">Entry</span> {fmt(t.entry, d)} <span class="dim">{stamp(t.openedAt)}</span>
+                <span class="dim">{tl('Entry')}</span> {fmt(t.entry, d)} <span class="dim">{stamp(t.openedAt)}</span>
               </div>
               <div>
-                <span class="dim">Exit</span> {fmt(t.exit, d)} <span class="dim">{stamp(t.closedAt)}</span>
+                <span class="dim">{tl('Exit')}</span> {fmt(t.exit, d)} <span class="dim">{stamp(t.closedAt)}</span>
               </div>
               <div>
-                <span class="dim">Size</span> {coins(t.qty)} {coinOf(t.symbol)} · <span class="dim">margin</span> {usd(t.margin)}
+                <span class="dim">{tl('Size')}</span> {coins(t.qty)} {coinOf(t.symbol)} · <span class="dim">{tl('margin')}</span> {usd(t.margin)}
               </div>
               <div>
-                <span class="dim">Net</span> <b classList={{ bull: t.net > 0, bear: t.net < 0 }}>{money(t.net)}</b> ({percent(t.margin > 0 ? t.net / t.margin : 0)}) ·{' '}
-                <span class="dim">fees</span> {usd(t.fees)}
+                <span class="dim">{tl('Net')}</span> <b classList={{ bull: t.net > 0, bear: t.net < 0 }}>{money(t.net)}</b> ({percent(t.margin > 0 ? t.net / t.margin : 0)}) ·{' '}
+                <span class="dim">{tl('fees')}</span> {usd(t.fees)}
               </div>
             </div>
           )}
@@ -353,20 +354,20 @@ export function Training(props: { chart: typeof ChartPanel }) {
   return (
     <section class="journal training">
       <header class="jr-head">
-        <span class="jr-title">Training</span>
+        <span class="jr-title">{tl('Training')}</span>
         <Show when={signedIn() && state() && value()}>
           {(_) => (
             <span class="tr-worth num">
               <span>
-                <span class="dim">Equity</span> {usd(value()!.equity)}
+                <span class="dim">{tl('Equity')}</span> {usd(value()!.equity)}
               </span>
               <span classList={{ bull: value()!.unrealized > 0, bear: value()!.unrealized < 0 }}>
-                <span class="dim">Unrealized</span> {money(value()!.unrealized)}
+                <span class="dim">{tl('Unrealized')}</span> {money(value()!.unrealized)}
               </span>
               <span>
-                <span class="dim">Available</span> {usd(value()!.available)}
+                <span class="dim">{tl('Available')}</span> {usd(value()!.available)}
               </span>
-              <span class="dim">Run {state()!.run}</span>
+              <span class="dim">{tl('Run')} {state()!.run}</span>
             </span>
           )}
         </Show>
@@ -377,7 +378,7 @@ export function Training(props: { chart: typeof ChartPanel }) {
             <span>{sure() ? 'Reset to 100,000?' : 'Reset'}</span>
           </button>
         </Show>
-        <button class="iconbtn" aria-label="Close training" data-tip="Back to the charts" onClick={() => setTrainingOpen(false)}>
+        <button class="iconbtn" aria-label={tl('Close training')} data-tip="Back to the charts" onClick={() => setTrainingOpen(false)}>
           <Icon name="close" size={15} />
         </button>
       </header>
@@ -390,7 +391,7 @@ export function Training(props: { chart: typeof ChartPanel }) {
                 <div class="banner jr-fail">
                   <span>▲ {e()}</span>
                   <button class="tb" onClick={() => void readAccount()}>
-                    Try again
+                    {tl('Try again')}
                   </button>
                 </div>
               )}
@@ -404,10 +405,9 @@ export function Training(props: { chart: typeof ChartPanel }) {
           fallback={
             <div class="jr-body">
               <div class="jr-gate">
-                <h2>Sign in with Telegram to train</h2>
+                <h2>{tl('Sign in with Telegram to train')}</h2>
                 <p class="muted">
-                  Training trades Binance's BTC, ETH and SOL perpetuals at their live prices, with 100,000 USDT to start and up to 100x: market and limit orders, long and short, a take profit and stop loss,
-                  liquidation, fees and funding as Binance has them. Every trade is kept with your account, to look back on.
+                  {tl('Training trades Binance\'s BTC, ETH and SOL perpetuals at their live prices, with 100,000 USDT to start and up to 100x: market and limit orders, long and short, a take profit and stop loss, liquidation, fees and funding as Binance has them. Every trade is kept with your account, to look back on.')}
                 </p>
                 <AccountCard onSignedIn={() => void readAccount()} />
               </div>
@@ -427,16 +427,16 @@ export function Training(props: { chart: typeof ChartPanel }) {
             <div class="tr-tabs">
               <nav class="chips jr-tabs">
                 <button classList={{ on: tab() === 'positions' }} onClick={() => setTab('positions')}>
-                  Positions <span class="dim">{state()?.positions.length ?? 0}</span>
+                  {tl('Positions')} <span class="dim">{state()?.positions.length ?? 0}</span>
                 </button>
                 <button classList={{ on: tab() === 'orders' }} onClick={() => setTab('orders')}>
-                  Orders <span class="dim">{state()?.orders.length ?? 0}</span>
+                  {tl('Orders')} <span class="dim">{state()?.orders.length ?? 0}</span>
                 </button>
                 <button classList={{ on: tab() === 'history' }} onClick={() => setTab('history')}>
-                  History
+                  {tl('History')}
                 </button>
                 <button classList={{ on: tab() === 'stats' }} onClick={() => setTab('stats')}>
-                  Statistics
+                  {tl('Statistics')}
                 </button>
               </nav>
               <div class="tr-tab">
@@ -531,15 +531,15 @@ function Ticket(props: {
       </div>
       <div class="chips tr-types">
         <button classList={{ on: type() === 'market' }} onClick={() => setType('market')}>
-          Market
+          {tl('Market')}
         </button>
         <button classList={{ on: type() === 'limit' }} onClick={() => setType('limit')}>
-          Limit
+          {tl('Limit')}
         </button>
       </div>
       <label class="tfield">
         <span class="tlabel">
-          Leverage <b class="num">{lev()}×</b>
+          {tl('Leverage')} <b class="num">{lev()}×</b>
         </span>
         <input
           type="range"
@@ -554,15 +554,15 @@ function Ticket(props: {
       </label>
       <Show when={type() === 'limit'}>
         <label class="tfield">
-          <span class="tlabel">Price</span>
+          <span class="tlabel">{tl('Price')}</span>
           <input class="dinput num" type="number" inputmode="decimal" step={10 ** -props.decimals} placeholder={fmt(last(), props.decimals).replace(/,/g, '')} value={limit()} onFocus={() => !limit() && setLimit(String(last() ?? ''))} onInput={(e) => setLimit(e.currentTarget.value)} />
         </label>
       </Show>
       <label class="tfield">
-        <span class="tlabel">Size (USDT)</span>
+        <span class="tlabel">{tl('Size (USDT)')}</span>
         <input class="dinput num" type="number" inputmode="decimal" min="0" placeholder="0" value={size()} onInput={(e) => setSize(e.currentTarget.value)} />
         <span class="thint num">
-          {coins(qty())} {coinOf(props.symbol)} · margin {usd(margin())}
+          {coins(qty())} {coinOf(props.symbol)} {tl('· margin')} {usd(margin())}
         </span>
       </label>
       <div class="chips tr-steps">
@@ -581,30 +581,30 @@ function Ticket(props: {
       <Show when={exits()}>
         <div class="tgrid two">
           <label class="tfield">
-            <span class="tlabel">Take profit</span>
+            <span class="tlabel">{tl('Take profit')}</span>
             <input class="dinput num" type="number" inputmode="decimal" step={10 ** -props.decimals} value={tp()} onInput={(e) => setTp(e.currentTarget.value)} />
           </label>
           <label class="tfield">
-            <span class="tlabel">Stop loss</span>
+            <span class="tlabel">{tl('Stop loss')}</span>
             <input class="dinput num" type="number" inputmode="decimal" step={10 ** -props.decimals} value={sl()} onInput={(e) => setSl(e.currentTarget.value)} />
           </label>
         </div>
       </Show>
       <div class="tr-sides">
         <button class="tr-buy" disabled={props.busy || !(notional() > 0)} onClick={() => place(true)}>
-          <span>Buy / Long</span>
-          <span class="num">liq {fmt(liquidationAt('long', at(), lev(), mmr()), props.decimals)}</span>
+          <span>{tl('Buy / Long')}</span>
+          <span class="num">{tl('liq')} {fmt(liquidationAt('long', at(), lev(), mmr()), props.decimals)}</span>
         </button>
         <button class="tr-sell" disabled={props.busy || !(notional() > 0)} onClick={() => place(false)}>
-          <span>Sell / Short</span>
-          <span class="num">liq {fmt(liquidationAt('short', at(), lev(), mmr()), props.decimals)}</span>
+          <span>{tl('Sell / Short')}</span>
+          <span class="num">{tl('liq')} {fmt(liquidationAt('short', at(), lev(), mmr()), props.decimals)}</span>
         </button>
       </div>
       <p class="tnote num">
-        Available {usd(props.available)} · fee ≈ {usd(fee())}
+        {tl('Available')} {usd(props.available)} {tl('· fee ≈')} {usd(fee())}
         <Show when={props.state?.quotes[props.symbol]?.nextFunding}>
           {' '}
-          · funding {percent(props.state!.quotes[props.symbol]!.funding)} at {stamp(props.state!.quotes[props.symbol]!.nextFunding).slice(6)}
+          {tl('· funding')} {percent(props.state!.quotes[props.symbol]!.funding)} {tl('at')} {stamp(props.state!.quotes[props.symbol]!.nextFunding).slice(6)}
         </Show>
       </p>
       <Show when={props.error}>{(e) => <p class="bear tnote">{e()}</p>}</Show>
@@ -637,18 +637,18 @@ function Positions(props: {
       setEditing(null);
     });
   return (
-    <Show when={(props.state?.positions.length ?? 0) > 0} fallback={<p class="jr-empty muted">No open position. Pick a coin on the chart and place an order.</p>}>
+    <Show when={(props.state?.positions.length ?? 0) > 0} fallback={<p class="jr-empty muted">{tl('No open position. Pick a coin on the chart and place an order.')}</p>}>
       <div class="tr-table">
         <table class="jr-table num">
           <thead>
             <tr>
-              <th>Coin</th>
-              <th>Size</th>
-              <th>Entry</th>
-              <th>Mark</th>
-              <th>Liq.</th>
-              <th>Margin</th>
-              <th>PnL (ROE)</th>
+              <th>{tl('Coin')}</th>
+              <th>{tl('Size')}</th>
+              <th>{tl('Entry')}</th>
+              <th>{tl('Mark')}</th>
+              <th>{tl('Liq.')}</th>
+              <th>{tl('Margin')}</th>
+              <th>{tl('PnL (ROE)')}</th>
               <th>TP / SL</th>
               <th />
             </tr>
@@ -693,25 +693,25 @@ function Positions(props: {
                           50%
                         </button>
                         <button class="tb" disabled={props.busy} data-tip={`Close it and open as much ${p().side === 'long' ? 'short' : 'long'} at the market, with no TP / SL`} onClick={() => void props.act(() => trainingApi.reverse(symbol))}>
-                          Reverse
+                          {tl('Reverse')}
                         </button>
                         <button class="tb" disabled={props.busy} data-tip="Close it all at the market" onClick={() => void props.act(() => trainingApi.close(symbol))}>
-                          Close
+                          {tl('Close')}
                         </button>
                       </td>
                     </tr>
                     <Show when={editing() === symbol}>
                       <tr class="tr-edit">
                         <td colSpan={9}>
-                          <span class="dim">Take profit</span>
-                          <input class="dinput num" type="number" inputmode="decimal" step={10 ** -d()} value={tp()} placeholder="none" onInput={(e) => setTp(e.currentTarget.value)} />
-                          <span class="dim">Stop loss</span>
-                          <input class="dinput num" type="number" inputmode="decimal" step={10 ** -d()} value={sl()} placeholder="none" onInput={(e) => setSl(e.currentTarget.value)} />
+                          <span class="dim">{tl('Take profit')}</span>
+                          <input class="dinput num" type="number" inputmode="decimal" step={10 ** -d()} value={tp()} placeholder={tl('none')} onInput={(e) => setTp(e.currentTarget.value)} />
+                          <span class="dim">{tl('Stop loss')}</span>
+                          <input class="dinput num" type="number" inputmode="decimal" step={10 ** -d()} value={sl()} placeholder={tl('none')} onInput={(e) => setSl(e.currentTarget.value)} />
                           <button class="tb on" disabled={props.busy} onClick={() => saveExits(p())}>
-                            Save
+                            {tl('Save')}
                           </button>
                           <button class="tb" onClick={() => setEditing(null)}>
-                            Cancel
+                            {tl('Cancel')}
                           </button>
                         </td>
                       </tr>
@@ -729,16 +729,16 @@ function Positions(props: {
 
 function Orders(props: { state: State | null; decimals: (s: string) => number; busy: boolean; act: (run: () => Promise<unknown>) => Promise<boolean> }) {
   return (
-    <Show when={(props.state?.orders.length ?? 0) > 0} fallback={<p class="jr-empty muted">No resting order. A limit order waits here until the price reaches it.</p>}>
+    <Show when={(props.state?.orders.length ?? 0) > 0} fallback={<p class="jr-empty muted">{tl('No resting order. A limit order waits here until the price reaches it.')}</p>}>
       <div class="tr-table">
         <table class="jr-table num">
           <thead>
             <tr>
-              <th>Placed</th>
-              <th>Coin</th>
-              <th>Side</th>
-              <th>Price</th>
-              <th>Size</th>
+              <th>{tl('Placed')}</th>
+              <th>{tl('Coin')}</th>
+              <th>{tl('Side')}</th>
+              <th>{tl('Price')}</th>
+              <th>{tl('Size')}</th>
               <th>TP / SL</th>
               <th />
             </tr>
@@ -752,7 +752,7 @@ function Orders(props: { state: State | null; decimals: (s: string) => number; b
                   <tr>
                     <td>{stamp(o.createdAt)}</td>
                     <td>{coinOf(o.symbol)}</td>
-                    <td class={o.side === 'buy' ? 'bull' : 'bear'}>{o.side === 'buy' ? 'Buy' : 'Sell'} limit</td>
+                    <td class={o.side === 'buy' ? 'bull' : 'bear'}>{o.side === 'buy' ? 'Buy' : 'Sell'} {tl('limit')}</td>
                     <td>{fmt(o.price, props.decimals(o.symbol))}</td>
                     <td>
                       {coins(o.qty)} <span class="dim">{usd(o.qty * o.price)}</span>
@@ -762,7 +762,7 @@ function Orders(props: { state: State | null; decimals: (s: string) => number; b
                     </td>
                     <td class="tr-actions">
                       <button class="tb" disabled={props.busy} onClick={() => void props.act(() => trainingApi.cancel(o.id))}>
-                        Cancel
+                        {tl('Cancel')}
                       </button>
                     </td>
                   </tr>
@@ -778,20 +778,20 @@ function Orders(props: { state: State | null; decimals: (s: string) => number; b
 
 function Trades(props: { trades: ClosedTrade[]; decimals: (s: string) => number }) {
   return (
-    <Show when={props.trades.length > 0} fallback={<p class="jr-empty muted">No trade closed in this run yet.</p>}>
+    <Show when={props.trades.length > 0} fallback={<p class="jr-empty muted">{tl('No trade closed in this run yet.')}</p>}>
       <div class="tr-table">
         <table class="jr-table num">
           <thead>
             <tr>
-              <th>Closed</th>
-              <th>Coin</th>
-              <th>Size</th>
-              <th>Entry</th>
-              <th>Exit</th>
-              <th>How</th>
-              <th>Fees</th>
-              <th>Funding</th>
-              <th>Net (on margin)</th>
+              <th>{tl('Closed')}</th>
+              <th>{tl('Coin')}</th>
+              <th>{tl('Size')}</th>
+              <th>{tl('Entry')}</th>
+              <th>{tl('Exit')}</th>
+              <th>{tl('How')}</th>
+              <th>{tl('Fees')}</th>
+              <th>{tl('Funding')}</th>
+              <th>{tl('Net (on margin)')}</th>
             </tr>
           </thead>
           <tbody>
@@ -871,7 +871,7 @@ function Statistics(props: { history: History | null; onRun: (run: number) => vo
   return (
     <div class="tr-stats">
       <div class="tr-runs">
-        <span class="dim">Run</span>
+        <span class="dim">{tl('Run')}</span>
         <select class="dinput" value={props.history?.run ?? ''} onChange={(e) => props.onRun(Number(e.currentTarget.value))}>
           <For each={runs()}>
             {(r) => (
@@ -883,7 +883,7 @@ function Statistics(props: { history: History | null; onRun: (run: number) => vo
           </For>
         </select>
       </div>
-      <Show when={s().closed > 0} fallback={<p class="jr-empty muted">No trade closed in this run yet: the statistics fill in as trades close.</p>}>
+      <Show when={s().closed > 0} fallback={<p class="jr-empty muted">{tl('No trade closed in this run yet: the statistics fill in as trades close.')}</p>}>
         <div class="tr-cards num">
           <For each={cards()}>
             {([label, v, tone]) => (
@@ -905,9 +905,9 @@ function Statistics(props: { history: History | null; onRun: (run: number) => vo
                 <thead>
                   <tr>
                     <th>{title}</th>
-                    <th>Trades</th>
-                    <th>Win rate</th>
-                    <th>Net</th>
+                    <th>{tl('Trades')}</th>
+                    <th>{tl('Win rate')}</th>
+                    <th>{tl('Net')}</th>
                   </tr>
                 </thead>
                 <tbody>

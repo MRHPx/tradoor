@@ -4,6 +4,7 @@ import { Icon } from '../lib/icons';
 import { VenueTag } from '../lib/exchanges';
 import { symbolOf } from '../lib/markets';
 import { TIMEFRAMES } from '../lib/timeframes';
+import { tl } from '../lib/i18n';
 
 /** The ticker, which opens symbol search, and its venue — left out where a panel spans every venue. */
 export function MarketButton(props: { panelId: string; market: string; venue?: boolean }) {
@@ -24,7 +25,7 @@ export function TimeframeSelect(props: { value: string; onChange(tf: string): vo
       <For each={TIMEFRAMES.filter((t) => props.allow?.(t.value) ?? true)}>
         {(t) => (
           <option value={t.value} selected={t.value === props.value}>
-            {t.label}
+            {tl(t.label)}
           </option>
         )}
       </For>

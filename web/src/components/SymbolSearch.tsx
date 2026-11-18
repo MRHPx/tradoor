@@ -10,6 +10,7 @@ import { formatPct, formatPrice, formatTurnover, priceDecimals } from '../lib/fo
 import { ExchangeLogo, exchangeOfVenue, LIVE_EXCHANGES, type ExchangeId } from '../lib/exchanges';
 import { isChartMarket, isMarket, ratioOf, symbolOf, venueLabel } from '../lib/markets';
 import { popularity, rank, type Kind, type Sort } from '../lib/symbol-rank';
+import { tl } from '../lib/i18n';
 
 const EXCHANGE_IDS = LIVE_EXCHANGES.map((e) => e.id);
 
@@ -161,18 +162,18 @@ export function SymbolSearch(props: {
             <For each={SORTS}>
               {(o) => (
                 <button classList={{ on: sort() === o.id }} data-tip={o.tip} onClick={() => setSort(o.id)}>
-                  {o.label}
+                  {tl(o.label)}
                 </button>
               )}
             </For>
           </div>
           <button class="x" onClick={() => props.onClose()}>
-            esc ✕
+            {tl('esc ✕')}
           </button>
         </header>
         <div ref={list} class="list">
-          <Show when={markets.state !== 'errored'} fallback={<div class="empty warn">▲ The market list is unavailable: {errorText(markets.error)}. A market typed as venue:SYMBOL — binance-perp:BTCUSDT — still opens with Enter.</div>}>
-            <Show when={markets.state === 'ready'} fallback={<div class="empty">Loading markets from every venue…</div>}>
+          <Show when={markets.state !== 'errored'} fallback={<div class="empty warn">{tl('▲ The market list is unavailable:')} {errorText(markets.error)}. A market typed as venue:SYMBOL — binance-perp:BTCUSDT — still opens with Enter.</div>}>
+            <Show when={markets.state === 'ready'} fallback={<div class="empty">{tl('Loading markets from every venue…')}</div>}>
               <Show when={pair()}>
                 {(p) => (
                   <div class="row ratio" classList={{ cur: cursor() === 0 }} data-cur={cursor() === 0 ? '' : undefined} onMouseMove={() => setCursor(0)} onClick={() => props.onSelect(ratioOf(p()[0].market, p()[1].market))}>
@@ -194,7 +195,7 @@ export function SymbolSearch(props: {
                   </div>
                 )}
               </Show>
-              <Show when={rows().length > 0 || pair()} fallback={<div class="empty">Nothing matches “{query()}”.</div>}>
+              <Show when={rows().length > 0 || pair()} fallback={<div class="empty">{tl('Nothing matches “')}{query()}”.</div>}>
                 <For each={rows()}>
                   {(p, i) => (
                     <div class="row" classList={{ cur: i() + first() === cursor() }} data-cur={i() + first() === cursor() ? '' : undefined} onMouseMove={() => setCursor(i() + first())} onClick={() => props.onSelect(p.market)}>
@@ -202,7 +203,7 @@ export function SymbolSearch(props: {
                       <span class="dim grow">
                         {p.name ?? `${p.base}/${p.quote}`}
                         <Show when={p.market === props.current}>
-                          <span class="primary"> · on screen</span>
+                          <span class="primary"> {tl('· on screen')}</span>
                         </Show>
                       </span>
                       <span class="venue" style={{ 'min-width': '84px' }}>
@@ -226,10 +227,10 @@ export function SymbolSearch(props: {
         </div>
         <footer>
           <span>
-            {rows().length} of {products().length} markets
+            {rows().length} {tl('of')} {products().length} {tl('markets')}
             {unavailable().length > 0 ? ` · ${unavailable().join(', ')} unavailable` : ''}
           </span>
-          <span>↑↓ move · ↵ open · tab perp/spot · esc close</span>
+          <span>{tl('↑↓ move · ↵ open · tab perp/spot · esc close')}</span>
         </footer>
       </div>
     </div>

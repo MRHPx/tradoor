@@ -17,6 +17,7 @@ import { toast } from '../lib/toasts';
 import { validate, type WorkspaceDoc } from '../workspace/model';
 import { applyLayout, keepWatchlists, LAYOUTS, watchlists } from '../workspace/presets';
 import { doc, update } from '../workspace/store';
+import { tl } from '../lib/i18n';
 
 /** What a layout file or a saved layout brings: all of it but when it was saved — and the watchlists, which stay the reader's. */
 function take(next: WorkspaceDoc): void {
@@ -110,22 +111,22 @@ export function LayoutsMenu(props: { onClose?(): void; inSettings?: boolean }) {
   let picker!: HTMLInputElement;
   return (
     <div class="layouts" classList={{ menu: !props.inSettings, 'layouts-menu': !props.inSettings }} onPointerDown={(e) => e.stopPropagation()}>
-      <div class="cap">Recommended</div>
+      <div class="cap">{tl('Recommended')}</div>
       <For each={LAYOUTS}>
         {(l) => (
           <button class="lo-row" onClick={() => pick(l.id)}>
             <span class="lo-name">{l.name}</span>
-            <span class="lo-note">{l.note}</span>
+            <span class="lo-note">{tl(l.note)}</span>
           </button>
         )}
       </For>
 
-      <div class="cap">Saved</div>
+      <div class="cap">{tl('Saved')}</div>
       <Show
         when={signedIn()}
         fallback={
           <button class="lo-row" onClick={() => (done(), setOverlay({ kind: 'settings' }))}>
-            <span class="lo-note">Sign in with Telegram in Settings to save layouts of your own, on every device.</span>
+            <span class="lo-note">{tl('Sign in with Telegram in Settings to save layouts of your own, on every device.')}</span>
           </button>
         }
       >
@@ -134,7 +135,7 @@ export function LayoutsMenu(props: { onClose?(): void; inSettings?: boolean }) {
             <div class="lo-saved">
               <button class="lo-row" onClick={() => void open(l.id, l.name)}>
                 <span class="lo-name">{l.name}</span>
-                <span class="lo-note">saved {formatDateTime(l.updatedAt).slice(0, 16)}</span>
+                <span class="lo-note">{tl('saved')} {formatDateTime(l.updatedAt).slice(0, 16)}</span>
               </button>
               <button class="x" aria-label={`Delete ${l.name}`} data-tip={`Delete ${l.name}`} onClick={() => void remove(l.id, l.name)}>
                 <Icon name="close" size={10} stroke={2.4} />
@@ -143,17 +144,17 @@ export function LayoutsMenu(props: { onClose?(): void; inSettings?: boolean }) {
           )}
         </For>
         <button class="lo-action" onClick={() => void save()}>
-          <Icon name="plus" size={12} /> Save the layout in use
+          <Icon name="plus" size={12} /> {tl('Save the layout in use')}
         </button>
       </Show>
 
-      <div class="cap">File</div>
+      <div class="cap">{tl('File')}</div>
       <div class="lo-files">
         <button class="lo-action" data-tip="Download the layout in use as a JSON file" onClick={exportFile}>
-          Export JSON
+          {tl('Export JSON')}
         </button>
         <button class="lo-action" data-tip="Open a layout from a JSON file" onClick={() => picker.click()}>
-          Import JSON
+          {tl('Import JSON')}
         </button>
         <input ref={picker} type="file" accept="application/json,.json" hidden onChange={(e) => (importFile(e.currentTarget.files?.[0]), (e.currentTarget.value = ''))} />
       </div>

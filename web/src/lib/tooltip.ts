@@ -6,6 +6,8 @@
  * too. One element serves every tooltip; nothing is added per element.
  */
 
+import { tl } from './i18n';
+
 const DELAY_MS = 400;
 /** After a tooltip, the next one this soon shows without waiting. */
 const WARM_MS = 600;
@@ -20,9 +22,12 @@ function label(root: ParentNode): void {
   const els = root instanceof Element && root.matches('[data-tip]') ? [root] : [];
   for (const el of [...els, ...root.querySelectorAll('[data-tip]')]) {
     const tip = el.getAttribute('data-tip');
-    if (tip && !el.textContent?.trim()) el.setAttribute('aria-label', tip);
+    if (tip && !el.textContent?.trim()) el.setAttribute('aria-label', tl(tip));
   }
 }
+
+/** Icon buttons named again from their tooltips: after the language changes. */
+export const relabel = (): void => label(document.body);
 
 export function installTooltips(): void {
   label(document.body);
@@ -55,7 +60,7 @@ export function installTooltips(): void {
   const show = (el: HTMLElement) => {
     const text = el.dataset.tip;
     if (!text || !el.isConnected) return;
-    tip.textContent = text;
+    tip.textContent = tl(text);
     tip.classList.add('show');
     place(el);
   };

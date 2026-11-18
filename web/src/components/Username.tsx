@@ -6,6 +6,7 @@
 import { createSignal, Show } from 'solid-js';
 import { errorText } from '../lib/api';
 import { claimUsername, usernameProblem } from '../lib/username';
+import { tl } from '../lib/i18n';
 
 export function UsernameClaim(props: { button?: string }) {
   const [draft, setDraft] = createSignal('');
@@ -40,8 +41,8 @@ export function UsernameClaim(props: { button?: string }) {
                 class="uname-input"
                 value={draft()}
                 maxLength={21}
-                placeholder="your_username"
-                aria-label="Username"
+                placeholder={tl('your_username')}
+                aria-label={tl('Username')}
                 spellcheck={false}
                 autocomplete="off"
                 autocapitalize="off"
@@ -54,7 +55,7 @@ export function UsernameClaim(props: { button?: string }) {
                 }}
               />
               <button class={button()} disabled={!name() || !!problem()} onClick={() => setSure(true)}>
-                Choose
+                {tl('Choose')}
               </button>
             </div>
             <Show when={problem() ?? error()}>{(m) => <span class="warn">▲ {m()}</span>}</Show>
@@ -63,13 +64,13 @@ export function UsernameClaim(props: { button?: string }) {
       >
         <div class="uname-sure">
           <span>
-            Keep <b>@{name()}</b> for good? It can never be changed, and stays with this Telegram account.
+            {tl('Keep')} <b>@{name()}</b> {tl('for good? It can never be changed, and stays with this Telegram account.')}
           </span>
           <button class={`${button()} primary`} disabled={busy()} onClick={() => void keep()}>
-            Yes, keep @{name()}
+            {tl('Yes, keep @')}{name()}
           </button>
           <button class={button()} disabled={busy()} onClick={() => setSure(false)}>
-            Back
+            {tl('Back')}
           </button>
         </div>
       </Show>

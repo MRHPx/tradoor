@@ -5,6 +5,7 @@
  */
 import { createSignal, For, type JSX, Show } from 'solid-js';
 import { Icon } from '../lib/icons';
+import { tl } from '../lib/i18n';
 
 const Sketch = (props: { children: JSX.Element }) => (
   <svg viewBox="0 0 60 36" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -156,18 +157,18 @@ export function StrategyPicker(props: { value: string; onChange(v: string): void
   return (
     <div class="strategy">
       <div class="strategy-head">
-        <span class="strategy-title">Strategy</span>
+        <span class="strategy-title">{tl('Strategy')}</span>
         <Show
           when={other()}
           fallback={
             <button class="strategy-other" onClick={() => (setOther(true), props.onChange(''))}>
               <Icon name="pencil" size={11} />
-              <span>Other</span>
+              <span>{tl('Other')}</span>
             </button>
           }
         >
-          <input class="dinput strategy-own" placeholder="Describe your strategy…" maxLength={120} value={props.value} onInput={(e) => props.onChange(e.currentTarget.value)} ref={(el) => queueMicrotask(() => el.focus())} />
-          <button class="strategy-other" aria-label="Back to the cards" onClick={() => (setOther(false), props.onChange(''))}>
+          <input class="dinput strategy-own" placeholder={tl('Describe your strategy…')} maxLength={120} value={props.value} onInput={(e) => props.onChange(e.currentTarget.value)} ref={(el) => queueMicrotask(() => el.focus())} />
+          <button class="strategy-other" aria-label={tl('Back to the cards')} onClick={() => (setOther(false), props.onChange(''))}>
             <Icon name="close" size={11} />
           </button>
         </Show>
@@ -183,7 +184,7 @@ export function StrategyPicker(props: { value: string; onChange(v: string): void
               }}
             >
               {c.sketch()}
-              <span>{c.label}</span>
+              <span>{tl(c.label)}</span>
             </button>
           )}
         </For>

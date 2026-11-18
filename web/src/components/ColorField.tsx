@@ -3,6 +3,7 @@
  *  loading the dialog. */
 import { createEffect, createSignal, For, onCleanup, Show } from 'solid-js';
 import { Portal } from 'solid-js/web';
+import { tl } from '../lib/i18n';
 
 /** A palette in the spirit of TradingView's: greys, then hues in three strengths. */
 export const PALETTE = [
@@ -98,10 +99,10 @@ export function ColorField(props: { value: string; onChange(v: string): void; ti
             </div>
             <label class="custom">
               <input type="color" value={parts().hex} onInput={(e) => props.onChange(joinColor(e.currentTarget.value, parts().opacity))} />
-              Custom
+              {tl('Custom')}
             </label>
             <label class="opacity">
-              Opacity
+              {tl('Opacity')}
               <input type="range" min="0" max="100" value={parts().opacity} onInput={(e) => props.onChange(joinColor(parts().hex, Number(e.currentTarget.value)))} />
               <span class="num">{parts().opacity}%</span>
             </label>

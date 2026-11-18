@@ -15,6 +15,7 @@ import { formatClock, formatHm, zoneLabel } from '../lib/timezone';
 import type { LiquidationsPanelState } from '../workspace/model';
 import { marketOf, patchPanel } from '../workspace/store';
 import { MarketButton } from './common';
+import { tl } from '../lib/i18n';
 
 /** How often the totals are asked for again. */
 const POLL_MS = 5_000;
@@ -150,11 +151,11 @@ export function LiquidationsPanel(props: { panel: LiquidationsPanelState }) {
             {/* The longer windows are not whole until the server has listened that long. */}
             <Show when={s().coverageFrom > s().now - WINDOW_MS['24h']!}>
               <div class="note">
-                Kept since {formatHm(s().coverageFrom)} {zoneLabel()} — a window marked * is still filling.
+                {tl('Kept since')} {formatHm(s().coverageFrom)} {zoneLabel()} {tl('— a window marked * is still filling.')}
               </div>
             </Show>
             <Show when={serverGaps().length > 0}>
-              <div class="note warn">▲ Server: {serverGaps().join(', ')} — totals miss those hits until it is back.</div>
+              <div class="note warn">{tl('▲ Server:')} {serverGaps().join(', ')} {tl('— totals miss those hits until it is back.')}</div>
             </Show>
           </>
         )}
@@ -165,9 +166,9 @@ export function LiquidationsPanel(props: { panel: LiquidationsPanelState }) {
           <table class="grid tape venues">
             <thead>
               <tr>
-                <th>Exchange</th>
-                <th>Status</th>
-                <th>Hits</th>
+                <th>{tl('Exchange')}</th>
+                <th>{tl('Status')}</th>
+                <th>{tl('Hits')}</th>
               </tr>
             </thead>
             <tbody>
@@ -197,14 +198,14 @@ export function LiquidationsPanel(props: { panel: LiquidationsPanelState }) {
       </Show>
 
       <div class="scroll">
-        <Show when={hits().length > 0} fallback={<div class="empty">Waiting for the next liquidation on any exchange.</div>}>
+        <Show when={hits().length > 0} fallback={<div class="empty">{tl('Waiting for the next liquidation on any exchange.')}</div>}>
           <table class="grid tape">
             <thead>
               <tr>
-                <th>Time</th>
-                <th>Side</th>
-                <th>Price</th>
-                <th>Size</th>
+                <th>{tl('Time')}</th>
+                <th>{tl('Side')}</th>
+                <th>{tl('Price')}</th>
+                <th>{tl('Size')}</th>
               </tr>
             </thead>
             <tbody>
