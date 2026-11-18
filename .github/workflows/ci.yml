@@ -127,47 +127,10 @@ jobs:
           GHCR_USER: ${{ github.actor }}
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SITE_URL: ${{ vars.SITE_URL }}
+        # The key may run one thing there, /usr/local/bin/tradoor-deploy (deploy/tradoor-deploy,
+        # installed by hand): it takes compose.yml and the image from this commit, and the
+        # job's token on stdin, which can pull only while the job runs.
         run: |
           set -euo pipefail
-          target="$VPS_USER@$VPS_HOST"
-          opts=(-i ~/.ssh/deploy -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes)
-
-          scp "${opts[@]}" -P "$VPS_PORT" deploy/compose.yml "$target:/var/www/tradoor/compose.yml"
-
-          # The job's token can pull only while the job runs, so no lasting
-          # registry credential is left on the server.
-          printf '%s' "$GHCR_TOKEN" | ssh "${opts[@]}" -p "$VPS_PORT" "$target" \
-            "docker login ghcr.io -u '$GHCR_USER' --password-stdin >/dev/null"
-
-          ssh "${opts[@]}" -p "$VPS_PORT" "$target" "IMAGE='$IMAGE' SHA='$GITHUB_SHA' SITE_URL='$SITE_URL' bash -s" <<'REMOTE'
-          set -euo pipefail
-          cd /var/www/tradoor
-          trap 'docker logout ghcr.io >/dev/null 2>&1 || true' EXIT
-
-          # Pin the exact image, so a rollback is one line in .env.
-          sed -i '/^TRADOOR_IMAGE=/d' .env
-          echo "TRADOOR_IMAGE=$IMAGE:$SHA" >> .env
-          # The site's address, for links in Telegram messages: the repository variable SITE_URL.
-          if [ -n "$SITE_URL" ]; then
-            sed -i '/^TRADOOR_SITE_URL=/d' .env
-            echo "TRADOOR_SITE_URL=$SITE_URL" >> .env
-          fi
-
-          docker compose pull server
-          docker compose up -d --remove-orphans
-
-          port="$(sed -n 's/^TRADOOR_PORT=//p' .env)"
-          for _ in $(seq 60); do
-            if curl -fsS "http://127.0.0.1:${port:-8080}/api/health" >/dev/null; then
-              echo "healthy on $IMAGE:$SHA"
-              # Keep this image and the one before it; drop older tradoor images.
-              docker images "$IMAGE" --format '{{.Repository}}:{{.Tag}}' \
-                | grep -v -e ":$SHA\$" -e ':latest$' | tail -n +2 | xargs -r docker rmi >/dev/null || true
-              exit 0
-            fi
-            sleep 2
-          done
-          docker compose ps
-          docker compose logs --tail=80 server
-          exit 1
-          REMOTE
+          printf '%s' "$GHCR_TOKEN" | ssh -i ~/.ssh/deploy -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
+            -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" "/usr/local/bin/tradoor-deploy $GITHUB_SHA $GHCR_USER $SITE_URL"

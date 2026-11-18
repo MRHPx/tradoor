@@ -1,0 +1,65 @@
+#!/bin/bash
+# The one thing tradoor's CI key may run on the server. Installed by hand, like
+# the nginx files: /usr/local/bin/tradoor-deploy, root-owned, and the key's line
+# in ~tradoor-deploy/.ssh/authorized_keys starts with
+#   restrict,command="/usr/local/bin/tradoor-deploy"
+# CI sends the commit, the registry user and the site address; the job's registry
+# token comes on stdin. The image and compose.yml are both taken from that commit,
+# and only a commit already on main is taken, so a stolen key can do no more than
+# deploy tradoor again at a commit of main.
+set -euo pipefail
+REPO=tradoor-terminal/tradoor
+IMAGE=ghcr.io/$REPO
+DIR=/var/www/tradoor
+
+# Through the key the words come in SSH_ORIGINAL_COMMAND; run by hand, as arguments.
+read -r -a words <<< "${SSH_ORIGINAL_COMMAND:-$*}"
+if [ "${words[0]:-}" = /usr/local/bin/tradoor-deploy ] || [ "${words[0]:-}" = tradoor-deploy ]; then words=("${words[@]:1}"); fi
+sha=${words[0]:-}
+user=${words[1]:-tradoor}
+site=${words[2]:-}
+if ! [[ $sha =~ ^[0-9a-f]{40}$ ]]; then echo "usage: tradoor-deploy <commit, 40 hex> [registry user] [https://site]" >&2; exit 2; fi
+if ! [[ $user =~ ^[A-Za-z0-9][A-Za-z0-9-]{0,38}$ ]]; then user=tradoor; fi
+# Telegram messages link to it, so only tradoor's own addresses.
+if [ -n "$site" ] && ! [[ $site =~ ^https://(tradoorterminal\.com|tradoor\.rsalianto\.com)$ ]]; then echo "not tradoor's address: $site" >&2; exit 2; fi
+
+# A commit pushed to a fork is reachable by the same URLs, so ask GitHub whether
+# this one is on main: "identical" or "behind" main is.
+status=$(curl -fsS --max-time 20 -H 'Accept: application/vnd.github+json' "https://api.github.com/repos/$REPO/compare/main...$sha" | sed -n 's/^  "status": "\([a-z]*\)".*/\1/p')
+if [ "$status" != identical ] && [ "$status" != behind ]; then echo "$sha is not on main (${status:-no answer})" >&2; exit 3; fi
+
+cd "$DIR"
+trap 'docker logout ghcr.io >/dev/null 2>&1 || true' EXIT
+token=$(head -c 8192)
+if [ -n "$token" ]; then printf '%s' "$token" | docker login ghcr.io -u "$user" --password-stdin >/dev/null; fi
+unset token
+
+curl -fsS --max-time 30 "https://raw.githubusercontent.com/$REPO/$sha/deploy/compose.yml" -o compose.yml.new
+mv compose.yml.new compose.yml
+
+# Pin the exact image, so a rollback is one line in .env.
+sed -i '/^TRADOOR_IMAGE=/d' .env
+echo "TRADOOR_IMAGE=$IMAGE:$sha" >> .env
+# The site's address, for links in Telegram messages: the repository variable SITE_URL.
+if [ -n "$site" ]; then
+  sed -i '/^TRADOOR_SITE_URL=/d' .env
+  echo "TRADOOR_SITE_URL=$site" >> .env
+fi
+
+docker compose pull server
+docker compose up -d --remove-orphans
+
+port="$(sed -n 's/^TRADOOR_PORT=//p' .env)"
+for _ in $(seq 60); do
+  if curl -fsS "http://127.0.0.1:${port:-8080}/api/health" >/dev/null; then
+    echo "healthy on $IMAGE:$sha"
+    # Keep this image and the one before it; drop older tradoor images.
+    docker images "$IMAGE" --format '{{.Repository}}:{{.Tag}}' \
+      | grep -v -e ":$sha\$" -e ':latest$' | tail -n +2 | xargs -r docker rmi >/dev/null || true
+    exit 0
+  fi
+  sleep 2
+done
+docker compose ps
+docker compose logs --tail=80 server
+exit 1
