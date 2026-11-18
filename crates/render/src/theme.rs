@@ -40,6 +40,8 @@ pub struct Theme {
     pub tpo_outside: Color,
     pub tpo_poc: Color,
     pub font_px: f32,
+    /// The chart's text in bold: axis, badges, legends drawn on the chart, footprint numbers.
+    pub font_bold: bool,
 }
 
 impl Default for Theme {
@@ -74,6 +76,7 @@ impl Default for Theme {
             tpo_outside: Color::hex(0x858c86),
             tpo_poc: Color::hex(0xe6f5d3),
             font_px: 11.0,
+            font_bold: false,
         }
     }
 }
@@ -90,6 +93,10 @@ impl Theme {
                 }
                 _ => false,
             };
+        }
+        if key == "fontBold" {
+            self.font_bold = value == "1";
+            return true;
         }
         if key == "fontPx" {
             return tradoor_core::format::parse_number(value).map(|v| v as f32).filter(|v| (8.0..=20.0).contains(v)).map(|v| self.font_px = v).is_some();
@@ -116,5 +123,21 @@ impl Theme {
         };
         *slot = color;
         true
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn bold_text_is_a_switch_and_the_font_size_has_bounds() {
+        let mut t = Theme::default();
+        assert!(!t.font_bold);
+        assert!(t.set("fontBold", "1") && t.font_bold);
+        assert!(t.set("fontBold", "0") && !t.font_bold);
+        assert!(t.set("fontPx", "14") && t.font_px == 14.0);
+        assert!(!t.set("fontPx", "40"), "past 20 px is refused");
+        assert_eq!(t.font_px, 14.0);
     }
 }

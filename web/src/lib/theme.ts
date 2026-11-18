@@ -33,6 +33,12 @@ export const CHART_THEME: readonly ThemeKey[] = [
 
 export const FONT_PX = { name: 'fontPx', value: '11' };
 
+/** The page's text, as a share of its usual size: every size in the CSS is in rem, so one root size moves them all. */
+export const TEXT_SCALE = { name: 'ui.textScale', value: '1' };
+
+/** Bold text on the page and on the charts: `1`, or left out. */
+export const FONT_BOLD = { name: 'fontBold', value: '0' };
+
 /** Whether the page is light or dark, for the browser's own controls and scrollbars: a theme's, not a swatch. */
 export const SCHEME = { name: 'ui.scheme', css: '--scheme' };
 

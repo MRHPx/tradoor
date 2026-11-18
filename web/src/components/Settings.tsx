@@ -5,7 +5,7 @@ import { OWNER_PATTERN, ownerId, session, switchOwner } from '../lib/owner';
 import { ALL_EXCHANGES, ExchangeLogo } from '../lib/exchanges';
 import { Icon, type IconName } from '../lib/icons';
 import { deviceZone, LOCAL_ZONE, offsetLabel, offsetMinutes, TIME_ZONE_KEY, timeZone } from '../lib/timezone';
-import { CHART_THEME, FONT_PX, UI_THEME } from '../lib/theme';
+import { CHART_THEME, FONT_BOLD, FONT_PX, TEXT_SCALE, UI_THEME } from '../lib/theme';
 import { THEMES, themeOf, withTheme, type ThemePreset } from '../lib/themes';
 import { LayoutsMenu } from './LayoutsMenu';
 import { formatDateTime } from '../lib/timezone';
@@ -212,11 +212,63 @@ function TelegramSection() {
   );
 }
 
+/** The page's text sizes to pick from, as a share of the usual. */
+const TEXT_SCALES: readonly { value: string; label: string }[] = [
+  { value: '0.9', label: 'Smaller (90%)' },
+  { value: '1', label: 'Normal' },
+  { value: '1.1', label: 'Larger (110%)' },
+  { value: '1.2', label: 'Large (120%)' },
+  { value: '1.35', label: 'Largest (135%)' },
+];
+
+/** Text: how big the page's and the charts' are, and bold. Kept with the workspace, apart from the theme: picking a theme leaves it. */
+function TextCard() {
+  const scale = () => doc.theme[TEXT_SCALE.name] ?? TEXT_SCALE.value;
+  return (
+    <>
+      <h3 class="set-sub">Text</h3>
+      <p class="lead">How big the writing is on the page and on the charts, and whether it is bold. It follows the workspace; a theme picked later leaves it as it is.</p>
+      <div class="set-card">
+        <Row label="Page text" tip="Every panel's writing — legends, tables, menus — larger or smaller, the layout around it unchanged">
+          <select class="box wide" onChange={(e) => setThemeValue(TEXT_SCALE.name, e.currentTarget.value === TEXT_SCALE.value ? null : e.currentTarget.value)}>
+            <For each={TEXT_SCALES}>
+              {(s) => (
+                <option value={s.value} selected={scale() === s.value}>
+                  {s.label}
+                </option>
+              )}
+            </For>
+          </select>
+        </Row>
+        <Row label="Chart text (px)" tip="The charts' own writing: the price and time axes, their labels, footprint numbers">
+          <input
+            class="box num"
+            type="number"
+            min={8}
+            max={20}
+            value={doc.theme[FONT_PX.name] ?? FONT_PX.value}
+            onChange={(e) => {
+              const px = Number(e.currentTarget.value);
+              setThemeValue(FONT_PX.name, px >= 8 && px <= 20 && String(px) !== FONT_PX.value ? String(px) : null);
+            }}
+          />
+        </Row>
+        <Row label="Bold" tip="Heavier writing on the page and on the charts, easier to read on a bright or distant screen">
+          <label class="set-check">
+            <input type="checkbox" checked={doc.theme[FONT_BOLD.name] === '1'} onChange={(e) => setThemeValue(FONT_BOLD.name, e.currentTarget.checked ? '1' : null)} />
+            <span>{doc.theme[FONT_BOLD.name] === '1' ? 'Bold text on the page and the charts' : 'Regular text'}</span>
+          </label>
+        </Row>
+      </div>
+    </>
+  );
+}
+
 function GeneralSection() {
   return (
     <>
       <h2>General</h2>
-      <p class="lead">The workspace's name and the clock every time on the page is written in.</p>
+      <p class="lead">The workspace's name, the clock every time on the page is written in, and the size of its text.</p>
       <div class="set-card">
         <Row label="Workspace name">
           <input
@@ -251,6 +303,7 @@ function GeneralSection() {
           </select>
         </Row>
       </div>
+      <TextCard />
       <BrowserFootprints />
     </>
   );
@@ -371,19 +424,7 @@ function ThemesSection() {
         <div class="swatches">
           <For each={CHART_THEME}>{(t) => <Swatch name={t.name} label={t.label} fallback={t.value} />}</For>
         </div>
-        <Row label="Axis font size (px)">
-          <input
-            class="box num"
-            type="number"
-            min={8}
-            max={20}
-            value={doc.theme[FONT_PX.name] ?? FONT_PX.value}
-            onChange={(e) => {
-              const px = Number(e.currentTarget.value);
-              setThemeValue(FONT_PX.name, px >= 8 && px <= 20 ? String(px) : null);
-            }}
-          />
-        </Row>
+        <p class="lead">The size of the chart's text, and bold, are in General → Text.</p>
       </div>
       <div class="set-card">
         <h3>Page</h3>

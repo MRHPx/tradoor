@@ -25,16 +25,18 @@ pub struct TextLayer {
     ctx: Ctx,
     /// Numbered as the page numbers exchanges; a liquidation names its mark by index.
     marks: Vec<Mark>,
+    /// Every text in bold, as the theme asks.
+    pub bold: bool,
 }
 
-fn font(size: f32) -> String {
-    format!("{}px ui-monospace, SFMono-Regular, Menlo, Consolas, \"Liberation Mono\", monospace", tradoor_core::format::plain(f64::from(size)))
+fn font(size: f32, bold: bool) -> String {
+    format!("{}{}px ui-monospace, SFMono-Regular, Menlo, Consolas, \"Liberation Mono\", monospace", if bold { "bold " } else { "" }, tradoor_core::format::plain(f64::from(size)))
 }
 
 impl TextLayer {
     pub fn new(canvas: OffscreenCanvas) -> Result<Self, JsValue> {
         let ctx: Ctx = canvas.get_context("2d")?.ok_or("2D canvas is not available")?.dyn_into()?;
-        Ok(Self { canvas, ctx, marks: Vec::new() })
+        Ok(Self { canvas, ctx, marks: Vec::new(), bold: false })
     }
 
     /// Exchange `index`'s mark, one path a line as `tx|ty|scale|fill|d`. An
@@ -89,7 +91,7 @@ impl TextLayer {
 
     /// Axis labels are monospace, so one glyph's width sizes every label.
     pub fn char_width(&self, size: f32) -> f32 {
-        self.ctx.set_font(&font(size));
+        self.ctx.set_font(&font(size, self.bold));
         self.ctx.measure_text("0").map_or(size * 0.6, |m| m.width() as f32)
     }
 
@@ -136,7 +138,7 @@ impl TextLayer {
                 ctx.clip();
             }
             if t.clip.is_some() || current.0 != t.size {
-                ctx.set_font(&font(t.size));
+                ctx.set_font(&font(t.size, self.bold));
             }
             if t.clip.is_some() || current.1 != Some(t.align) {
                 ctx.set_text_align(match t.align {

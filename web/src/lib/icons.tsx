@@ -30,7 +30,8 @@ const PATHS = {
   splitRight: 'M4 5h16v14H4zM12 5v14',
   splitDown: 'M4 5h16v14H4zM4 12h16',
   layout: 'M4 5h16v14H4zM12 5v14M4 12h16',
-  settings: 'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9L7 7M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1',
+  /** A gear of eight teeth around a hole (it was a sun of rays, and read as one). */
+  settings: 'M9.9 4.9L10.2 2.2L13.8 2.2L14.1 4.9L15.5 5.5L17.7 3.8L20.2 6.3L18.5 8.5L19.1 9.9L21.8 10.2L21.8 13.8L19.1 14.1L18.5 15.5L20.2 17.7L17.7 20.2L15.5 18.5L14.1 19.1L13.8 21.8L10.2 21.8L9.9 19.1L8.5 18.5L6.3 20.2L3.8 17.7L5.5 15.5L4.9 14.1L2.2 13.8L2.2 10.2L4.9 9.9L5.5 8.5L3.8 6.3L6.3 3.8L8.5 5.5zM15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z',
   command: 'M4 7l5 5-5 5M11 17h9',
   indicators: 'M3 17l5-6 4 3 8-9M3 21h18',
   replay: 'M11 6l-7 6 7 6zM20 6l-7 6 7 6z',

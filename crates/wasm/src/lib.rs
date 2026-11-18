@@ -236,7 +236,9 @@ impl ChartEngine {
 
     pub fn set_theme_value(&mut self, key: &str, value: &str) -> bool {
         let ok = self.chart.set_theme_value(key, value);
-        if ok && key == "fontPx" {
+        // Bold text is wider: the layout's character width is measured again either way.
+        if ok && (key == "fontPx" || key == "fontBold") {
+            self.text.bold = self.chart.theme().font_bold;
             let width = self.text.char_width(self.chart.theme().font_px);
             self.chart.set_char_width(width);
         }

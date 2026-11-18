@@ -13,7 +13,7 @@ import { MARK_ORDER, MARKS, markSpec } from '../lib/exchange-marks';
 import { useDismiss } from '../lib/dismiss';
 import { Icon } from '../lib/icons';
 import { tabTitle } from '../lib/tab-title';
-import { CHART_THEME, FONT_PX, SCHEME, UI_THEME } from '../lib/theme';
+import { CHART_THEME, FONT_BOLD, FONT_PX, SCHEME, TEXT_SCALE, UI_THEME } from '../lib/theme';
 import { stepTimeframe, TIMEFRAMES } from '../lib/timeframes';
 import { showAlertsPanel, startAlerts, unread } from '../lib/alerts';
 import { Toasts } from '../components/Toasts';
@@ -271,6 +271,14 @@ function applyTheme(): void {
     onCleanup(() => clearInterval(timer));
   });
   createEffect(() => send({ t: 'theme', key: FONT_PX.name, value: doc.theme[FONT_PX.name] ?? FONT_PX.value }));
+  createEffect(() => send({ t: 'theme', key: FONT_BOLD.name, value: doc.theme[FONT_BOLD.name] ?? FONT_BOLD.value }));
+  // The page's text: its size from the root (every size in the CSS is in rem), bold from an attribute.
+  createEffect(() => {
+    const root = document.documentElement;
+    const scale = Number(doc.theme[TEXT_SCALE.name]);
+    root.style.fontSize = scale >= 0.8 && scale <= 1.6 && scale !== 1 ? `${scale * 16}px` : '';
+    root.toggleAttribute('data-bold', doc.theme[FONT_BOLD.name] === '1');
+  });
   for (const t of [...UI_THEME, SCHEME]) {
     createEffect(() => {
       const value = doc.theme[t.name];
