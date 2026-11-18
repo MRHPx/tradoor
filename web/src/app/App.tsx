@@ -122,7 +122,7 @@ function commands(): Command[] {
     { group: 'App', label: 'Settings and colours…', run: () => setOverlay({ kind: 'settings' }) },
     { group: 'App', label: 'Frost Script — write an indicator of your own', run: () => setEditing({ panelId: targetChart()?.id }) },
     { group: 'App', label: 'Keyboard shortcuts', hint: '?', run: () => setOverlay({ kind: 'help' }) },
-    { group: 'App', label: 'Partners — Lighter, Nado, Bybit and Binance', run: () => setOverlay({ kind: 'referrals' }) },
+    { group: 'App', label: 'Support tradoor — exchange sign-ups and GitHub Sponsors', run: () => setOverlay({ kind: 'referrals' }) },
     {
       group: 'App',
       label: 'Reset workspace to default',
@@ -571,9 +571,6 @@ export function App() {
             <LayoutPicker onClose={() => setTopMenu(null)} />
           </Show>
         </span>
-        <button class="item ref-btn" data-tip="Partners: Lighter, Nado, Bybit and Binance" onClick={() => setOverlay({ kind: 'referrals' })}>
-          <Icon name="gift" size={13} /> <span>{tl('Rewards')}</span>
-        </button>
         <Health />
         <button class="item icon alerts-btn" data-tip="Price alerts" onClick={showAlertsPanel}>
           <Icon name="alarm" size={13} />

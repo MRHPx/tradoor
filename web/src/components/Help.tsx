@@ -206,6 +206,14 @@ export function Help(props: { onClose(): void }) {
               )}
             </For>
           </div>
+          {/* The same words as the README's Disclaimer, shortened. */}
+          <Show when={!query().trim()}>
+            <section class="hk-note">
+              <h3>{tl('Disclaimer')}</h3>
+              <p>{tl('tradoor is software: a tool that charts market data and works out technical studies from it. It is not a financial adviser, a broker or an exchange, and it never holds your money. Nothing it shows — charts, indicators, signals, alerts, backtests or shared scripts — is advice to buy or sell.')}</p>
+              <p>{tl('Market data comes from the exchanges and can be late, incomplete or wrong. Trading, above all with leverage, can lose all you put in. Every trade is your own decision and your own risk: tradoor and its authors are not liable for any loss.')}</p>
+            </section>
+          </Show>
         </div>
         <footer>
           <span>

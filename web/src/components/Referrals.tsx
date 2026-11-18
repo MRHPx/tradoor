@@ -79,7 +79,7 @@ export function ReferralDialog(props: { onClose(): void }) {
         }}
       >
         <header>
-          <span class="title caps">{tl('Partners')}</span>
+          <span class="title caps">{tl('Support tradoor')}</span>
           <span class="spacer" />
           <button class="x" onClick={() => props.onClose()}>
             {tl('esc ✕')}
@@ -132,10 +132,10 @@ export function ReferralDialog(props: { onClose(): void }) {
 
 export function ReferralCard() {
   return (
-    <aside class="ref-card" aria-label={tl('Partner exchanges')}>
+    <aside class="ref-card" aria-label={tl('Exchange sign-ups')}>
       <header>
         <span class="eyebrow">
-          <Icon name="gift" size={12} /> {tl('Partner offers')}
+          <Icon name="gift" size={12} /> {tl('Exchange sign-ups')}
         </span>
         <button class="x" aria-label={tl('Close')} onClick={dismissReferralCard}>
           <Icon name="close" size={10} stroke={2.4} />

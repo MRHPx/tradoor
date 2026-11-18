@@ -31,6 +31,7 @@
   <a href="#run-it">Run it</a> ·
   <a href="#self-hosting">Self-hosting</a> ·
   <a href="#security">Security</a> ·
+  <a href="#disclaimer">Disclaimer</a> ·
   <a href="docs/architecture.md">Architecture</a> ·
   <a href="https://github.com/tradoor-terminal/tradoor/discussions">Discussions</a> ·
   <a href="https://discord.gg/c6hhmvXe">Discord</a>
@@ -56,6 +57,8 @@
 **📓 Journal and training.** Every position you draw becomes a trade that price settles, and a paper account trades Binance's perpetuals at live prices.
 
 **🔓 Free and open.** AGPL-3.0, and one Docker image to host it yourself.
+
+> **A tool, not advice.** tradoor charts market data and works out technical studies from it. It is not a financial adviser or a broker, and every trade you make is your own decision. Read the [disclaimer](#disclaimer).
 
 ## Features
 
@@ -327,6 +330,17 @@ ssh user@server 'bash -s' < scripts/export-signals.sh > signals.tar.gz   # the s
 - **Frost Script:** limits on size, depth, memory and steps; the server checks scripts on a thread of their own, four at a time.
 
 The server reads the visitor's address from nginx's `X-Real-IP`, so it must only be reachable through nginx; `deploy/compose.yml` publishes it on loopback. `http.conf` keys nginx's limits on Cloudflare's `CF-Connecting-IP`, which is trustworthy only where nginx admits nothing but Cloudflare (`allow` its ranges, `deny all`). After certbot adds its HTTPS block, merge `tradoor.conf`'s locations into the site by hand.
+
+## Disclaimer
+
+tradoor is software: a tool that charts market data and works out technical studies from it. It is not a financial adviser, an investment adviser, a broker or an exchange, and it is not licensed or registered as any of them.
+
+- **Not advice.** Nothing tradoor shows is investment advice or a recommendation to buy, sell or hold anything: not its charts, indicators, market profile, signals, alerts or backtests, not the training account, and not the scripts people share in the Community. Signals and backtests tell you what a set of rules found in past data, and the past promises nothing about the future.
+- **Your money stays with you.** tradoor never holds your funds and is not a party to any trade you make on an exchange.
+- **Data as the exchanges send it.** Prices, order books, trades and liquidations come straight from the exchanges and can be late, incomplete or wrong, and the site itself can be slow or unavailable.
+- **Your decisions, your risk.** Trading crypto can lose all you put in, and with leverage it can happen fast. Every decision and every trade is yours, and so is its result. tradoor and its authors are not liable for any loss or damage that comes from using it.
+- **Where you live.** Not every exchange or product is allowed in every country. Making sure you may use them is up to you.
+- **As is.** The software comes with no warranty of any kind, as sections 15 and 16 of the [license](LICENSE) set out.
 
 ## License
 

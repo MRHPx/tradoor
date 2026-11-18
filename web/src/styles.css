@@ -1087,7 +1087,7 @@ table.venues tr.off td { color: var(--dim); }
 @keyframes toast-in { from { opacity: 0; transform: translateY(6px); } }
 
 /* ------------------------------------------------------------ partner exchanges */
-.topbar .ref-btn svg, .mdrawer .ref-item svg { color: var(--primary); }
+.mdrawer .ref-item svg { color: var(--primary); }
 /* What lies between the header and the footer scrolls, on a screen too short for all of it. */
 .ref-body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
 .ref-intro { margin: 0; padding: 12px 14px 10px; color: var(--muted); font-size: .75rem; line-height: 1.55; }

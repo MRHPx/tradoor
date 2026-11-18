@@ -24,3 +24,8 @@
   .hk-row { flex-wrap: wrap; gap: 4px 10px; }
   .hk-keys { justify-content: flex-start; }
 }
+/* The disclaimer, under the shortcuts. */
+.hk-note { margin-top: 18px; padding: 10px 12px; border: 1px solid var(--border); background: var(--surface-2); }
+.hk-note h3 { margin: 0 0 6px; color: var(--muted); font-size: .65625rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.hk-note p { margin: 0 0 6px; color: var(--muted); font-size: .6875rem; line-height: 1.5; }
+.hk-note p:last-child { margin-bottom: 0; }

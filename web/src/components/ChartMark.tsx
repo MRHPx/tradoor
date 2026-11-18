@@ -56,8 +56,8 @@ export function ChartMark(props: { x: number; y: number; accent: string; bear: s
     <button
       class="chart-mark"
       style={{ left: `${props.x}px`, top: `${props.y}px` }}
-      aria-label={tl('Rewards from tradoor\'s partners')}
-      data-tip="Rewards"
+      aria-label={tl('Support tradoor')}
+      data-tip="Support tradoor"
       onPointerDown={(e) => e.stopPropagation()}
       onClick={() => setOverlay({ kind: 'referrals' })}
     >

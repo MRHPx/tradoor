@@ -240,7 +240,7 @@ function MobileShell() {
           <hr />
           <button class="ref-item" onClick={overlay('referrals')}>
             <Icon name="gift" size={15} />
-            <span class="grow">{tl('Partners')}</span>
+            <span class="grow">{tl('Support tradoor')}</span>
           </button>
         </nav>
       </Show>
