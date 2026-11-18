@@ -53,3 +53,8 @@ Deno.test('a stored chart keeps only what can be a style', () => {
   assertEquals(readStyles(['x']), {});
   assertEquals(readStyles({ 'bb:20:2.5/upper': '#fff,1.5,', 'ribbon/fast': '9', 'no slash': '1', 'a/b': 3, 'c/d': 'x;y=z' }), { 'bb:20:2.5/upper': '#fff,1.5,', 'ribbon/fast': '9' });
 });
+
+Deno.test('a Frost Script keeps its style when the chart is read back', () => {
+  const styles = { 'fx-k3j9x2m0q7pa:50/p0': ',3,,1', 'fx-k3j9x2m0q7pa:20:1:4294967295:1767225600000/p1': '#ff0000,2,,' };
+  assertEquals(readStyles(styles), styles);
+});

@@ -67,7 +67,8 @@ export const serializeStyles = (styles: StudyStyles | undefined): string =>
     .map(([key, value]) => `${key}=${value}`)
     .join(';');
 
-const KEY = /^[a-z0-9.:]{1,40}\/[A-Za-z0-9]{1,20}$/;
+// A Frost Script's owner is `fx-<id>:<inputs…>`: a dash, and room for a few long inputs (a date is 13 digits).
+const KEY = /^[a-z0-9.:-]{1,160}\/[A-Za-z0-9]{1,20}$/;
 const VALUE = /^[#0-9a-fA-F.,]{0,32}$/;
 
 /** A stored chart's styles, with what cannot be one left out. */
