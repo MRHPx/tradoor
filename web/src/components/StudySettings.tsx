@@ -18,7 +18,7 @@ import { formulaDefinition, formulaLabels, formulaOf, isFormulaKind, setEditing 
 import { SOURCES, UNWRITTEN } from '../lib/formula-sources';
 import { ColorField } from './ColorField';
 import { NumField } from './NumField';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 const WIDTHS = [1, 1.5, 2, 3, 4];
 const PATTERNS = [
@@ -320,10 +320,10 @@ export function StudySettings(props: { panel: ChartPanelState; target: string; m
             </Show>
             <span class="spacer" />
             <Show when={!r().onlyToggle}>
-              <ColorField value={color()} onChange={(c) => set({ color: c })} title={`${r().label} colour`} />
+              <ColorField value={color()} onChange={(c) => set({ color: c })} title={tlf('{0} colour', r().label)} />
               <Show when={!r().noWidth}>
                 <Show when={!r().noPattern}>
-                  <select class="dinput dpattern" aria-label={`${r().label} line style`} onChange={(e) => set({ pattern: e.currentTarget.value })}>
+                  <select class="dinput dpattern" aria-label={tlf('{0} line style', r().label)} onChange={(e) => set({ pattern: e.currentTarget.value })}>
                     <For each={PATTERNS}>
                       {([value, name]) => (
                         <option value={value} selected={(own().pattern || r().pattern || '0') === value}>
@@ -333,7 +333,7 @@ export function StudySettings(props: { panel: ChartPanelState; target: string; m
                     </For>
                   </select>
                 </Show>
-                <select class="dinput dwidth" aria-label={`${r().label} width`} onChange={(e) => set({ width: e.currentTarget.value })}>
+                <select class="dinput dwidth" aria-label={tlf('{0} width', r().label)} onChange={(e) => set({ width: e.currentTarget.value })}>
                   <For each={WIDTHS}>
                     {(w) => (
                       <option value={w} selected={width() === String(w)}>
@@ -396,7 +396,7 @@ export function StudySettings(props: { panel: ChartPanelState; target: string; m
             <Show when={formula ? formulaOf(kind)?.about : undefined}>{(a) => <p class="fx-described">{a()}</p>}</Show>
             <pre class="fx-source">{source()}</pre>
             <button class="dbtn" onClick={openSource}>
-              {formula && !formulaOf(kind)?.by ? 'Edit the script' : 'Open a copy in Frost Script'}
+              {formula && !formulaOf(kind)?.by ? tl('Edit the script') : tl('Open a copy in Frost Script')}
             </button>
           </Show>
           <Show when={showing() !== 'source'}>

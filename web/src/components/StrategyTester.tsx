@@ -20,7 +20,7 @@ import { BacktestCharts } from './BacktestCharts';
 import { BacktestLab } from './BacktestLab';
 import { BacktestSetup } from './BacktestSetup';
 import './strategy-tester.css';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 export interface TesterProps {
   sid: string;
@@ -125,29 +125,29 @@ export function StrategyTester(props: TesterProps) {
           {tl('Strategy tester')}
         </span>
         <span class="bt-kpis num">
-          <Show when={stats()} fallback={<span class="dim">{failed() ? '' : !props.run ? 'No strategy yet' : props.result === null ? 'Working it out…' : 'No bars yet'}</span>}>
+          <Show when={stats()} fallback={<span class="dim">{failed() ? '' : !props.run ? tl('No strategy yet') : props.result === null ? tl('Working it out…') : tl('No bars yet')}</span>}>
             {(s) => (
               <>
                 <span class={tone(s().net)}>{pct(s().netPct)}</span>
                 <span data-tip="The deepest fall of the equity from a high">DD {pct(-s().maxDdPct)}</span>
                 <span data-tip="What the winners made over what the losers lost">PF {ratio(s().profitFactor)}</span>
-                <span>{s().closed === 0 && s().trades > 0 ? '1 open trade' : `${s().closed} ${s().closed === 1 ? 'trade' : 'trades'}${s().trades > s().closed ? ' · 1 open' : ''}`}</span>
+                <span>{s().closed === 0 && s().trades > 0 ? tl('1 open trade') : `${s().closed} ${s().closed === 1 ? 'trade' : 'trades'}${s().trades > s().closed ? ' · 1 open' : ''}`}</span>
                 <span class="bt-wide">{tl('Win')} {pct(s().winRate, false)}</span>
               </>
             )}
           </Show>
-          <Show when={failed()}>{(f) => <span class="warn">▲ {f().line > 0 ? `Line ${f().line}: ` : ''}{f().message}</span>}</Show>
+          <Show when={failed()}>{(f) => <span class="warn">▲ {f().line > 0 ? tlf('Line {0}: ', f().line) : ''}{f().message}</span>}</Show>
           <Show when={next()}>{(n) => <span class="badge">{n()}</span>}</Show>
         </span>
         <span class="spacer" />
-        <button class="iconbtn" classList={{ on: props.state.draw }} aria-label={props.state.draw ? 'Hide the trades on the chart' : 'Show the trades on the chart'} data-tip={props.state.draw ? 'Trades drawn on the chart · click to hide' : 'Trades hidden · click to draw them'} onClick={() => props.onChange({ draw: !props.state.draw })}>
+        <button class="iconbtn" classList={{ on: props.state.draw }} aria-label={props.state.draw ? tl('Hide the trades on the chart') : tl('Show the trades on the chart')} data-tip={props.state.draw ? 'Trades drawn on the chart · click to hide' : 'Trades hidden · click to draw them'} onClick={() => props.onChange({ draw: !props.state.draw })}>
           <Icon name={props.state.draw ? 'eye' : 'eyeOff'} size={13} />
         </button>
         <button class="iconbtn" classList={{ on: props.state.alerts }} aria-label={tl('Notify on the strategy\'s orders')} data-tip={props.state.alerts ? 'A notice whenever a bar closes with an order, while tradoor is open · click to stop' : 'Tell me when a bar closes with an order, while tradoor is open'} onClick={() => void toggleAlerts(props)}>
           <Icon name="alarm" size={13} />
         </button>
         <Show when={!mobile()}>
-          <button class="iconbtn" aria-label={props.beside ? 'Put the tester under the chart' : 'Put the tester beside the chart'} data-tip={props.beside ? 'Under the chart' : 'Beside the chart: the chart and the settings side by side'} onClick={() => props.onChange({ dock: props.beside ? 'bottom' : 'right' })}>
+          <button class="iconbtn" aria-label={props.beside ? tl('Put the tester under the chart') : tl('Put the tester beside the chart')} data-tip={props.beside ? 'Under the chart' : 'Beside the chart: the chart and the settings side by side'} onClick={() => props.onChange({ dock: props.beside ? 'bottom' : 'right' })}>
             <Icon name={props.beside ? 'splitDown' : 'splitRight'} size={13} />
           </button>
         </Show>
@@ -177,7 +177,7 @@ export function StrategyTester(props: TesterProps) {
           </Match>
           <Match when={!props.run}>
             <p class="bt-empty">
-              {tl('Nothing to test yet:')} {props.state.source === 'script' ? 'choose one of the library’s strategies' : props.state.source === 'code' ? 'write a strategy, or start from an example' : 'add a condition to enter on'}.{' '}
+              {tl('Nothing to test yet:')} {props.state.source === 'script' ? tl('choose one of the library’s strategies') : props.state.source === 'code' ? tl('write a strategy, or start from an example') : tl('add a condition to enter on')}.{' '}
               <button class="linkbtn" onClick={() => props.onChange({ tab: 'strategy' })}>
                 {tl('Open the strategy')}
               </button>
@@ -188,7 +188,7 @@ export function StrategyTester(props: TesterProps) {
               <Show when={failed()} fallback={props.result === null ? 'Working it out on the chart’s bars…' : 'No result yet.'}>
                 {(f) => (
                   <>
-                    {tl('The strategy does not run:')} {f().line > 0 ? `line ${f().line}, column ${f().col}: ` : ''}
+                    {tl('The strategy does not run:')} {f().line > 0 ? tlf('line {0}, column {1}: ', f().line, f().col) : ''}
                     {f().message}.{' '}
                     <button class="linkbtn" onClick={() => props.onChange({ tab: 'strategy' })}>
                       {tl('Open the strategy')}
@@ -335,16 +335,16 @@ function Summary(props: TesterProps & { result: Ok; rows: TradeRow[]; stats: Sta
       <ul class="bt-notes dim">
         <li>
           {r().time.length.toLocaleString('en-US')} {tl('bars of')} {props.timeframe}, {when(first())} {tl('to')} {when(last())}
-          {props.state.settings.since > 0 ? ` · trades from ${when(props.state.settings.since)}` : props.state.settings.days > 0 ? ` · trades from the last ${props.state.settings.days} days` : props.state.settings.days < 0 ? (props.exhausted ? ' · the market’s whole history' : props.loading ? ' · reading back to the market’s first bar…' : ` · as far back as tradoor reads on ${props.timeframe}: a 4-hour or daily chart reaches further`) : ''}
+          {props.state.settings.since > 0 ? tlf(' · trades from {0}', when(props.state.settings.since)) : props.state.settings.days > 0 ? tlf(' · trades from the last {0} days', props.state.settings.days) : props.state.settings.days < 0 ? (props.exhausted ? ' · the market’s whole history' : props.loading ? ' · reading back to the market’s first bar…' : tlf(' · as far back as tradoor reads on {0}: a 4-hour or daily chart reaches further', props.timeframe)) : ''}
           {r().time.length >= 100_000 ? ' · 100,000 bars a test at most: the newest' : ''}
           {props.loading ? ' · loading more…' : ''}
         </li>
         <li>
-          {props.state.settings.fill === 'close' ? 'Filled at the close of the bar an order is given on' : 'Filled at the next bar’s open, never on the bar that gave the order'} {tl('· fees')} {fees()[0]}{tl('% taker,')} {fees()[1]}{tl('% maker')}{props.state.settings.autoFees ? ` (${symbolOf(props.market)}’s exchange, first tier)` : ''} {tl('· slippage')} {props.state.settings.slippage}%
+          {props.state.settings.fill === 'close' ? tl('Filled at the close of the bar an order is given on') : tl('Filled at the next bar’s open, never on the bar that gave the order')} {tl('· fees')} {fees()[0]}{tl('% taker,')} {fees()[1]}{tl('% maker')}{props.state.settings.autoFees ? tlf(' ({0}’s exchange, first tier)', symbolOf(props.market)) : ''} {tl('· slippage')} {props.state.settings.slippage}%
         </li>
         <li>
           <Show when={r().inner} fallback={props.state.settings.magnify ? `No shorter timeframe to look inside ${props.timeframe} bars: a bar that reached both a stop and a target is taken as stopped` : 'A bar that reached both a stop and a target is taken as stopped'}>
-            {r().magnified > 0 || r().ambiguous > 0 ? `${r().magnified} bars that reached both a stop and a target read from their ${r().inner} bars` : `A bar that reaches both a stop and a target is read from its ${r().inner} bars: none did`}
+            {r().magnified > 0 || r().ambiguous > 0 ? tlf('{0} bars that reached both a stop and a target read from their {1} bars', r().magnified, r().inner) : tlf('A bar that reaches both a stop and a target is read from its {0} bars: none did', r().inner)}
           </Show>
           <Show when={r().ambiguous > 0}>
             {' '}
@@ -353,17 +353,17 @@ function Summary(props: TesterProps & { result: Ok; rows: TradeRow[]; stats: Sta
         </li>
         <li>
           {r().funding === 'paid'
-            ? `Funding paid at ${r().settlements.toLocaleString('en-US')} settlements`
+            ? tlf('Funding paid at {0} settlements', r().settlements.toLocaleString('en-US'))
             : r().funding === 'reading'
-              ? 'Reading the funding history…'
+              ? tl('Reading the funding history…')
               : r().funding === 'none'
-                ? 'Funding not counted: this exchange’s history is not read'
+                ? tl('Funding not counted: this exchange’s history is not read')
                 : r().funding === 'failed'
-                  ? 'Funding not counted: its history could not be read'
+                  ? tl('Funding not counted: its history could not be read')
                   : r().funding === 'spot'
-                    ? 'Spot: no funding'
-                    : 'Funding off'}
-          {r().skipped > 0 ? ` · ${r().skipped} orders not filled (no stop to size by, or no equity left)` : ''}
+                    ? tl('Spot: no funding')
+                    : tl('Funding off')}
+          {r().skipped > 0 ? tlf(' · {0} orders not filled (no stop to size by, or no equity left)', r().skipped) : ''}
         </li>
         <li>{tl('Worked out in this browser from the exchange’s bars. A backtest is the past: costs, fills and the market itself differ live.')}</li>
       </ul>
@@ -423,11 +423,11 @@ function Trades(props: { rows: TradeRow[]; result: Ok; precision: number; market
     <div class="bt-trades">
       <div class="bt-bar">
         <span class="dim">
-          {props.rows.length} {tl('trades')}{props.rows.length > MOST_ROWS ? ` · the ${asc() ? 'oldest' : 'newest'} ${MOST_ROWS} shown` : ''} {tl('· click one to see it on the chart')}
+          {props.rows.length} {tl('trades')}{props.rows.length > MOST_ROWS ? tlf(' · the {0} {1} shown', asc() ? tl('oldest') : tl('newest'), MOST_ROWS) : ''} {tl('· click one to see it on the chart')}
         </span>
         <span class="spacer" />
         <button class="dbtn" onClick={() => setAsc((v) => !v)}>
-          {asc() ? 'Oldest first' : 'Newest first'}
+          {asc() ? tl('Oldest first') : tl('Newest first')}
         </button>
         <button class="dbtn" disabled={props.rows.length === 0} onClick={csv}>
           {tl('Download CSV')}
@@ -454,7 +454,7 @@ function Trades(props: { rows: TradeRow[]; result: Ok; precision: number; market
               {(t) => (
                 <tr onClick={() => props.onShow(t.entryTime - 20 * barMs(), (t.open ? Date.now() : t.exitTime) + 20 * barMs())}>
                   <td class="dim">{t.n}</td>
-                  <td class={t.long ? 'bull' : 'bear'}>{t.long ? 'Long' : 'Short'}</td>
+                  <td class={t.long ? 'bull' : 'bear'}>{t.long ? tl('Long') : tl('Short')}</td>
                   <td>
                     <span class="dim">{when(t.entryTime)}</span> {price(t.entryPrice)}
                   </td>

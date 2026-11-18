@@ -8,6 +8,7 @@
 import { For, Show } from 'solid-js';
 import { armedTool, cycleMagnet, magnet, setArmedTool, TOOL_KEYS, type ChartController, type MagnetMode } from '../app/ui';
 import { Icon, type IconName } from '../lib/icons';
+import { tlf } from '../lib/i18n';
 
 const TOOLS: { kind: string; icon: IconName; title: string }[] = [
   { kind: '', icon: 'pointer', title: 'Select and pan (Esc) — click a drawing to select it, then Delete to remove it' },
@@ -50,7 +51,7 @@ export function DrawingRail(props: { target: () => ChartController | undefined }
           <button
             classList={{ on: armedTool() === t.kind }}
             disabled={t.kind !== '' && offline() !== null}
-            data-tip={t.kind !== '' && offline() ? `${t.title.split(' — ')[0]} — unavailable: drawings are saved on the tradoor server (${offline()})` : toolTip(t)}
+            data-tip={t.kind !== '' && offline() ? tlf('{0} — unavailable: drawings are saved on the tradoor server ({1})', t.title.split(' — ')[0], offline()) : toolTip(t)}
             onClick={() => setArmedTool(armedTool() === t.kind ? '' : t.kind)}
           >
             <Icon name={t.icon} />
@@ -77,7 +78,7 @@ export function DrawingRail(props: { target: () => ChartController | undefined }
       >
         <Icon name="trash" />
       </button>
-      <button class="del" disabled={count() === 0} data-tip={`Remove all ${count()} drawings on this market, on every timeframe`} onClick={() => props.target()?.clearDrawings()}>
+      <button class="del" disabled={count() === 0} data-tip={tlf('Remove all {0} drawings on this market, on every timeframe', count())} onClick={() => props.target()?.clearDrawings()}>
         <Icon name="eraser" />
       </button>
       <Show when={count() > 0}>

@@ -32,7 +32,7 @@ import { formatAlertTime } from '../lib/timezone';
 import { toast } from '../lib/toasts';
 import type { AlertSort, AlertsPanelState } from '../workspace/model';
 import { marketOf, patchPanel, targetChart } from '../workspace/store';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 const SORTS: { value: AlertSort; label: string }[] = [
   { value: 'newest', label: 'Newest first' },
@@ -206,7 +206,7 @@ export function AlertsPanel(props: { panel: AlertsPanelState }) {
         <Show when={tab() === 'alerts'}>
           <button
             class="iconbtn"
-            data-tip={`Sort: ${SORTS.find((s) => s.value === props.panel.sort)?.label}`}
+            data-tip={tlf('Sort: {0}', SORTS.find((s) => s.value === props.panel.sort)?.label)}
             onClick={() => patchPanel(id, { sort: SORTS[(SORTS.findIndex((s) => s.value === props.panel.sort) + 1) % SORTS.length]!.value })}
           >
             <Icon name="sort" size={13} />
@@ -245,7 +245,7 @@ export function AlertsPanel(props: { panel: AlertsPanelState }) {
       {/* The log's clean-up in sight rather than only under the menu. */}
       <Show when={tab() === 'log' && alertState.log.length > 0}>
         <div class="al-bulk">
-          <span>{alertState.log.length === 1 ? '1 entry' : `${alertState.log.length} entries`}</span>
+          <span>{alertState.log.length === 1 ? tl('1 entry') : tlf('{0} entries', alertState.log.length)}</span>
           <button class="del" onClick={clearLog}>
             <Icon name="trash" size={12} />
             <span>{tl('Clear log')}</span>
@@ -263,7 +263,7 @@ export function AlertsPanel(props: { panel: AlertsPanelState }) {
             }}
           >
             <div class="al-form-title">
-              {f().id === null ? 'New alert' : 'Edit alert'} · <MarketTag market={f().market} />
+              {f().id === null ? tl('New alert') : tl('Edit alert')} · <MarketTag market={f().market} />
             </div>
             <label>
               {tl('Condition')}
@@ -284,7 +284,7 @@ export function AlertsPanel(props: { panel: AlertsPanelState }) {
                 {tl('Cancel')}
               </button>
               <button type="submit" class="tb on">
-                {f().id === null ? 'Create' : 'Save'}
+                {f().id === null ? tl('Create') : tl('Save')}
               </button>
             </div>
           </form>
@@ -293,7 +293,7 @@ export function AlertsPanel(props: { panel: AlertsPanelState }) {
 
       <div class="scroll">
         <Show when={tab() === 'alerts'}>
-          <For each={alerts()} fallback={<div class="empty">{alertState.error ? `▲ ${alertState.error}` : query() ? 'No alert matches.' : 'No alerts. Hover the chart’s price axis and click the clock, or use the clock above.'}</div>}>
+          <For each={alerts()} fallback={<div class="empty">{alertState.error ? `▲ ${alertState.error}` : query() ? tl('No alert matches.') : tl('No alerts. Hover the chart’s price axis and click the clock, or use the clock above.')}</div>}>
             {(a) => (
               <div class="al-row" classList={{ stopped: !a.active }} onClick={() => openMarket(a.market)}>
                 <div class="al-title">

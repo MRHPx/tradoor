@@ -15,6 +15,9 @@ export { setWords };
 /** Left out (an optional label) stays left out. */
 export const tl = <S extends string | undefined>(s: S): S => ((s && words()[s]) || s) as S;
 
+/** A sentence with values in it, written {0}, {1}… in the catalog: translated, then filled in. */
+export const tlf = (s: string, ...v: unknown[]): string => tl(s).replace(/\{(\d+)\}/g, (_, i: string) => String(v[+i] ?? ''));
+
 /** Every language offered, English first: the rest have a catalog each. */
 export const LANG_CODES = 'en es fr ko zh ja th ms id vi tr pt ru'.split(' ');
 export const LANG_KEY = 'lang';

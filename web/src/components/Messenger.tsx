@@ -18,7 +18,7 @@ import { setPanelMarket, targetChart } from '../workspace/store';
 import { session } from '../lib/owner';
 import { noteOnline, online } from '../lib/presence';
 import { username } from '../lib/username';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 const EVERY_MS = 2500;
 const MAX_CHARS = 300;
@@ -90,7 +90,7 @@ function Cashtag(props: { tag: string }) {
           <button
             class="cashtag"
             classList={{ bull: (change() ?? 0) > 0, bear: (change() ?? 0) < 0 }}
-            data-tip={`${p.symbol} · open it on the chart`}
+            data-tip={tlf('{0} · open it on the chart', p.symbol)}
             onClick={() => {
               const chart = targetChart();
               if (chart) setPanelMarket(chart.id, p.market);
@@ -252,11 +252,11 @@ export function Messenger(props: { onClose(): void }) {
                       class="msgr-report"
                       classList={{ done: reported().has(m.id) }}
                       disabled={reported().has(m.id)}
-                      aria-label={reported().has(m.id) ? 'Reported' : `Report this message from ${m.name}`}
+                      aria-label={reported().has(m.id) ? tl('Reported') : tlf('Report this message from {0}', m.name)}
                       data-tip={reported().has(m.id) ? 'Reported to the moderator' : 'Report to the moderator: spam, a scam or abuse'}
                       onClick={() => void report(m.id)}
                     >
-                      {reported().has(m.id) ? 'reported' : 'report'}
+                      {reported().has(m.id) ? tl('reported') : tl('report')}
                     </button>
                   </div>
                   <div class="msgr-text">
@@ -289,7 +289,7 @@ export function Messenger(props: { onClose(): void }) {
           rows={1}
           maxlength={MAX_CHARS * 2}
           disabled={held()}
-          placeholder={held() ? 'Only accounts with a username can write for now' : `Write as ${as() ?? 'a guest'}`}
+          placeholder={held() ? tl('Only accounts with a username can write for now') : tlf('Write as {0}', as() ?? tl('a guest'))}
           value={text()}
           onInput={(e) => {
             setText(e.currentTarget.value);

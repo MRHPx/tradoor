@@ -100,7 +100,7 @@ export function AccountCard(props: { onSignedIn?: () => void }) {
 
   return (
     <>
-      <Show when={status()} fallback={<div class="dim">{error() ?? 'Reading…'}</div>}>
+      <Show when={status()} fallback={<div class="dim">{error() ?? tl('Reading…')}</div>}>
         {(s) => (
           <Show
             when={s().account}
@@ -117,7 +117,7 @@ export function AccountCard(props: { onSignedIn?: () => void }) {
                 </div>
                 <Show when={s().telegram} fallback={<div class="dim">{tl('This server has no Telegram bot set up, so signing in is not on offer here.')}</div>}>
                   <div class="set-actions">
-                    <Show when={invite()} fallback={<span class="dim">{s().bot ? 'Making a link…' : 'The bot has not answered yet.'}</span>}>
+                    <Show when={invite()} fallback={<span class="dim">{s().bot ? tl('Making a link…') : tl('The bot has not answered yet.')}</span>}>
                       {(link) => (
                         <a
                           class="btn primary big"
@@ -150,7 +150,7 @@ export function AccountCard(props: { onSignedIn?: () => void }) {
                 <div class="set-account">
                   <span class="avatar">{(a().name ?? '?').replace(/^@/, '').slice(0, 1).toUpperCase()}</span>
                   <div class="who">
-                    <b>{a().name ?? 'Telegram account'}</b>
+                    <b>{a().name ?? tl('Telegram account')}</b>
                     <span class="dim">{tl('Signed in with Telegram · since')} {formatDateTime(a().since).slice(0, 10)}</span>
                   </div>
                   <button class="btn" disabled={leaving()} onClick={() => void signOut()}>

@@ -17,7 +17,7 @@ import { book, FILL_LABEL, journalApi, localInput, money, pnl, rMultiple, rText,
 import { Readout } from '../journal/Readout';
 import { StrategyPicker } from '../journal/strategies';
 import { NumField } from './NumField';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 const LEG_GROUPS: { kind: LegKind; title: string; tip: string }[] = [
   { kind: 'take', title: 'Partial take profit', tip: 'A partial take profit: part of the position off on the way to the target' },
@@ -204,7 +204,7 @@ export function PositionTicket(props: {
       </div>
       <details class="tmore">
         <summary class="num">
-          {tl('Account')} {account().toLocaleString('en-US')} {tl('· Lot')} {lot()} {tl('· Qty precision')} {props.str('qtyDecimals', '') === '' ? 'default' : props.str('qtyDecimals', '')}
+          {tl('Account')} {account().toLocaleString('en-US')} {tl('· Lot')} {lot()} {tl('· Qty precision')} {props.str('qtyDecimals', '') === '' ? tl('default') : props.str('qtyDecimals', '')}
         </summary>
         <div class="tgrid">
           {field('Account size', <NumField value={account()} onValue={(v) => v > 0 && props.set('account', v)} label="Account size" />)}
@@ -238,14 +238,14 @@ export function PositionTicket(props: {
             const ok = () => fits(x().l, entry(), stop(), target());
             const moved = () => (x().l.percent / 100) * coins();
             return (
-              <div classList={{ tleg: true, bad: !ok() }} data-tip={ok() ? undefined : `Left out: a level here goes ${WHERE[x().l.kind]}`}>
+              <div classList={{ tleg: true, bad: !ok() }} data-tip={ok() ? undefined : tlf('Left out: a level here goes {0}', WHERE[x().l.kind])}>
                 <span class={`tleg-name ${x().l.kind}`}>
                   {legName(x().l.kind)}
                   {x().n}
                 </span>
-                <NumField value={round(x().l.price)} onValue={(v) => editLeg(x().i, { price: v })} step={tick()} label={`${x().g.title} ${x().n} price`} />
+                <NumField value={round(x().l.price)} onValue={(v) => editLeg(x().i, { price: v })} step={tick()} label={tlf('{0} {1} price', x().g.title, x().n)} />
                 <span class="tpct">
-                  <NumField value={x().l.percent} onValue={(v) => v > 0 && v <= 1000 && editLeg(x().i, { percent: v })} step={5} label={`${x().g.title} ${x().n} percent`} />%
+                  <NumField value={x().l.percent} onValue={(v) => v > 0 && v <= 1000 && editLeg(x().i, { percent: v })} step={5} label={tlf('{0} {1} percent', x().g.title, x().n)} />%
                 </span>
                 <span class="thint num" data-tip={x().l.kind === 'add' ? 'Coins added' : 'Coins moved, and what they make against the entry'}>
                   {x().l.kind === 'add' ? `+${qtyText(moved() / lot())}` : money((x().l.price - entry()) * dir * moved())}

@@ -112,7 +112,7 @@ function Held(props: { position: Position | undefined; last: number }) {
         const pnl = () => unrealized(p(), props.last);
         return (
           <span class="num">
-            <span classList={{ bull: p().side === 'long', bear: p().side === 'short' }}>{p().side === 'long' ? 'Long' : 'Short'}</span> {coins(p().qty)} {coinOf(p().symbol)} <span class="dim">@</span> {formatPrice(p().entry)}{' '}
+            <span classList={{ bull: p().side === 'long', bear: p().side === 'short' }}>{p().side === 'long' ? tl('Long') : tl('Short')}</span> {coins(p().qty)} {coinOf(p().symbol)} <span class="dim">@</span> {formatPrice(p().entry)}{' '}
             <span classList={{ bull: pnl() > 0, bear: pnl() < 0 }}>{usd(pnl())}</span>
           </span>
         );

@@ -14,7 +14,7 @@ import { AccountCard, clock } from './Account';
 import { forgetRecorded, KEEP_DAYS, recorderSettings, setRecorderSettings } from '../lib/fp-recorder';
 import { usage } from '../lib/fp-store';
 import { symbolOf, venueLabel } from '../lib/markets';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 import { LANGS, useLang } from '../lib/i18n-load';
 
 function Swatch(props: { name: string; label: string; fallback: string }) {
@@ -147,7 +147,7 @@ function TelegramSection() {
     <>
       <h2>{tl('Telegram alerts')}</h2>
       <p class="lead">{tl('Price alerts and the signals you turn on fire on the server, so they reach these chats whether or not a tab is open.')}</p>
-      <Show when={status()} fallback={<div class="dim">{error() ?? 'Reading…'}</div>}>
+      <Show when={status()} fallback={<div class="dim">{error() ?? tl('Reading…')}</div>}>
         {(s) => (
           <Show when={s().enabled} fallback={<div class="set-card dim">{tl('This server has no Telegram bot set up. Give it one with TRADOOR_TELEGRAM_TOKEN.')}</div>}>
             <div class="set-card">
@@ -156,7 +156,7 @@ function TelegramSection() {
                 {(chat) => (
                   <div class="set-row">
                     <Icon name="send" size={13} />
-                    <span class="grow">{chat.name ?? `Chat ${chat.chatId}`}</span>
+                    <span class="grow">{chat.name ?? tlf('Chat {0}', chat.chatId)}</span>
                     <span class="num dim">{tl('linked')} {formatDateTime(chat.linkedAt).slice(0, 16)}</span>
                     <button class="btn" onClick={() => void act(() => api.telegramUnlink(chat.chatId), 'Disconnected.')}>
                       {tl('Disconnect')}
@@ -165,11 +165,11 @@ function TelegramSection() {
                 )}
               </For>
               <div class="set-actions">
-                <Show when={invite()} fallback={<span class="dim">{s().bot ? 'Making a link…' : 'The bot has not answered yet.'}</span>}>
+                <Show when={invite()} fallback={<span class="dim">{s().bot ? tl('Making a link…') : tl('The bot has not answered yet.')}</span>}>
                   {(link) => (
                     <>
                       <a class="btn" href={link().url} target="_blank" rel="noopener" onClick={() => setWaiting(true)}>
-                        {s().chats.length > 0 ? 'Connect another chat' : 'Connect Telegram'}
+                        {s().chats.length > 0 ? tl('Connect another chat') : tl('Connect Telegram')}
                       </a>
                       <span class="dim num" data-tip="Or send the bot /start with this code">
                         /start {link().code}
@@ -257,7 +257,7 @@ function TextCard() {
         <Row label="Bold" tip="Heavier writing on the page and on the charts, easier to read on a bright or distant screen">
           <label class="set-check">
             <input type="checkbox" checked={doc.theme[FONT_BOLD.name] === '1'} onChange={(e) => setThemeValue(FONT_BOLD.name, e.currentTarget.checked ? '1' : null)} />
-            <span>{doc.theme[FONT_BOLD.name] === '1' ? 'Bold text on the page and the charts' : 'Regular text'}</span>
+            <span>{doc.theme[FONT_BOLD.name] === '1' ? tl('Bold text on the page and the charts') : tl('Regular text')}</span>
           </label>
         </Row>
       </div>
@@ -366,7 +366,7 @@ function BrowserFootprints() {
         <Row label="Record" tip="Off, footprints show only for the markets the server records">
           <label class="set-check">
             <input type="checkbox" checked={recorderSettings().on} onChange={(e) => setRecorderSettings({ on: e.currentTarget.checked })} />
-            <span>{recorderSettings().on ? 'Recording the markets on your charts' : 'Not recording'}</span>
+            <span>{recorderSettings().on ? tl('Recording the markets on your charts') : tl('Not recording')}</span>
           </label>
         </Row>
         <Row label="Keep" tip="Older minutes are deleted on their own">
@@ -374,7 +374,7 @@ function BrowserFootprints() {
             <For each={KEEP_DAYS}>
               {(d) => (
                 <option value={d} selected={recorderSettings().days === d}>
-                  {d === 1 ? 'The last day' : `The last ${d} days`}
+                  {d === 1 ? tl('The last day') : tlf('The last {0} days', d)}
                 </option>
               )}
             </For>
@@ -382,7 +382,7 @@ function BrowserFootprints() {
         </Row>
         <Row label="Stored here">
           <div class="set-actions">
-            <span class="num">{used() === null ? '…' : `${megabytes(total())} · ${used()!.length} market${used()!.length === 1 ? '' : 's'}`}</span>
+            <span class="num">{used() === null ? '…' : tlf('{0} · {1} market{2}', megabytes(total()), used()!.length, used()!.length === 1 ? '' : 's')}</span>
             <Show when={site()}>{(s) => <span class="dim">{tl('of')} {megabytes(s().usage)} {tl('this site uses; the browser allows')} {megabytes(s().quota)}</span>}</Show>
             <Show when={(used() ?? []).length > 0}>
               <button class="btn danger" onClick={() => remove()}>
@@ -401,7 +401,7 @@ function BrowserFootprints() {
                   </span>
                   <span class="num dim">{Math.round(m.minutes / 60)} {tl('h')}</span>
                   <span class="num">{megabytes(m.bytes)}</span>
-                  <button class="dim" data-tip={`Delete ${symbolOf(m.market)}'s footprint`} aria-label={`Delete ${symbolOf(m.market)}'s footprint`} onClick={() => remove(m.market)}>
+                  <button class="dim" data-tip={tlf('Delete {0}\'s footprint', symbolOf(m.market))} aria-label={tlf('Delete {0}\'s footprint', symbolOf(m.market))} onClick={() => remove(m.market)}>
                     ✕
                   </button>
                 </div>
@@ -444,7 +444,7 @@ function ThemesSection() {
           )}
         </For>
       </div>
-      <h3 class="set-sub">{current() ? 'Fine-tune it' : 'Your own colours'}</h3>
+      <h3 class="set-sub">{current() ? tl('Fine-tune it') : tl('Your own colours')}</h3>
       <p class="lead">{tl('Any colour changed here makes the theme your own; ↺ puts one back to the default.')}</p>
       <div class="set-card">
         <h3>{tl('Chart')}</h3>
@@ -497,7 +497,7 @@ function AdvancedSection(props: { onClose(): void }) {
               <span class="swatch">
                 <ExchangeLogo exchange={x} size={16} />
                 <span class="name">{x.name}</span>
-                <span class={x.live ? 'bull' : 'dim'}>{x.live ? 'live' : 'coming later'}</span>
+                <span class={x.live ? 'bull' : 'dim'}>{x.live ? tl('live') : tl('coming later')}</span>
               </span>
             )}
           </For>
@@ -537,7 +537,7 @@ function OwnerRows() {
         <div class="set-inline">
           <input class="box wide num" readOnly value={ownerId()} onFocus={(e) => e.currentTarget.select()} />
           <button class="btn" onClick={() => void navigator.clipboard?.writeText(ownerId()).then(() => setCopied(true))}>
-            {copied() ? 'Copied' : 'Copy'}
+            {copied() ? tl('Copied') : tl('Copy')}
           </button>
         </div>
       </Row>

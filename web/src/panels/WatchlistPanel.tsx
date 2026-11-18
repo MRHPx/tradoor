@@ -21,7 +21,7 @@ import { parseMarket, symbolOf, venueLabel } from '../lib/markets';
 import { blockOf, FLAG_COLORS, FLAGS, freshName, isSection, move, SECTION_NAME_MAX, sectionEnd, sectionName, sectionStops, visible } from '../lib/watchlist';
 import type { WatchlistPanelState } from '../workspace/model';
 import { doc, marketOf, patchPanel, setLinkMarket, setPanelMarket, targetChart, timeframeOf } from '../workspace/store';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 interface Row {
   last: number;
@@ -417,8 +417,8 @@ export function WatchlistPanel(props: { panel: WatchlistPanelState }) {
                         class="swatch"
                         classList={{ on: flags()[item!] === c }}
                         style={{ '--flag': FLAG_COLORS[c] }}
-                        data-tip={flags()[item!] === c ? 'Unflag' : `Flag ${c}`}
-                        aria-label={`Flag ${c}`}
+                        data-tip={flags()[item!] === c ? 'Unflag' : tlf('Flag {0}', c)}
+                        aria-label={tlf('Flag {0}', c)}
                         onClick={run(() => setFlag(item!, c))}
                       />
                     )}
@@ -436,17 +436,17 @@ export function WatchlistPanel(props: { panel: WatchlistPanelState }) {
               </Show>
               <Show when={item !== null && isSection(item)}>
                 <button onClick={run(() => setEditing(sectionName(item!)))}>{tl('Rename section')}</button>
-                <button onClick={run(() => toggle(sectionName(item!)))}>{collapsed().includes(sectionName(item!)) ? 'Expand section' : 'Collapse section'}</button>
+                <button onClick={run(() => toggle(sectionName(item!)))}>{collapsed().includes(sectionName(item!)) ? tl('Expand section') : tl('Collapse section')}</button>
               </Show>
               <button onClick={run(() => addSection(item))}>
-                {tl('Add section')}<span class="dim">{item === null ? 'at the end' : 'above'}</span>
+                {tl('Add section')}<span class="dim">{item === null ? tl('at the end') : tl('above')}</span>
               </button>
               <button onClick={run(() => addSymbol(item !== null && isSection(item) ? sectionEnd(items(), at) : item === null ? at : at + 1))}>
-                {tl('Add symbol…')}<span class="dim">{item !== null && isSection(item) ? 'to this section' : item === null ? '' : 'below'}</span>
+                {tl('Add symbol…')}<span class="dim">{item !== null && isSection(item) ? tl('to this section') : item === null ? '' : tl('below')}</span>
               </button>
               <Show when={item !== null}>
                 <hr />
-                <button onClick={run(() => remove(item!))}>{isSection(item!) ? 'Remove section' : `Remove ${symbolOf(item!)}`}</button>
+                <button onClick={run(() => remove(item!))}>{isSection(item!) ? tl('Remove section') : tlf('Remove {0}', symbolOf(item!))}</button>
               </Show>
             </div>
           );

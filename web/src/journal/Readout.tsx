@@ -9,7 +9,7 @@ export function Readout(props: { figures: Figures; hasLegs?: boolean; avgEntry?:
   return (
     <dl class="readout num">
       <div data-tip={props.hasLegs ? 'At the stop, every add and cut on the way filled' : 'What it loses if price reaches the stop'}>
-        <dt>{props.hasLegs ? 'Max loss' : 'Loss at stop'}</dt>
+        <dt>{props.hasLegs ? tl('Max loss') : tl('Loss at stop')}</dt>
         <dd class="bear">{money(-f().loss)}</dd>
       </div>
       <div data-tip="What it makes if price reaches the target">

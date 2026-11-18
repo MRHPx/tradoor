@@ -17,7 +17,7 @@ import { Icon } from '../lib/icons';
 import { toast } from '../lib/toasts';
 import { doc, marketOf, patchPanel, timeframeOf } from '../workspace/store';
 import { mendable, mendPaste, mendScript, type Mended } from '../lib/mend';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 const CHECK_MS = 250;
 /** A description, in characters: at least, to share the script, and at most (bins/server scripts). */
@@ -185,7 +185,7 @@ export function FormulaEditor(props: { id?: string; seed?: { name: string; sourc
       toast({ tone: 'info', title: 'Copied the instructions for an AI', body: 'Paste them into Claude, ChatGPT, Gemini or another AI chat, then your Pine Script v6 indicator. Paste its answer here, and it is checked as usual.' });
     } catch (e) {
       aiText = null;
-      toast({ tone: 'warn', title: 'Not copied', body: `${errorText(e)}. They are on the docs page as well.` });
+      toast({ tone: 'warn', title: 'Not copied', body: tlf('{0}. They are on the docs page as well.', errorText(e)) });
     }
   };
 
@@ -266,7 +266,7 @@ export function FormulaEditor(props: { id?: string; seed?: { name: string; sourc
                 value={about()}
                 disabled={removed()}
                 aria-label={tl('Description')}
-                placeholder={`What it shows, and how to read it. Needed to share it: ${SHARED_ABOUT} characters at least.`}
+                placeholder={tlf('What it shows, and how to read it. Needed to share it: {0} characters at least.', SHARED_ABOUT)}
                 onInput={(e) => setAbout(e.currentTarget.value)}
               />
             </Show>
@@ -286,7 +286,7 @@ export function FormulaEditor(props: { id?: string; seed?: { name: string; sourc
                   {(u) => (
                     <Show when={short() === 0} fallback={<span class="warn">{tl('Describe it to share it:')} {short()} {tl('more characters. Say what it shows, and how to read it.')}</span>}>
                       <span>
-                        {saved()?.shared ? 'Shared in the Community as' : 'Saved, it is shared in the Community as'} <b>@{u()}</b>{tl(', on every chart it is added to, and on the')}{' '}
+                        {saved()?.shared ? tl('Shared in the Community as') : tl('Saved, it is shared in the Community as')} <b>@{u()}</b>{tl(', on every chart it is added to, and on the')}{' '}
                         <a href="/community.html" target="_blank" rel="noopener">
                           {tl('showcase ↗')}
                         </a>
@@ -339,7 +339,7 @@ export function FormulaEditor(props: { id?: string; seed?: { name: string; sourc
               {(m) => (
                 <div class="fx-mend done">
                   <span>
-                    <b>{tl('Mended:')}</b> {m().changes.join(' · ') || 'nothing to change'}.
+                    <b>{tl('Mended:')}</b> {m().changes.join(' · ') || tl('nothing to change')}.
                   </span>
                   <Show when={m().left.length > 0}>
                     <ul>
@@ -355,13 +355,13 @@ export function FormulaEditor(props: { id?: string; seed?: { name: string; sourc
                 {(r) => {
                   return r.ok ? (
                     <span class="ok">
-                      {tl('✓ Checks ·')} {r.ownPane ? 'its own pane' : 'on price'} · {r.inputs.length} {r.inputs.length === 1 ? 'setting' : 'settings'} · {r.plots.length} {r.plots.length === 1 ? 'line' : 'lines'}
+                      {tl('✓ Checks ·')} {r.ownPane ? tl('its own pane') : tl('on price')} · {r.inputs.length} {r.inputs.length === 1 ? tl('setting') : tl('settings')} · {r.plots.length} {r.plots.length === 1 ? tl('line') : tl('lines')}
                       {r.marks.length > 0 ? ` · ${r.marks.length} ${r.marks.length === 1 ? 'mark' : 'marks'}` : ''}
                       {r.draws ? ' · shapes' : ''}
                     </span>
                   ) : (
                     <button class="warn fx-error" onClick={() => jump(r.line, r.col)}>
-                      ▲ {r.line > 0 ? `Line ${r.line}, column ${r.col}: ` : ''}
+                      ▲ {r.line > 0 ? tlf('Line {0}, column {1}: ', r.line, r.col) : ''}
                       {r.message}
                     </button>
                   );

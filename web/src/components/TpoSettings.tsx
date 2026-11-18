@@ -10,7 +10,7 @@ import { CHART_THEME } from '../lib/theme';
 import { parseSessions, serializeSessions, themedTpoColor, TPO_DEFAULTS, tpoValue, withTpoValue, type TpoSession } from '../lib/tpo-settings';
 import { TPO_SPLITS, tpoFits, type ChartPanelState } from '../workspace/model';
 import { doc, patchPanel, timeframeOf } from '../workspace/store';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const clock = (m: number) => `${pad(Math.floor(m / 60) % 24)}:${pad(m % 60)}`;
@@ -40,7 +40,7 @@ export function TpoSettings(props: { panel: ChartPanelState; onClose(): void }) 
               <input
                 class="box num"
                 value={clock(s().start)}
-                aria-label={`Session ${i + 1} start, UTC`}
+                aria-label={tlf('Session {0} start, UTC', i + 1)}
                 onChange={(e) => {
                   const m = minutes(e.currentTarget.value);
                   if (m === null) e.currentTarget.value = clock(s().start);
@@ -51,15 +51,15 @@ export function TpoSettings(props: { panel: ChartPanelState; onClose(): void }) 
               <input
                 class="box num"
                 value={clock(s().end)}
-                aria-label={`Session ${i + 1} end, UTC`}
+                aria-label={tlf('Session {0} end, UTC', i + 1)}
                 onChange={(e) => {
                   const m = minutes(e.currentTarget.value);
                   if (m === null) e.currentTarget.value = clock(s().end);
                   else change(i, { end: m });
                 }}
               />
-              <ColorField value={s().color} onChange={(c) => change(i, { color: c.slice(0, 7) })} title={`Session ${i + 1} colour`} />
-              <button class="dim" data-tip="Remove this session" aria-label={`Remove session ${i + 1}`} onClick={() => save(list().filter((_, j) => j !== i))}>
+              <ColorField value={s().color} onChange={(c) => change(i, { color: c.slice(0, 7) })} title={tlf('Session {0} colour', i + 1)} />
+              <button class="dim" data-tip="Remove this session" aria-label={tlf('Remove session {0}', i + 1)} onClick={() => save(list().filter((_, j) => j !== i))}>
                 ✕
               </button>
             </div>

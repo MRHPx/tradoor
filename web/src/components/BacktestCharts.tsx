@@ -9,7 +9,7 @@ import { distribution, monteCarlo, monthly, pct, ratio, type Stats, type TradeRo
 import type { BacktestState } from '../lib/backtest-state';
 import { formatAlertTime } from '../lib/timezone';
 import type { Ok } from './StrategyTester';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 const W = 1000;
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -153,7 +153,7 @@ function Spread(props: { rows: TradeRow[] }) {
   return (
     <figure class="bt-chart half">
       <figcaption>
-        {tl('How the results spread')} <span class="dim">{tl('· in')} {d().unit === 'R' ? 'R, multiples of the first stop’s loss' : 'percent of the equity'}</span>
+        {tl('How the results spread')} <span class="dim">{tl('· in')} {d().unit === 'R' ? tl('R, multiples of the first stop’s loss') : tl('percent of the equity')}</span>
       </figcaption>
       <Show when={d().bins.length > 0} fallback={<p class="dim">{tl('No closed trades.')}</p>}>
         <svg viewBox="0 0 400 120" class="bt-svg" role="img" aria-label="How many trades ended at each result">
@@ -228,7 +228,7 @@ function Shuffled(props: { rows: TradeRow[]; stats: Stats | null }) {
           <div class="bt-mc num">
             <span>
               {tl('Drawdown: half the runs reach')} <b class="bear">{pct(-m().dd[1])}</b>{tl(', one in twenty')} <b class="bear">{pct(-m().dd[2])}</b>
-              {props.stats ? ` (the test’s own: ${pct(-props.stats.maxDdPct)})` : ''}
+              {props.stats ? tlf(' (the test’s own: {0})', pct(-props.stats.maxDdPct)) : ''}
             </span>
             <span>
               {tl('Return:')} <b>{pct(m().ret[0])}</b> {tl('to')} <b>{pct(m().ret[2])}</b> {tl('for nine runs in ten, the middle one')} {pct(m().ret[1])} · {pct(m().losing, false)} {tl('of the runs lost money')}

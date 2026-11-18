@@ -538,7 +538,7 @@ export function DomPanel(props: { panel: DomPanelState; trade?: DomTrade; patch?
           </For>
         </select>
         <button class="tb" data-tip="Sizes in dollars or in coins" onClick={() => patch({ unit: props.panel.unit === 'usd' ? 'coins' : 'usd' })}>
-          {props.panel.unit === 'usd' ? 'USD' : 'Coins'}
+          {props.panel.unit === 'usd' ? tl('USD') : tl('Coins')}
         </button>
         <button class="tb dom-opt" classList={{ on: auto() }} data-tip="Keep the last price in the middle — or double-click the rows" onClick={center}>
           {tl('Center')}
@@ -563,7 +563,7 @@ export function DomPanel(props: { panel: DomPanelState; trade?: DomTrade; patch?
             {(o) => (
               <button data-tip={o.tip} classList={{ cur: !hidden().has(o.key) }} onClick={() => toggleColumn(o.key)}>
                 <span>{tl(o.label)}</span>
-                <span>{hidden().has(o.key) ? 'Off' : 'On'}</span>
+                <span>{hidden().has(o.key) ? tl('Off') : 'On'}</span>
               </button>
             )}
           </For>
@@ -648,7 +648,7 @@ export function DomPanel(props: { panel: DomPanelState; trade?: DomTrade; patch?
                 {(o) => (
                   <button onClick={() => toggleColumn(o.key)}>
                     <span>{tl(o.label)} {tl('column')}</span>
-                    <span class="dim">{hidden().has(o.key) ? 'Off' : 'On'}</span>
+                    <span class="dim">{hidden().has(o.key) ? tl('Off') : 'On'}</span>
                   </button>
                 )}
               </For>

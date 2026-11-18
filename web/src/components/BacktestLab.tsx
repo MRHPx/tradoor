@@ -14,7 +14,7 @@ import { isChartMarket, isRatio, parseMarket, symbolOf } from '../lib/markets';
 import { optimize, type Cell } from '../lib/optimizer';
 import { doc } from '../workspace/store';
 import type { TesterProps } from './StrategyTester';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 const METRICS: { id: string; label: string; get(s: Stats): number; show(v: number): string }[] = [
   { id: 'net', label: 'Net profit', get: (s) => s.netPct, show: (v) => pct(v) },
@@ -201,7 +201,7 @@ function Optimizer(props: TesterProps) {
                   {tl('Run')} {count()} {tl('tests')}
                 </button>
               </Show>
-              <span class="dim">{count() > 300 ? 'a large grid: it takes a while on a long chart' : 'each over every bar the chart holds, several at once'}</span>
+              <span class="dim">{count() > 300 ? tl('a large grid: it takes a while on a long chart') : tl('each over every bar the chart holds, several at once')}</span>
             </div>
             <Show when={error()}>{(e) => <p class="warn">{e()}</p>}</Show>
           </div>
@@ -216,7 +216,7 @@ function Optimizer(props: TesterProps) {
                 <thead>
                   <tr>
                     <th class="dim">{grid().ys ? `${label(grid().yi!)} ↓ · ${label(grid().xi)} →` : label(grid().xi)}</th>
-                    <Show when={grid().ys} fallback={<th>{tl(m().label)}{props.state.settings.split > 0 ? ', tuned part' : ''}</th>}>
+                    <Show when={grid().ys} fallback={<th>{tl(m().label)}{props.state.settings.split > 0 ? tl(', tuned part') : ''}</th>}>
                       <For each={grid().xs}>{(v) => <th>{v}</th>}</For>
                     </Show>
                   </tr>
@@ -311,7 +311,7 @@ function AxisRow(props: { title: string; axis: Axis | null; options: { inp: Form
   return (
     <label class="bt-row">
       <span>{tl(props.title)}</span>
-      <select value={props.axis ? String(props.axis.index) : '-1'} aria-label={`${props.title}: which setting`} onChange={(e) => props.onPick(Number(e.currentTarget.value))}>
+      <select value={props.axis ? String(props.axis.index) : '-1'} aria-label={tlf('{0}: which setting', props.title)} onChange={(e) => props.onPick(Number(e.currentTarget.value))}>
         <Show when={props.optional}>
           <option value="-1">{tl('Nothing')}</option>
         </Show>
@@ -434,7 +434,7 @@ function Markets(props: TesterProps) {
                     <td>
                       {symbolOf(r.market)} <span class="dim">{parseMarket(r.market)?.venue}</span>
                     </td>
-                    <Show when={r.stats} fallback={<td colSpan={8} class={r.error ? 'warn' : 'dim'}>{r.error ?? (running() ? '…' : 'no bars')}</td>}>
+                    <Show when={r.stats} fallback={<td colSpan={8} class={r.error ? 'warn' : 'dim'}>{r.error ?? (running() ? '…' : tl('no bars'))}</td>}>
                       {(s) => (
                         <>
                           <td class={tone(s().net)}>{pct(s().netPct)}</td>

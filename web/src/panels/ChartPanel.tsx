@@ -41,7 +41,7 @@ import { TIMEFRAMES, tfLabel, tfMs, tfName } from '../lib/timeframes';
 import { tabsOf, TPO_SPLITS, tpoFits, type ChartPanelState } from '../workspace/model';
 import { canSplit, mergeLeft, mergeRight, splitProfile, toggleExpanded } from '../lib/tpo-edits';
 import { behindMaximized, doc, marketOf, maximized, patchPanel, setPanelMarket, setPanelTimeframe, timeframeOf, toggleFavoriteTimeframe, toggleMaximized } from '../workspace/store';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 // Drawing settings load when a drawing is first selected: nobody needs them to see a chart.
 const DrawingSettings = lazy(() => import('../components/DrawingSettings').then((m) => ({ default: m.DrawingSettings })));
@@ -1244,7 +1244,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
   const capture = (save: boolean) => {
     const l = legend();
     const at = replayAt();
-    const tpo = split() ? ` · TPO ${TPO_SPLITS.find((t) => t.value === split())?.label}` : '';
+    const tpo = split() ? ` · TPO ${tl(TPO_SPLITS.find((t) => t.value === split())?.label)}` : '';
     const title = {
       symbol: symbolOf(market()),
       detail: `${tfLabel(timeframe())}${tpo} · ${venueLabel(market())}`,
@@ -1516,7 +1516,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
       <input
         class="box num"
         style={{ width: '58px' }}
-        data-tip={`Ticks a row covers — empty fits the rows to the zoom, so every row carries its number. One tick is ${recorded().get(market()) ?? 1}`}
+        data-tip={tlf('Ticks a row covers — empty fits the rows to the zoom, so every row carries its number. One tick is {0}', recorded().get(market()) ?? 1)}
         value={props.panel.footprintTicks || ''}
         placeholder={tl('auto')}
         onChange={(e) => {
@@ -1565,7 +1565,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
           </button>
         </Show>
         {/* A narrow chart folds the buttons into the timeframe shown, which opens them all (styles.css). */}
-        <button class="tb num on tf-now" data-tip={`${tfName(timeframe())} — every timeframe`} onPointerDown={(e) => e.stopPropagation()} onClick={(e) => openTfMenu(e.currentTarget)}>
+        <button class="tb num on tf-now" data-tip={tlf('{0} — every timeframe', tfName(timeframe()))} onPointerDown={(e) => e.stopPropagation()} onClick={(e) => openTfMenu(e.currentTarget)}>
           {tfLabel(timeframe())}
           <Icon name="chevron" size={10} />
         </button>
@@ -1703,7 +1703,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
               {(item) => (
                 <button onClick={() => tpoSet(item.key, tpoOn(item.key) ? '0' : '1')}>
                   {tl(item.label)}
-                  <span class={tpoOn(item.key) ? 'bull' : 'dim'}>{tpoOn(item.key) ? 'on' : 'off'}</span>
+                  <span class={tpoOn(item.key) ? 'bull' : 'dim'}>{tpoOn(item.key) ? 'on' : tl('off')}</span>
                 </button>
               )}
             </For>
@@ -1734,7 +1734,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
                           <button
                             class="num"
                             classList={{ cur: t.value === timeframe() }}
-                            data-tip={t.live ? t.name : `${t.name} — folded from shorter bars; closed bars only`}
+                            data-tip={t.live ? t.name : tlf('{0} — folded from shorter bars; closed bars only', t.name)}
                             onClick={() => {
                               setPanelTimeframe(id, t.value);
                               setTfMenu(null);
@@ -1747,7 +1747,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
                             class="fav"
                             classList={{ on: favorite() }}
                             aria-pressed={favorite()}
-                            aria-label={`Favourite: ${t.name}`}
+                            aria-label={tlf('Favourite: {0}', t.name)}
                             data-tip={favorite() ? 'In the bar — click to take it out' : 'Add to the bar'}
                             onClick={() => toggleFavoriteTimeframe(t.value)}
                           >
@@ -1900,7 +1900,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
               <span class="sep" />
               <button
                 class="tb"
-                aria-label={replayPlaying() ? 'Pause' : 'Play'}
+                aria-label={replayPlaying() ? tl('Pause') : tl('Play')}
                 data-tip={replayPlaying() ? 'Pause' : 'Play'}
                 disabled={!replaying() || replayState().ended}
                 onClick={() => setReplayPlaying((v) => !v)}
@@ -1933,7 +1933,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
           </Show>
           <Show when={tool() !== '' || selected() !== null || drawError() || replayPicking()}>
             <div class="hint" classList={{ 'over-replay': replayOpen() && !(footprintOn() && props.panel.footprintStats === true) }}>
-              {replayPicking() ? `${mobile() ? 'Tap' : 'Click'} the bar to replay from: every bar after it is hidden${mobile() ? '' : ' · esc cancels'}` : tool() ? (mobile() && tool() !== 'brush' ? TOUCH_STEPS : TOOL_STEPS[tool()]) : selected() !== null ? 'Drawing selected · double-click for settings · Delete removes it, esc deselects' : ''}
+              {replayPicking() ? tlf('{0} the bar to replay from: every bar after it is hidden{1}', mobile() ? tl('Tap') : tl('Click'), mobile() ? '' : ' · esc cancels') : tool() ? (mobile() && tool() !== 'brush' ? TOUCH_STEPS : TOOL_STEPS[tool()]) : selected() !== null ? tl('Drawing selected · double-click for settings · Delete removes it, esc deselects') : ''}
               <Show when={drawError()}>{(err) => <span class="warn"> ▲ {err()}</span>}</Show>
             </div>
           </Show>
@@ -1942,8 +1942,8 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
               <div class="pattern-bar" onPointerDown={(e) => e.stopPropagation()}>
                 <span class={p().side === 'bear' ? 'bear' : 'bull'}>{p().side === 'bear' ? '▼' : '▲'} {tl('Three drives')}</span>
                 <span class="dim">
-                  {p().stage === 'line' ? 'at the line · not confirmed yet' : `score ${p().score}${p().divergence ? ' · RSI divergence' : ''}`}
-                  {p().limit ? ` · limit ${formatPrice(p().limit!.price, digitsFor(p().market, p().limit!.price))}` : ''}
+                  {p().stage === 'line' ? tl('at the line · not confirmed yet') : tlf('score {0}{1}', p().score, p().divergence ? ' · RSI divergence' : '')}
+                  {p().limit ? tlf(' · limit {0}', formatPrice(p().limit!.price, digitsFor(p().market, p().limit!.price))) : ''}
                 </span>
                 <button class="tb" data-tip="Save the line and the circles as drawings on this chart" onClick={() => keepPattern(p())}>
                   {tl('Keep drawings')}
@@ -1977,7 +1977,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
               <button
                 class="alert-add"
                 style={{ left: `${axisX() - 22}px`, top: `${c().y - 9}px` }}
-                data-tip={`Add alert at ${formatPrice(c().price, digitsFor(market(), c().price))}`}
+                data-tip={tlf('Add alert at {0}', formatPrice(c().price, digitsFor(market(), c().price)))}
                 onPointerEnter={() => setOverClock(c())}
                 onPointerLeave={() => setOverClock(null)}
                 onPointerDown={(e) => e.stopPropagation()}
@@ -2018,7 +2018,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
                 <b>
                   {h().mark.deltaUsd > 0 ? '+' : '-'}${formatTurnover(Math.abs(h().mark.deltaUsd))}
                 </b>
-                <span class="dim">{h().mark.deltaUsd > 0 ? 'net bought in a minute' : 'net sold in a minute'}</span>
+                <span class="dim">{h().mark.deltaUsd > 0 ? tl('net bought in a minute') : tl('net sold in a minute')}</span>
                 <span>{formatClock(h().mark.at)}</span>
                 <span class="dim">{formatPrice(h().mark.price, digitsFor(market(), h().mark.price))}</span>
               </div>
@@ -2064,7 +2064,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
               <span class="title">{symbolOf(market())}</span>
               <span class="dim where">
                 {tfLabel(timeframe())}
-                {split() ? ` · TPO ${TPO_SPLITS.find((t) => t.value === split())?.label}` : ''} · {venueLabel(market())}
+                {split() ? ` · TPO ${tl(TPO_SPLITS.find((t) => t.value === split())?.label)}` : ''} · {venueLabel(market())}
                 <Show when={fpNote()}>
                   {(note) => (
                     <span class="dim" classList={{ warn: note().warn }} data-tip={note().tip}>
@@ -2105,8 +2105,8 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
               <button
                 class="fold"
                 classList={{ shut: props.panel.legendShut }}
-                data-tip={props.panel.legendShut ? `Show the ${folded()} layers and indicators` : 'Hide them'}
-                aria-label={props.panel.legendShut ? `Show the ${folded()} layers and indicators` : 'Hide the layers and indicators'}
+                data-tip={props.panel.legendShut ? tlf('Show the {0} layers and indicators', folded()) : 'Hide them'}
+                aria-label={props.panel.legendShut ? tlf('Show the {0} layers and indicators', folded()) : tl('Hide the layers and indicators')}
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={() => patchPanel(id, { legendShut: !props.panel.legendShut })}
               >
@@ -2173,8 +2173,8 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
                   {(h) => (
                     <>
                       <button onClick={() => tpoEdit(toggleExpanded, h())}>
-                        {h().expanded ? 'Collapse' : 'Expand'}
-                        <span class="dim">{h().expanded ? 'back to its shape' : 'a column a bracket'}</span>
+                        {h().expanded ? tl('Collapse') : tl('Expand')}
+                        <span class="dim">{h().expanded ? tl('back to its shape') : tl('a column a bracket')}</span>
                       </button>
                       <button disabled={h().next === null} onClick={() => tpoEdit(mergeRight, h())}>
                         {tl('Merge right')}<span class="dim">→|</span>
@@ -2183,7 +2183,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
                         {tl('Merge left')}<span class="dim">|←</span>
                       </button>
                       <button disabled={!canSplit(h())} onClick={() => tpoEdit(splitProfile, h())}>
-                        {tl('Split profile')}<span class="dim">{h().merged ? 'into its sessions' : h().splitAt !== null ? 'at the pointer' : 'expand it first'}</span>
+                        {tl('Split profile')}<span class="dim">{h().merged ? tl('into its sessions') : h().splitAt !== null ? tl('at the pointer') : tl('expand it first')}</span>
                       </button>
                       <button classList={{ cur: tpoPrices() }} onClick={() => setTpoPrices((v) => !v)}>
                         {tl('Prices')}<span class="dim">{tpoPrices() ? '▾' : '▸'}</span>
@@ -2196,7 +2196,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
                               data-tip="Copy it"
                               onClick={() => {
                                 const text = formatPrice(value, digitsFor(market(), value));
-                                void navigator.clipboard?.writeText(text).then(() => toast({ tone: 'info', title: `${name} copied`, body: text }, 2_500));
+                                void navigator.clipboard?.writeText(text).then(() => toast({ tone: 'info', title: tlf('{0} copied', name), body: text }, 2_500));
                                 setMenu(null);
                               }}
                             >
@@ -2243,7 +2243,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
                     setMenu(null);
                   }}
                 >
-                  {props.panel.log ? 'Linear price scale' : 'Logarithmic price scale'}
+                  {props.panel.log ? tl('Linear price scale') : tl('Logarithmic price scale')}
                 </button>
                 <button
                   onClick={() => {
@@ -2326,7 +2326,7 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
       <div class="rangebar">
         <For each={RANGES}>
           {(r) => (
-            <button class="tb num range" data-tip={r.days === null ? 'Every loaded bar' : `Zoom to the last ${r.label}`} onClick={() => showRange(r.days)}>
+            <button class="tb num range" data-tip={r.days === null ? 'Every loaded bar' : tlf('Zoom to the last {0}', r.label)} onClick={() => showRange(r.days)}>
               {tl(r.label)}
             </button>
           )}
@@ -2342,12 +2342,12 @@ export function ChartPanel(props: { panel: ChartPanelState; training?: TrainingC
           <button
             class="tb maxbtn"
             classList={{ on: isMaximized() }}
-            aria-label={isMaximized() ? 'Minimize, back to the layout' : 'Maximize this chart'}
+            aria-label={isMaximized() ? tl('Minimize, back to the layout') : tl('Maximize this chart')}
             data-tip={isMaximized() ? 'Back to the layout · alt ↵' : 'This chart alone, filling the workspace · alt ↵'}
             onClick={() => toggleMaximized(id)}
           >
             <Icon name={isMaximized() ? 'minimize' : 'maximize'} size={11} />
-            <span>{isMaximized() ? 'Minimize' : 'Maximize'}</span>
+            <span>{isMaximized() ? tl('Minimize') : tl('Maximize')}</span>
           </button>
         </Show>
         <span class="sep" />
@@ -2413,7 +2413,7 @@ function LayerRow(props: {
       {/* Only the buttons keep the press: a drag that starts on the legend text still pans. */}
       {/* Hide first, then settings, as TradingView has them. */}
       <span class="btns" onPointerDown={(e) => e.stopPropagation()}>
-        <button data-tip={props.off ? 'Show' : 'Hide'} aria-label={props.off ? 'Show' : 'Hide'} onClick={() => props.onToggle()}>
+        <button data-tip={props.off ? 'Show' : 'Hide'} aria-label={props.off ? tl('Show') : tl('Hide')} onClick={() => props.onToggle()}>
           <Icon name={props.off ? 'eyeOff' : 'eye'} size={15} />
         </button>
         <Show when={props.onSettings}>
@@ -2461,7 +2461,7 @@ function LiveBadge(props: { market: string; live: LiveStatus; relayed: boolean; 
   };
   const state = () => (props.replay ? REPLAY_BADGE : LIVE[props.live]);
   return (
-    <span class="live" data-tip={props.relayed ? `${state().title} Through the tradoor server, because this network blocks the exchange.` : state().title}>
+    <span class="live" data-tip={props.relayed ? tlf('{0} Through the tradoor server, because this network blocks the exchange.', state().title) : state().title}>
       <span class={`state ${state().tone}`} classList={{ pulse: props.live === 'connecting' || props.live === 'retrying' }}>
         {tl(state().label)}
       </span>

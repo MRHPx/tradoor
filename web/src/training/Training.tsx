@@ -49,7 +49,7 @@ import {
   type Position,
   type State,
 } from './model';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 /** The chart's own settings, kept in this browser: its coin, indicators and view. */
 const PANEL_KEY = 'trainingChart';
@@ -375,7 +375,7 @@ export function Training(props: { chart: typeof ChartPanel }) {
         <Show when={signedIn()}>
           <button class="tb" classList={{ 'jr-delete': true, sure: sure() }} disabled={busy()} data-tip="Start again at 100,000: open positions and orders go, this run's trades stay in the statistics" onClick={reset}>
             <Icon name="reset" size={12} />
-            <span>{sure() ? 'Reset to 100,000?' : 'Reset'}</span>
+            <span>{sure() ? tl('Reset to 100,000?') : tl('Reset')}</span>
           </button>
         </Show>
         <button class="iconbtn" aria-label={tl('Close training')} data-tip="Back to the charts" onClick={() => setTrainingOpen(false)}>
@@ -396,7 +396,7 @@ export function Training(props: { chart: typeof ChartPanel }) {
                 </div>
               )}
             </Show>
-            <p class="jr-empty muted">{error() ? 'Not read yet. Asking again shortly…' : 'Reading…'}</p>
+            <p class="jr-empty muted">{error() ? tl('Not read yet. Asking again shortly…') : tl('Reading…')}</p>
           </>
         }
       >
@@ -568,7 +568,7 @@ function Ticket(props: {
       <div class="chips tr-steps">
         <For each={SIZE_STEPS}>
           {(f) => (
-            <button data-tip={`${f * 100}% of what is free, at ${lev()}×`} onClick={() => setSize(String(Math.max(0, Math.floor(props.available * f * lev() * 0.999))))}>
+            <button data-tip={tlf('{0}% of what is free, at {1}×', f * 100, lev())} onClick={() => setSize(String(Math.max(0, Math.floor(props.available * f * lev() * 0.999))))}>
               {f * 100}%
             </button>
           )}
@@ -692,7 +692,7 @@ function Positions(props: {
                         <button class="tb" disabled={props.busy} data-tip="Close half at the market" onClick={() => void props.act(() => trainingApi.close(symbol, Number((p().qty / 2).toPrecision(6))))}>
                           50%
                         </button>
-                        <button class="tb" disabled={props.busy} data-tip={`Close it and open as much ${p().side === 'long' ? 'short' : 'long'} at the market, with no TP / SL`} onClick={() => void props.act(() => trainingApi.reverse(symbol))}>
+                        <button class="tb" disabled={props.busy} data-tip={tlf('Close it and open as much {0} at the market, with no TP / SL', p().side === 'long' ? tl('short') : tl('long'))} onClick={() => void props.act(() => trainingApi.reverse(symbol))}>
                           {tl('Reverse')}
                         </button>
                         <button class="tb" disabled={props.busy} data-tip="Close it all at the market" onClick={() => void props.act(() => trainingApi.close(symbol))}>
@@ -752,7 +752,7 @@ function Orders(props: { state: State | null; decimals: (s: string) => number; b
                   <tr>
                     <td>{stamp(o.createdAt)}</td>
                     <td>{coinOf(o.symbol)}</td>
-                    <td class={o.side === 'buy' ? 'bull' : 'bear'}>{o.side === 'buy' ? 'Buy' : 'Sell'} {tl('limit')}</td>
+                    <td class={o.side === 'buy' ? 'bull' : 'bear'}>{o.side === 'buy' ? tl('Buy') : tl('Sell')} {tl('limit')}</td>
                     <td>{fmt(o.price, props.decimals(o.symbol))}</td>
                     <td>
                       {coins(o.qty)} <span class="dim">{usd(o.qty * o.price)}</span>

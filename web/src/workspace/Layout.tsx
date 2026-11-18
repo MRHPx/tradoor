@@ -15,7 +15,7 @@ import { tfLabel } from '../lib/timeframes';
 import { ChartPanel } from '../panels/ChartPanel';
 import { activate, addPanel, bareChart, LINK_COLORS, movePanel, newPanel, PANEL_TITLE, PANEL_TYPES, removePanel, setSizes, tabsOf, type DropZone, type LayoutNode, type Panel, type PanelType, type SplitNode, type TabsNode } from './model';
 import { doc, focusedPanelId, focusPanel, marketOf, maximized, setMaximized, setPanelLink, targetChart, timeframeOf, update } from './store';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 // Side panels, fetched when a layout shows one: the chart and watchlist come first.
 const EconPanel = lazy(() => import('../panels/EconPanel').then((m) => ({ default: m.EconPanel })));
@@ -455,7 +455,7 @@ function Tab(props: { id: string; tabs: TabsNode }) {
           class="tab"
           classList={{ active: props.tabs.active === props.id }}
           draggable={true}
-          data-tip={`${panelTitle(p())} — drag onto another group, or its edge, to dock it there`}
+          data-tip={tlf('{0} — drag onto another group, or its edge, to dock it there', panelTitle(p()))}
           onDragStart={(e) => {
             e.dataTransfer?.setData('text/plain', props.id);
             if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
@@ -503,7 +503,7 @@ function LinkButton(props: { panel: Panel }) {
       class="linkbtn"
       classList={{ linked: props.panel.link !== null }}
       style={props.panel.link ? { color: `var(--link-${props.panel.link})` } : undefined}
-      data-tip={props.panel.link ? `Linked to the ${props.panel.link} group — click for the next group` : 'Not linked — click to join a group that shares one market'}
+      data-tip={props.panel.link ? tlf('Linked to the {0} group — click for the next group', props.panel.link) : 'Not linked — click to join a group that shares one market'}
       onClick={(e) => {
         e.stopPropagation();
         setPanelLink(props.panel.id, next());

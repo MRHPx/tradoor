@@ -15,7 +15,7 @@ import { formatClock, formatHm, zoneLabel } from '../lib/timezone';
 import type { LiquidationsPanelState } from '../workspace/model';
 import { marketOf, patchPanel } from '../workspace/store';
 import { MarketButton } from './common';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 /** How often the totals are asked for again. */
 const POLL_MS = 5_000;
@@ -124,7 +124,7 @@ export function LiquidationsPanel(props: { panel: LiquidationsPanelState }) {
           <For each={[0, 1_000, 10_000, 100_000]}>
             {(v) => (
               <option value={v} selected={min() === v}>
-                {v === 0 ? 'All sizes' : `≥ ${usd(v)}`}
+                {v === 0 ? tl('All sizes') : `≥ ${usd(v)}`}
               </option>
             )}
           </For>
@@ -136,10 +136,10 @@ export function LiquidationsPanel(props: { panel: LiquidationsPanelState }) {
         fallback={
           <div class="note" classList={{ warn: statsError() }}>
             {untracked()
-              ? `The server keeps 24 hours for ${untracked()!.join(', ') || 'no ticker'}. ${ticker()} streams live below; add it to TRADOOR_LIQUIDATIONS to keep its totals.`
+              ? tlf('The server keeps 24 hours for {0}. {1} streams live below; add it to TRADOOR_LIQUIDATIONS to keep its totals.', untracked()!.join(', ') || tl('no ticker'), ticker())
               : statsError()
-                ? '▲ The server is not reachable, so there are no totals. The tape below still streams.'
-                : 'Loading totals…'}
+                ? tl('▲ The server is not reachable, so there are no totals. The tape below still streams.')
+                : tl('Loading totals…')}
           </div>
         }
       >
@@ -178,7 +178,7 @@ export function LiquidationsPanel(props: { panel: LiquidationsPanelState }) {
                   const state = (): VenueStatus => tape()?.status[v.venue] ?? 'connecting';
                   return (
                     <tr classList={{ off: !v.market }}>
-                      <td data-tip={v.market ? `${exchange.name} ${symbolOf(v.market)} perpetual` : `${exchange.name} does not list ${ticker()}`}>
+                      <td data-tip={v.market ? tlf('{0} {1} perpetual', exchange.name, symbolOf(v.market)) : tlf('{0} does not list {1}', exchange.name, ticker())}>
                         <ExchangeLogo exchange={exchange} size={12} />
                         <span>{exchange.name}</span>
                         {/* Named only where the exchange spells the ticker its own way. */}
@@ -213,9 +213,9 @@ export function LiquidationsPanel(props: { panel: LiquidationsPanelState }) {
                 {(h) => (
                   <tr classList={{ big: h.usd >= 100_000 }}>
                     <td class="num dim">{formatClock(h.time)}</td>
-                    <td class={h.long ? 'bear' : 'bull'} data-tip={`${exchangeOfVenue(h.venue).name} · ${h.long ? 'a long' : 'a short'} closed out`}>
+                    <td class={h.long ? 'bear' : 'bull'} data-tip={tlf('{0} · {1} closed out', exchangeOfVenue(h.venue).name, h.long ? tl('a long') : tl('a short'))}>
                       <ExchangeLogo exchange={exchangeOfVenue(h.venue)} size={11} />
-                      {h.long ? 'LONG' : 'SHORT'}
+                      {h.long ? tl('LONG') : tl('SHORT')}
                     </td>
                     <td class="num">{formatPrice(h.price, tick())}</td>
                     <td class="num">{usd(h.usd)}</td>
@@ -235,7 +235,7 @@ function Total(props: { w: LiquidationWindow; partial: boolean }) {
   const total = () => props.w.longUsd + props.w.shortUsd;
   const longShare = () => (total() > 0 ? (props.w.longUsd / total()) * 100 : 50);
   return (
-    <div class="win" data-tip={`${props.w.longs} longs and ${props.w.shorts} shorts closed out in the last ${props.w.window}${props.partial ? ' — the server has not listened that long yet' : ''}`}>
+    <div class="win" data-tip={tlf('{0} longs and {1} shorts closed out in the last {2}{3}', props.w.longs, props.w.shorts, props.w.window, props.partial ? ' — the server has not listened that long yet' : '')}>
       <span class="caps dim">
         {props.w.window.toUpperCase()}
         {props.partial ? '*' : ''}

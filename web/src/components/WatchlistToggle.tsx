@@ -7,6 +7,7 @@ import { toast } from '../lib/toasts';
 import { insertMarket } from '../lib/watchlist';
 import type { WatchlistPanelState } from '../workspace/model';
 import { doc, patchPanel } from '../workspace/store';
+import { tl } from '../lib/i18n';
 
 export function WatchlistToggle(props: { market: string }) {
   const lists = () => Object.values(doc.panels).filter((p): p is WatchlistPanelState => p.type === 'watchlist');
@@ -33,7 +34,7 @@ export function WatchlistToggle(props: { market: string }) {
       class="tb wl-toggle"
       classList={{ in: listed() }}
       aria-pressed={listed()}
-      aria-label={listed() ? 'In your watchlist' : 'Add to your watchlist'}
+      aria-label={listed() ? tl('In your watchlist') : tl('Add to your watchlist')}
       data-tip={listed() ? 'In your watchlist — click to remove it' : 'Add this market to your watchlist'}
       onClick={toggle}
     >

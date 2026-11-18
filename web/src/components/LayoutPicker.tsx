@@ -8,7 +8,7 @@ import { For } from 'solid-js';
 import type { SyncState } from '../workspace/model';
 import { doc, setSync, update } from '../workspace/store';
 import { applyTemplate, cellRects, surplus, TEMPLATES, type Template } from '../workspace/templates';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 /** The template's cells, drawn small. */
 function TemplateIcon(props: { template: Template }) {
@@ -45,7 +45,7 @@ export function LayoutPicker(props: { onClose(): void }) {
             <span class="lm-count num">{count}</span>
             <For each={TEMPLATES.filter((t) => t.count === count)}>
               {(t) => (
-                <button class="lm-tpl" data-tip={tl(t.label)} aria-label={`${t.label}: ${t.count} chart${t.count > 1 ? 's' : ''}`} onClick={() => pick(t)}>
+                <button class="lm-tpl" data-tip={tl(t.label)} aria-label={tlf('{0}: {1} chart{2}', t.label, t.count, t.count > 1 ? 's' : '')} onClick={() => pick(t)}>
                   <TemplateIcon template={t} />
                 </button>
               )}

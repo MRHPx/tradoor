@@ -14,7 +14,7 @@ import { canWrite, community, describe, formulas, loadCommunity, setEditing, typ
 import { Icon } from '../lib/icons';
 import { mendable, mendPaste, mendScript, type Mended } from '../lib/mend';
 import type { TesterProps } from './StrategyTester';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 const SOURCES = [
   { id: 'rules', label: 'Build with rules', tip: 'Pick conditions from lists: no code' },
@@ -213,7 +213,7 @@ export function BacktestSetup(props: TesterProps) {
       </section>
       <section class="bt-col">
         <Money {...props} set={set} />
-        <Step title={tl('Tested over')} hint={`${props.bars.toLocaleString('en-US')} bars held${props.loading ? ', loading more…' : props.exhausted ? ', the exchange’s whole history' : ''}`}>
+        <Step title={tl('Tested over')} hint={tlf('{0} bars held{1}', props.bars.toLocaleString('en-US'), props.loading ? tl(', loading more…') : props.exhausted ? tl(', the exchange’s whole history') : '')}>
           <Chips
             label="The stretch tested"
             value={st().settings.since > 0 ? -2 : st().settings.days}
@@ -313,7 +313,7 @@ function RuleSetEditor(props: { verb: string; buying: boolean; set: RuleSet; opt
           <>
             <Show when={i > 0}>
               <button class="bt-join" data-tip={props.set.all ? 'Every condition must be true on the same bar · click for any one' : 'Any one condition is enough · click to need every one'} onClick={() => props.onChange({ ...props.set, all: !props.set.all })}>
-                {props.set.all ? 'and' : 'or'}
+                {props.set.all ? tl('and') : 'or'}
               </button>
             </Show>
             <div class="bt-rule">
@@ -343,10 +343,10 @@ function RuleSetEditor(props: { verb: string; buying: boolean; set: RuleSet; opt
               props.onChange({ ...props.set, list: [...props.set.list, c] });
             }}
           >
-            + {props.set.list.length === 0 ? (props.optional ? 'Add a rule' : 'Add a condition') : 'Another condition'}
+            + {props.set.list.length === 0 ? (props.optional ? tl('Add a rule') : tl('Add a condition')) : tl('Another condition')}
           </button>
         </Show>
-        <span class="dim bt-sentence">{props.set.list.length === 0 ? (props.optional ? '' : 'Never: add a condition') : `${props.verb} when ${sentence()}.`}</span>
+        <span class="dim bt-sentence">{props.set.list.length === 0 ? (props.optional ? '' : tl('Never: add a condition')) : tlf('{0} when {1}.', props.verb, sentence())}</span>
       </div>
     </div>
   );
@@ -391,7 +391,7 @@ function RulesEditor(props: TesterProps) {
           when={exits()}
           fallback={
             <p class="bt-hint dim">
-              {side() === 'both' ? 'A trade closes when the other side’s signal comes, or at a stop or target below.' : 'A trade closes at a stop or target below.'}{' '}
+              {side() === 'both' ? tl('A trade closes when the other side’s signal comes, or at a stop or target below.') : tl('A trade closes at a stop or target below.')}{' '}
               <button class="linkbtn" onClick={() => setExitsOpen(true)}>
                 {tl('Close it on a rule too')}
               </button>
@@ -440,7 +440,7 @@ function ExitChoice(props: { label: string; value: ExitSetting; presets: { value
       </div>
       <Show when={showCustom()}>
         <span class="bt-custom">
-          <select value={props.value.kind} aria-label={`${props.label}: measured in`} onChange={(e) => props.onChange({ ...props.value, kind: e.currentTarget.value })}>
+          <select value={props.value.kind} aria-label={tlf('{0}: measured in', props.label)} onChange={(e) => props.onChange({ ...props.value, kind: e.currentTarget.value })}>
             <For each={props.kinds}>{([v, l]) => <option value={v}>{l}</option>}</For>
           </select>
           <Show when={props.value.kind !== 'none'}>
@@ -543,7 +543,7 @@ function Money(props: TesterProps & { set(p: Partial<BacktestSettings>): void })
         </select>
         <Show when={per() === 'share' || per() === 'fixed' || per() === 'risk'}>
           <Num value={s().size} min={0} label="Order size" onChange={(size) => props.set({ size })} />
-          <span class="dim">{per() === 'fixed' ? 'quote' : '%'}</span>
+          <span class="dim">{per() === 'fixed' ? tl('quote') : '%'}</span>
         </Show>
       </div>
       <Show when={per() === 'risk'}>
@@ -635,7 +635,7 @@ function Realism(props: TesterProps & { set(p: Partial<BacktestSettings>): void 
       </details>
       <details class="bt-fold">
         <summary>
-          <b>{tl('More controls')}</b> <span class="dim">ATR {s().atr} · {s().maxBars > 0 ? `held ${s().maxBars} bars at most` : 'held as long as it takes'}</span>
+          <b>{tl('More controls')}</b> <span class="dim">ATR {s().atr} · {s().maxBars > 0 ? tlf('held {0} bars at most', s().maxBars) : tl('held as long as it takes')}</span>
         </summary>
         <label class="bt-row">
           <span>{tl('ATR length')}</span>
@@ -697,13 +697,13 @@ function CheckLine(props: { check: FormulaDescription | undefined }) {
         const d = c();
         return d.ok ? (
           d.strategy ? (
-            <span class="ok">{tl('✓ A strategy ·')} {d.inputs.length} {d.inputs.length === 1 ? 'setting' : 'settings'}</span>
+            <span class="ok">{tl('✓ A strategy ·')} {d.inputs.length} {d.inputs.length === 1 ? tl('setting') : tl('settings')}</span>
           ) : (
             <span class="warn">{tl('▲ It gives no orders: a strategy enters with long(condition) or short(condition).')}</span>
           )
         ) : (
           <span class="warn">
-            ▲ {d.line > 0 ? `Line ${d.line}, column ${d.col}: ` : ''}
+            ▲ {d.line > 0 ? tlf('Line {0}, column {1}: ', d.line, d.col) : ''}
             {d.message}
           </span>
         );
@@ -795,7 +795,7 @@ function CodeEditor(props: TesterProps) {
       <Show when={mended()}>
         {(m) => (
           <p class="bt-hint">
-            {tl('Mended:')} {m().changes.join(' · ') || 'nothing to change'}.
+            {tl('Mended:')} {m().changes.join(' · ') || tl('nothing to change')}.
             <For each={m().left}>{(l) => <span class="warn"> {l}.</span>}</For>
           </p>
         )}

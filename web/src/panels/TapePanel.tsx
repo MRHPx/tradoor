@@ -157,7 +157,7 @@ export function TapePanel(props: { panel: TapePanelState }) {
           </For>
         </select>
         <button class="tb" data-tip="Sizes in dollars or in coins" onClick={() => patchPanel(id, { unit: props.panel.unit === 'usd' ? 'coins' : 'usd' })}>
-          {props.panel.unit === 'usd' ? 'USD' : 'Coins'}
+          {props.panel.unit === 'usd' ? tl('USD') : tl('Coins')}
         </button>
       </div>
       <div class="flowcanvas" ref={host} onPointerEnter={() => setPaused(true)} onPointerLeave={() => setPaused(false)}>

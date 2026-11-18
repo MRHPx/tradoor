@@ -17,7 +17,7 @@ import { toast } from '../lib/toasts';
 import { validate, type WorkspaceDoc } from '../workspace/model';
 import { applyLayout, keepWatchlists, LAYOUTS, watchlists } from '../workspace/presets';
 import { doc, update } from '../workspace/store';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 /** What a layout file or a saved layout brings: all of it but when it was saved — and the watchlists, which stay the reader's. */
 function take(next: WorkspaceDoc): void {
@@ -50,7 +50,7 @@ export function LayoutsMenu(props: { onClose?(): void; inSettings?: boolean }) {
       take(next);
       done();
     } catch (e) {
-      toast({ tone: 'warn', title: `${name} not opened`, body: errorText(e) });
+      toast({ tone: 'warn', title: tlf('{0} not opened', name), body: errorText(e) });
     }
   };
 
@@ -63,7 +63,7 @@ export function LayoutsMenu(props: { onClose?(): void; inSettings?: boolean }) {
       update((d) => void (d.name = name));
       const id = same?.id ?? `l-${slug(name).slice(0, 40)}-${Math.random().toString(36).slice(2, 7)}`;
       await api.saveWorkspace(id, { name, doc: JSON.parse(JSON.stringify(doc)), version: same?.version ?? 0 });
-      toast({ tone: 'info', title: `Saved ${name}`, body: 'Open it again from Layouts, on any device you sign in on.' });
+      toast({ tone: 'info', title: tlf('Saved {0}', name), body: 'Open it again from Layouts, on any device you sign in on.' });
       void refetch();
     } catch (e) {
       toast({ tone: 'warn', title: 'Layout not saved', body: errorText(e) });
@@ -76,7 +76,7 @@ export function LayoutsMenu(props: { onClose?(): void; inSettings?: boolean }) {
       await api.deleteLayout(id);
       void refetch();
     } catch (e) {
-      toast({ tone: 'warn', title: `${name} not deleted`, body: errorText(e) });
+      toast({ tone: 'warn', title: tlf('{0} not deleted', name), body: errorText(e) });
     }
   };
 
@@ -99,7 +99,7 @@ export function LayoutsMenu(props: { onClose?(): void; inSettings?: boolean }) {
         next = null;
       }
       if (!next) {
-        toast({ tone: 'warn', title: `${file.name} is not a tradoor layout`, body: 'Export one from Layouts to see what a layout file holds.' });
+        toast({ tone: 'warn', title: tlf('{0} is not a tradoor layout', file.name), body: 'Export one from Layouts to see what a layout file holds.' });
         return;
       }
       if (!confirm(`Open ${next.name} from ${file.name}? The layout in use is replaced; save it first to keep it.`)) return;
@@ -130,14 +130,14 @@ export function LayoutsMenu(props: { onClose?(): void; inSettings?: boolean }) {
           </button>
         }
       >
-        <For each={saved()?.layouts ?? []} fallback={<div class="lo-empty">{saved.loading ? 'Loading…' : 'None yet: save the one in use below.'}</div>}>
+        <For each={saved()?.layouts ?? []} fallback={<div class="lo-empty">{saved.loading ? tl('Loading…') : tl('None yet: save the one in use below.')}</div>}>
           {(l) => (
             <div class="lo-saved">
               <button class="lo-row" onClick={() => void open(l.id, l.name)}>
                 <span class="lo-name">{l.name}</span>
                 <span class="lo-note">{tl('saved')} {formatDateTime(l.updatedAt).slice(0, 16)}</span>
               </button>
-              <button class="x" aria-label={`Delete ${l.name}`} data-tip={`Delete ${l.name}`} onClick={() => void remove(l.id, l.name)}>
+              <button class="x" aria-label={tlf('Delete {0}', l.name)} data-tip={tlf('Delete {0}', l.name)} onClick={() => void remove(l.id, l.name)}>
                 <Icon name="close" size={10} stroke={2.4} />
               </button>
             </div>

@@ -21,7 +21,7 @@ import { splitList, withLayer } from '../lib/study-style';
 import { toast } from '../lib/toasts';
 import type { ChartPanelState } from '../workspace/model';
 import { patchPanel } from '../workspace/store';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 /** What the engine keeps of a chart's list (`parse_studies`). */
 const MOST_STUDIES = 12;
@@ -149,7 +149,7 @@ export function IndicatorPicker(props: { panel: ChartPanelState; onClose(): void
   };
   const add = (id: string): boolean => {
     if (active().length >= MOST_STUDIES) {
-      toast({ tone: 'warn', title: `A chart holds ${MOST_STUDIES} indicators`, body: 'Remove one from the chart’s legend first.' });
+      toast({ tone: 'warn', title: tlf('A chart holds {0} indicators', MOST_STUDIES), body: 'Remove one from the chart’s legend first.' });
       return false;
     }
     patchPanel(props.panel.id, { studies: [...active(), id].join(',') });
@@ -188,7 +188,7 @@ export function IndicatorPicker(props: { panel: ChartPanelState; onClose(): void
           classList={{ on: starred(), none: isFormulaKind(e.id) }}
           disabled={isFormulaKind(e.id)}
           aria-pressed={starred()}
-          aria-label={starred() ? `Take ${e.name} out of your favourites` : `Add ${e.name} to your favourites`}
+          aria-label={starred() ? tlf('Take {0} out of your favourites', e.name) : tlf('Add {0} to your favourites', e.name)}
           data-tip={starred() ? 'In your favourites' : 'Add to your favourites'}
           onClick={(ev) => {
             ev.stopPropagation();
@@ -237,7 +237,7 @@ export function IndicatorPicker(props: { panel: ChartPanelState; onClose(): void
         <span class="spacer" />
         {/* A script the moderator removed says so, on the chart or not. */}
         <Show when={!shown() || e.where === 'removed'}>
-          <span class="where">{e.layer && !removed().includes(e.id) ? 'hidden' : e.where}</span>
+          <span class="where">{e.layer && !removed().includes(e.id) ? tl('hidden') : e.where}</span>
         </Show>
         <Show
           when={e.layer}
@@ -276,7 +276,7 @@ export function IndicatorPicker(props: { panel: ChartPanelState; onClose(): void
         <Show when={e.layer ? removed().includes(e.id) : on(e.id).length === 0 || (e.def && anotherId(e.def, active()))}>
           <button
             class="iadd"
-            aria-label={on(e.id).length > 0 ? `Add another ${e.short}` : `Add ${e.short}`}
+            aria-label={on(e.id).length > 0 ? tlf('Add another {0}', e.short) : `Add ${e.short}`}
             data-tip={on(e.id).length > 0 ? 'Add another, with other settings' : 'Add to the chart'}
             onClick={(ev) => {
               ev.stopPropagation();
@@ -308,7 +308,7 @@ export function IndicatorPicker(props: { panel: ChartPanelState; onClose(): void
               }
             >
               <Show when={!communityError()} fallback={<p class="warn">{tl('▲ The Community did not load:')} {communityError()}</p>}>
-                <p>{community() ? 'No public scripts yet. Make one of yours public in the editor, and it is listed here under your username.' : 'Loading the Community…'}</p>
+                <p>{community() ? tl('No public scripts yet. Make one of yours public in the editor, and it is listed here under your username.') : tl('Loading the Community…')}</p>
                 {/* The showcase is never empty: tradoor's own scripts are there, drawn live. */}
                 <a class="ind-hint" href="/community.html" target="_blank" rel="noopener">
                   {tl('The showcase, with tradoor\'s own scripts ↗')}

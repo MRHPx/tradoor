@@ -19,6 +19,7 @@ import { studyCatalog } from '../engine/client';
 import { toast } from './toasts';
 import { patchPanel, setPanelMarket, setPanelTimeframe, targetChart } from '../workspace/store';
 import type { ChartPanelState } from '../workspace/model';
+import { tlf } from './i18n';
 
 /** What the engine keeps of a chart's list (`parse_studies`). */
 const MOST_STUDIES = 12;
@@ -31,7 +32,7 @@ async function addScript(id: string, target: ChartPanelState): Promise<void> {
     const studies = splitList(target.studies);
     if (!studies.some((x) => x.split(':')[0] === kind)) {
       if (studies.length >= MOST_STUDIES) {
-        toast({ tone: 'warn', title: `A chart holds ${MOST_STUDIES} indicators`, body: `Remove one from the chart's legend, then add ${s.name} from the picker's Community tab.` });
+        toast({ tone: 'warn', title: tlf('A chart holds {0} indicators', MOST_STUDIES), body: tlf('Remove one from the chart\'s legend, then add {0} from the picker\'s Community tab.', s.name) });
         return;
       }
       patchPanel(target.id, { studies: [...studies, kind].join(',') });
@@ -58,7 +59,7 @@ async function addIndicator(kind: string, target: ChartPanelState): Promise<void
   const studies = splitList(target.studies);
   if (!studies.some((x) => x.split(':')[0] === kind)) {
     if (studies.length >= MOST_STUDIES) {
-      toast({ tone: 'warn', title: `A chart holds ${MOST_STUDIES} indicators`, body: 'Remove one from the chart’s legend, then add it from the picker.' });
+      toast({ tone: 'warn', title: tlf('A chart holds {0} indicators', MOST_STUDIES), body: 'Remove one from the chart’s legend, then add it from the picker.' });
       return;
     }
     patchPanel(target.id, { studies: [...studies, defaultId(def)].join(',') });

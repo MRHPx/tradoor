@@ -10,7 +10,7 @@ import { formatPct, formatPrice, formatTurnover, priceDecimals } from '../lib/fo
 import { ExchangeLogo, exchangeOfVenue, LIVE_EXCHANGES, type ExchangeId } from '../lib/exchanges';
 import { isChartMarket, isMarket, ratioOf, symbolOf, venueLabel } from '../lib/markets';
 import { popularity, rank, type Kind, type Sort } from '../lib/symbol-rank';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 const EXCHANGE_IDS = LIVE_EXCHANGES.map((e) => e.id);
 
@@ -132,20 +132,20 @@ export function SymbolSearch(props: {
     <div class="backdrop" onPointerDown={() => props.onClose()}>
       <div class="dialog" onPointerDown={(e) => e.stopPropagation()} onKeyDown={onKeyDown}>
         <header>
-          <span class="title caps">{props.title ?? 'Symbol'}</span>
+          <span class="title caps">{props.title ?? tl('Symbol')}</span>
           <input
             ref={input}
             class="q"
             value={query()}
             onInput={(e) => setQuery(e.currentTarget.value)}
-            placeholder={props.ratios ? 'ticker — BTC, sol perp, bybit btc… or a ratio: xpl bybit / btc binance' : 'ticker — BTC, ETHUSDT, sol perp, bybit btc…'}
+            placeholder={props.ratios ? tl('ticker — BTC, sol perp, bybit btc… or a ratio: xpl bybit / btc binance') : tl('ticker — BTC, ETHUSDT, sol perp, bybit btc…')}
             spellcheck={false}
             autocomplete="off"
           />
           <div class="chips">
             <For each={LIVE_EXCHANGES}>
               {(x) => (
-                <button class="xchip" classList={{ on: exchange() === x.id }} data-tip={exchange() === x.id ? `Showing ${x.name} only — click for every exchange` : `${x.name} only`} onClick={() => setExchange((e) => (e === x.id ? null : x.id))}>
+                <button class="xchip" classList={{ on: exchange() === x.id }} data-tip={exchange() === x.id ? tlf('Showing {0} only — click for every exchange', x.name) : tlf('{0} only', x.name)} onClick={() => setExchange((e) => (e === x.id ? null : x.id))}>
                   <ExchangeLogo exchange={x} size={14} />
                 </button>
               )}
@@ -228,7 +228,7 @@ export function SymbolSearch(props: {
         <footer>
           <span>
             {rows().length} {tl('of')} {products().length} {tl('markets')}
-            {unavailable().length > 0 ? ` · ${unavailable().join(', ')} unavailable` : ''}
+            {unavailable().length > 0 ? tlf(' · {0} unavailable', unavailable().join(', ')) : ''}
           </span>
           <span>{tl('↑↓ move · ↵ open · tab perp/spot · esc close')}</span>
         </footer>

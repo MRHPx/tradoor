@@ -63,7 +63,7 @@ import {
   type Trade,
   type TradePatch,
 } from './model';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 type Tab = 'dashboard' | 'history' | 'review';
 const TABS: [Tab, string][] = [
@@ -187,7 +187,7 @@ export function Journal() {
   const price = (market: string, v: number | null) => formatPrice(v, v === null ? undefined : digits(market, v));
   const replace = (t: Trade) => setTrades((list) => list.map((x) => (x.id === t.id ? t : x)));
   const current = () => trades().find((t) => t.id === selected());
-  const waiting = () => <p class="jr-empty muted">{error() ? 'Not read yet. Asking again shortly…' : 'Reading…'}</p>;
+  const waiting = () => <p class="jr-empty muted">{error() ? tl('Not read yet. Asking again shortly…') : tl('Reading…')}</p>;
 
   return (
     <section class="journal">
@@ -351,7 +351,7 @@ function Dashboard(props: { trades: Trade[]; price: (market: string, v: number |
           <div class="jx-kpi" data-tip="Trades that made money, of those closed">
             <span class="jx-cap">{tl('Win rate')}</span>
             <span class="jx-value">{s().winRate.toFixed(0)}%</span>
-            <div class="jx-meter" role="img" aria-label={`${s().wins} won, ${s().losses} lost, ${s().breakEven} even`}>
+            <div class="jx-meter" role="img" aria-label={tlf('{0} won, {1} lost, {2} even', s().wins, s().losses, s().breakEven)}>
               <For each={(['up', 'down', 'even'] as const).filter((k) => share(k) > 0)}>{(k) => <i class={k} style={{ 'flex-grow': share(k) }} />}</For>
             </div>
             <span class="dim num">
@@ -502,7 +502,7 @@ function Equity(props: { trades: Trade[] }) {
       <div class="jx-eq-y num">
         <For each={shape().ticks}>{(t) => <span style={{ top: `${t.y}%` }}>{axisMoney(t.v)}</span>}</For>
       </div>
-      <div class="jx-eq-plot" tabIndex={0} role="img" aria-label={`Equity: ${money(shape().last)}. Arrow keys read each trade.`} onPointerMove={nearest} onPointerLeave={() => setHover(null)} onBlur={() => setHover(null)} onKeyDown={keys}>
+      <div class="jx-eq-plot" tabIndex={0} role="img" aria-label={tlf('Equity: {0}. Arrow keys read each trade.', money(shape().last))} onPointerMove={nearest} onPointerLeave={() => setHover(null)} onBlur={() => setHover(null)} onKeyDown={keys}>
         <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
           <For each={shape().ticks}>{(t) => <line x1="0" x2="100" y1={t.y} y2={t.y} class={t.v === 0 ? 'jx-zero' : 'jx-gridline'} vector-effect="non-scaling-stroke" />}</For>
           {/* The same curve twice, each cut at zero: green above it, red below. */}
@@ -533,7 +533,7 @@ function Equity(props: { trades: Trade[] }) {
                 <b class={tone(p().total)}>{money(p().total)}</b>
                 <span class="dim">{stamp(p().at)}</span>
                 <span class="muted">
-                  {symbolOf(p().trade.market)} {p().trade.side === 'long' ? 'Long' : 'Short'} {money(pnl(p().trade))}
+                  {symbolOf(p().trade.market)} {p().trade.side === 'long' ? tl('Long') : tl('Short')} {money(pnl(p().trade))}
                 </span>
               </div>
             </>
@@ -629,7 +629,7 @@ function Calendar(props: { trades: Trade[] }) {
                       class="jx-day"
                       classList={{ blank: !day, up: (d() ? measure(d()!) : 0) > 0, down: (d() ? measure(d()!) : 0) < 0, today: day === now }}
                       style={{ '--s': String(0.1 + strength() * 0.22) }}
-                      data-tip={d() ? `${day}: ${money(d()!.pnl)} · ${rText(d()!.r)} from ${d()!.trades} trade${d()!.trades > 1 ? 's' : ''}` : undefined}
+                      data-tip={d() ? tlf('{0}: {1} · {2} from {3} trade{4}', day, money(d()!.pnl), rText(d()!.r), d()!.trades, d()!.trades > 1 ? 's' : '') : undefined}
                     >
                       <Show when={day}>
                         <span class="jx-date">{Number(day!.slice(8))}</span>
@@ -641,7 +641,7 @@ function Calendar(props: { trades: Trade[] }) {
                   );
                 }}
               </For>
-              <div class={`jx-week num ${week.trades > 0 ? tone(measure(week)) : 'dim'}`} data-tip={week.trades > 0 ? `Week of ${week.first}: ${money(week.pnl)} · ${rText(week.r)} from ${week.trades} trade${week.trades > 1 ? 's' : ''}` : undefined}>
+              <div class={`jx-week num ${week.trades > 0 ? tone(measure(week)) : 'dim'}`} data-tip={week.trades > 0 ? tlf('Week of {0}: {1} · {2} from {3} trade{4}', week.first, money(week.pnl), rText(week.r), week.trades, week.trades > 1 ? 's' : '') : undefined}>
                 {week.trades > 0 ? figure(measure(week), true) : '—'}
               </div>
             </>
@@ -713,7 +713,7 @@ function Breakdown(props: { trades: Trade[]; onFocus: (f: Focus) => void }) {
               <tr
                 class="go"
                 tabIndex={0}
-                data-tip={`Every ${g.key} trade, in History`}
+                data-tip={tlf('Every {0} trade, in History', g.key)}
                 onClick={() => open(g.key)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
@@ -831,14 +831,14 @@ function History(props: { trades: Trade[]; price: (market: string, v: number | n
           <For each={['all', 'long', 'short'] as const}>
             {(id) => (
               <button classList={{ on: side() === id }} onClick={() => setSide(id)}>
-                {id === 'all' ? 'Both' : id === 'long' ? 'Long' : 'Short'}
+                {id === 'all' ? tl('Both') : id === 'long' ? tl('Long') : tl('Short')}
               </button>
             )}
           </For>
         </div>
         <Show when={focused()}>
           {(f) => (
-            <button class="jh-focus" aria-label={`Show every trade, not only ${f().label}`} data-tip={`Only ${f().by.toLowerCase()} ${f().label}: show every trade`} onClick={() => props.onUnfocus()}>
+            <button class="jh-focus" aria-label={tlf('Show every trade, not only {0}', f().label)} data-tip={tlf('Only {0} {1}: show every trade', f().by.toLowerCase(), f().label)} onClick={() => props.onUnfocus()}>
               <span class="dim">{f().by}</span> {tl(f().label)}
               <Icon name="close" size={11} />
             </button>
@@ -899,7 +899,7 @@ function Row(props: { trade: Trade; price: (market: string, v: number | null) =>
   return (
     <button class={`jh-row ${outcome(t())}`} onClick={() => props.onSelect(t().id)}>
       <span class="jh-time num dim">{(props.dated ? stamp : clock)(done() ? when(t()) : (t().openedAt ?? t().startAt))}</span>
-      <span class={`jh-side ${t().side}`}>{t().side === 'long' ? 'Long' : 'Short'}</span>
+      <span class={`jh-side ${t().side}`}>{t().side === 'long' ? tl('Long') : tl('Short')}</span>
       <span class="jh-market">
         <b>{symbolOf(t().market)}</b>
         <span class="dim">{venueLabel(t().market)}</span>
@@ -1180,7 +1180,7 @@ function Editor(props: {
       <div class="jr-scrim" onClick={props.onClose} />
       <aside class="jr-drawer">
         <header class="jr-head jd-head">
-          <span class={`jh-side ${t().side}`}>{t().side === 'long' ? 'Long' : 'Short'}</span>
+          <span class={`jh-side ${t().side}`}>{t().side === 'long' ? tl('Long') : tl('Short')}</span>
           <span class="jr-title">{symbolOf(t().market)}</span>
           <span class="dim">{venueLabel(t().market)}</span>
           <Badge trade={t()} />
@@ -1209,10 +1209,10 @@ function Editor(props: {
             </div>
             <p class="jd-hint dim">
               {t().drawingId !== null
-                ? `Kept in step with its ${t().timeframe} position on the chart: change it here or there.`
+                ? tlf('Kept in step with its {0} position on the chart: change it here or there.', t().timeframe)
                 : t().timeframe
-                  ? 'Its position was deleted from the chart; the trade keeps these prices.'
-                  : 'Added by hand.'}
+                  ? tl('Its position was deleted from the chart; the trade keeps these prices.')
+                  : tl('Added by hand.')}
             </p>
           </section>
 
@@ -1240,7 +1240,7 @@ function Editor(props: {
                   <PriceField label="Exit price" value={exit()} onInput={setExit} />
                 </Show>
                 <label class="jd-field jd-wide">
-                  <span class="jd-label">{mode() === 'cancelled' ? 'Called off' : 'Closed'}</span>
+                  <span class="jd-label">{mode() === 'cancelled' ? tl('Called off') : tl('Closed')}</span>
                   <input class="jr-in" type="datetime-local" value={closedAt()} onInput={(e) => setClosedAt(e.currentTarget.value)} />
                 </label>
               </div>
@@ -1283,8 +1283,8 @@ function Editor(props: {
                 <For each={t().legs.filter((_, i) => !t().fills.some((f) => f.leg === i))}>
                   {(l) => (
                     <li class="dim">
-                      <span>{isLive(t()) ? 'waiting' : 'not reached'}</span>
-                      <span>{l.kind === 'take' ? 'Take profit' : l.kind === 'cut' ? 'Cut loss' : 'Add'}</span>
+                      <span>{isLive(t()) ? tl('waiting') : tl('not reached')}</span>
+                      <span>{l.kind === 'take' ? tl('Take profit') : l.kind === 'cut' ? tl('Cut loss') : tl('Add')}</span>
                       <span>{Math.round(l.share * 100)}%</span>
                       <span>@ {props.price(t().market, l.price)}</span>
                       <span />
@@ -1299,7 +1299,7 @@ function Editor(props: {
           <Show when={(dirty() && problem()) || error()}>{(e) => <p class="bear jd-error">{e()}</p>}</Show>
           <div class="jd-actions">
             <button class="jd-save" disabled={busy() || !dirty() || problem() !== null} onClick={save}>
-              {busy() ? 'Saving…' : 'Save'}
+              {busy() ? tl('Saving…') : tl('Save')}
             </button>
             <button class="tb" onClick={openChart}>
               <Icon name="external" size={12} />
@@ -1313,7 +1313,7 @@ function Editor(props: {
               onClick={() => (sure() ? act(async () => void (await journalApi.remove(t().id), props.onRemove(t().id))) : setSure(true))}
             >
               <Icon name="trash" size={12} />
-              <span>{sure() ? 'Delete for good' : 'Delete'}</span>
+              <span>{sure() ? tl('Delete for good') : tl('Delete')}</span>
             </button>
           </div>
         </footer>
@@ -1459,7 +1459,7 @@ function AddTrade(props: { onClose: () => void; onAdd: (t: Trade) => void }) {
             {tl('Notes')}
             <textarea class="jr-in" rows={3} value={notes()} onInput={(e) => setNotes(e.currentTarget.value)} />
           </label>
-          <p class="dim jr-note">{closed() ? 'Kept as you set it.' : 'Price decides it from when it was entered, where this market’s prices are read.'}</p>
+          <p class="dim jr-note">{closed() ? tl('Kept as you set it.') : tl('Price decides it from when it was entered, where this market’s prices are read.')}</p>
           <Show when={error()}>{(e) => <p class="bear">{e()}</p>}</Show>
           <div class="jr-actions">
             <button class="tb on" type="submit" disabled={busy()}>
@@ -1555,7 +1555,7 @@ function ReviewTab(props: { trades: Trade[] }) {
         <Show when={error()}>{(e) => <p class="bear">{e()}</p>}</Show>
         <div class="jr-actions">
           <button class="tb on" disabled={state() === 'saving'} onClick={() => void save()}>
-            {state() === 'saving' ? 'Saving…' : 'Save the review'}
+            {state() === 'saving' ? tl('Saving…') : tl('Save the review')}
           </button>
           <Show when={state() === 'saved'}>
             <span class="dim">{tl('Saved.')}</span>

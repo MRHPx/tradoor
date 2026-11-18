@@ -21,7 +21,7 @@ import { tfLabel } from '../lib/timeframes';
 import type { ValuesPanelState } from '../workspace/model';
 import { marketOf, patchPanel, setPanelTimeframe, timeframeOf } from '../workspace/store';
 import { MarketButton, SESSION_NAME, TimeframeSelect } from './common';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 /** Momentum is read on these, shortest first. */
 const FRAMES = ['15m', '1h', '4h', '1d', '1w'];
@@ -105,7 +105,7 @@ export function ValuesPanel(props: { panel: ValuesPanelState }) {
     const p = session()?.profile;
     if (p && p.covered > 0) {
       const name = SESSION_NAME[p.session] ?? p.session;
-      for (const [label, v] of [['VAH', p.vah], ['POC', p.poc], ['VAL', p.val]] as const) if (v !== null) out.push({ label: `${label} · prior ${name}`, price: v });
+      for (const [label, v] of [['VAH', p.vah], ['POC', p.poc], ['VAL', p.val]] as const) if (v !== null) out.push({ label: tlf('{0} · prior {1}', label, tl(name)), price: v });
     }
     for (const f of frames() ?? []) if ((f.tf === '4h' || f.tf === '1d') && f.v?.ema200 != null) out.push({ label: `EMA 200 · ${tfLabel(f.tf)}`, price: f.v.ema200 });
     return out.sort((a, b) => b.price - a.price);
@@ -117,7 +117,7 @@ export function ValuesPanel(props: { panel: ValuesPanelState }) {
         <MarketButton panelId={id} market={market()} />
       </div>
       <div class="scroll vx">
-        <Show when={price() !== null} fallback={<div class="empty" classList={{ warn: !!dailyError() }}>{dailyError() ? `▲ ${dailyError()}` : 'Loading…'}</div>}>
+        <Show when={price() !== null} fallback={<div class="empty" classList={{ warn: !!dailyError() }}>{dailyError() ? `▲ ${dailyError()}` : tl('Loading…')}</div>}>
           {/* ------------------------------------------------ today */}
           <div class="vx-price">
             <span class="num big">{px(price()!)}</span>
@@ -203,7 +203,7 @@ export function ValuesPanel(props: { panel: ValuesPanelState }) {
                       <td class="num" classList={{ bull: (trend() ?? 0) > 0, bear: (trend() ?? 0) < 0 }}>
                         {trend() === null ? <span class="dim">{frames() ? '—' : '…'}</span> : formatPct(trend())}
                       </td>
-                      <td classList={{ bull: cross() === true, bear: cross() === false }}>{cross() === null ? <span class="dim">—</span> : cross() ? '▲ bull' : '▼ bear'}</td>
+                      <td classList={{ bull: cross() === true, bear: cross() === false }}>{cross() === null ? <span class="dim">—</span> : cross() ? tl('▲ bull') : tl('▼ bear')}</td>
                     </tr>
                   );
                 }}

@@ -26,7 +26,7 @@ import { formatClock, formatDateTime } from '../lib/timezone';
 import { toast } from '../lib/toasts';
 import type { FlowPanelState } from '../workspace/model';
 import { patchPanel } from '../workspace/store';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 /** How often the flow is asked for again: the server weighs it this often too. */
 const POLL_MS = 5_000;
@@ -118,7 +118,7 @@ export function FlowPanel(props: { panel: FlowPanelState }) {
       return;
     }
     if (mine() >= room()) {
-      toast({ tone: 'warn', title: `You follow ${room()} coins already`, body: 'Stop one with its × to add another.' });
+      toast({ tone: 'warn', title: tlf('You follow {0} coins already', room()), body: 'Stop one with its × to add another.' });
       return;
     }
     setAdding(true);
@@ -183,11 +183,11 @@ export function FlowPanel(props: { panel: FlowPanelState }) {
       const followed = await api.flowFollow(name, span);
       setAdding(false);
       const told = SPANS.find((s) => s.span === span)!.told;
-      toast({ tone: 'info', title: `Following ${followed.coin}'s flow ${told}`, body: `On ${followed.markets.length} market${followed.markets.length === 1 ? '' : 's'}` });
+      toast({ tone: 'info', title: tlf('Following {0}\'s flow {1}', followed.coin, told), body: tlf('On {0} market{1}', followed.markets.length, followed.markets.length === 1 ? '' : 's') });
       if (followed.coin === coin()) await load();
       else choose(followed.coin);
     } catch (e) {
-      toast({ tone: 'warn', title: `${name} not followed`, body: errorText(e) });
+      toast({ tone: 'warn', title: tlf('{0} not followed', name), body: errorText(e) });
     } finally {
       setBusy(false);
     }
@@ -200,7 +200,7 @@ export function FlowPanel(props: { panel: FlowPanelState }) {
       if (coin() === name) choose('BTC');
       else await load();
     } catch (e) {
-      toast({ tone: 'warn', title: `${name} still followed`, body: errorText(e) });
+      toast({ tone: 'warn', title: tlf('{0} still followed', name), body: errorText(e) });
     }
   };
 
@@ -250,7 +250,7 @@ export function FlowPanel(props: { panel: FlowPanelState }) {
                     c.recorded === false
                       ? 'Not recorded yet: the server records as many coins as it can, and this one starts once there is room'
                       : c.until !== null
-                        ? `Followed until ${lapses(c.until, now())} · drag to reorder`
+                        ? tlf('Followed until {0} · drag to reorder', lapses(c.until, now()))
                         : fixed(c)
                           ? 'Always recorded · drag to reorder'
                           : 'Followed until you stop it · drag to reorder'
@@ -265,7 +265,7 @@ export function FlowPanel(props: { panel: FlowPanelState }) {
                   </Show>
                 </button>
                 <Show when={!fixed(c)}>
-                  <button class="x" aria-label={`Stop following ${c.coin}`} data-tip={`Stop following ${c.coin}`} onClick={() => void stop(c.coin)}>
+                  <button class="x" aria-label={tlf('Stop following {0}', c.coin)} data-tip={tlf('Stop following {0}', c.coin)} onClick={() => void stop(c.coin)}>
                     <Icon name="close" size={9} stroke={2.4} />
                   </button>
                 </Show>
@@ -279,7 +279,7 @@ export function FlowPanel(props: { panel: FlowPanelState }) {
             fallback={
               <button
                 class="iconbtn"
-                data-tip={state()?.signedIn ? `Follow another coin's flow · ${mine()} of ${room()}` : 'Follow another coin: sign in with Telegram first'}
+                data-tip={state()?.signedIn ? tlf('Follow another coin\'s flow · {0} of {1}', mine(), room()) : 'Follow another coin: sign in with Telegram first'}
                 onClick={add}
               >
                 <Icon name="plus" size={13} />
@@ -311,7 +311,7 @@ export function FlowPanel(props: { panel: FlowPanelState }) {
               />
               <For each={SPANS}>
                 {(s, i) => (
-                  <button class="tb" classList={{ on: i() === 0 }} type="submit" value={s.span} disabled={busy()} data-tip={`Follow it ${s.told}`}>
+                  <button class="tb" classList={{ on: i() === 0 }} type="submit" value={s.span} disabled={busy()} data-tip={tlf('Follow it {0}', s.told)}>
                     {tl(s.label)}
                   </button>
                 )}
@@ -335,7 +335,7 @@ export function FlowPanel(props: { panel: FlowPanelState }) {
         {(c) => (
           <div class="fl-note">
             <span class="grow">
-              {c().until === null ? `You follow ${c().coin} until you stop it` : `You follow ${c().coin} for ${left(c().until!, now())} more`}
+              {c().until === null ? tlf('You follow {0} until you stop it', c().coin) : tlf('You follow {0} for {1} more', c().coin, left(c().until!, now()))}
             </span>
             <span class="dim">{tl('Keep')}</span>
             <For each={SPANS}>
@@ -343,7 +343,7 @@ export function FlowPanel(props: { panel: FlowPanelState }) {
                 <button
                   class="tb"
                   classList={{ on: s.span === 'always' && c().until === null }}
-                  data-tip={s.span === 'always' ? 'Follow it until you stop it' : `Follow it ${s.told} from now`}
+                  data-tip={s.span === 'always' ? 'Follow it until you stop it' : tlf('Follow it {0} from now', s.told)}
                   disabled={busy()}
                   onClick={() => void follow(c().coin, s.span)}
                 >
@@ -361,7 +361,7 @@ export function FlowPanel(props: { panel: FlowPanelState }) {
       <Show when={settings()}>
         <div class="menu fl-menu" onPointerDown={(e) => e.stopPropagation()}>
           <div class="cap">{tl('Tell me when a minute’s flow passes')}</div>
-          <For each={markets()} fallback={<div class="empty">{error() ?? 'This server follows no market’s flow.'}</div>}>
+          <For each={markets()} fallback={<div class="empty">{error() ?? tl('This server follows no market’s flow.')}</div>}>
             {(m) => (
               <div class="row">
                 <Venue market={m.market} />
@@ -395,7 +395,7 @@ export function FlowPanel(props: { panel: FlowPanelState }) {
                   data-tip={m.notify ? 'Telling you when it crosses — click to stop' : 'Tell me when it crosses, here and on Telegram'}
                   onClick={() => void save(m, { notify: !m.notify })}
                 >
-                  {m.notify ? 'Notify' : 'Quiet'}
+                  {m.notify ? tl('Notify') : tl('Quiet')}
                 </button>
               </div>
             )}
@@ -413,7 +413,7 @@ export function FlowPanel(props: { panel: FlowPanelState }) {
           <span class="r">{tl('12h')}</span>
           <span class="r">{tl('24h')}</span>
         </div>
-        <For each={markets()} fallback={<div class="empty">{error() ?? 'This server follows no market’s flow.'}</div>}>
+        <For each={markets()} fallback={<div class="empty">{error() ?? tl('This server follows no market’s flow.')}</div>}>
           {(m) => (
             <div class="flow-line">
               <Venue market={m.market} />
@@ -429,12 +429,12 @@ export function FlowPanel(props: { panel: FlowPanelState }) {
 
       <div class="flow-sub">
         <span>{tl('Crossings')}</span>
-        <span class="dim">{told() ? `${told()} market${told() > 1 ? 's' : ''} watched · 48h` : 'none set'}</span>
+        <span class="dim">{told() ? tlf('{0} market{1} watched · 48h', told(), told() > 1 ? 's' : '') : tl('none set')}</span>
       </div>
       <div class="scroll">
         <For
           each={events()}
-          fallback={<div class="empty">{error() ?? (told() ? 'Nothing has crossed yet.' : 'No size is set yet. Open the gear to say what counts as a big minute.')}</div>}
+          fallback={<div class="empty">{error() ?? (told() ? tl('Nothing has crossed yet.') : tl('No size is set yet. Open the gear to say what counts as a big minute.'))}</div>}
         >
           {(e) => (
             <div class="flow-event">

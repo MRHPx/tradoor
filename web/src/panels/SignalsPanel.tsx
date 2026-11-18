@@ -24,7 +24,7 @@ import { formatDateTime, formatHm } from '../lib/timezone';
 import { toast } from '../lib/toasts';
 import type { SignalsPanelState } from '../workspace/model';
 import { patchPanel, targetChart } from '../workspace/store';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 /** How often the list is asked for again; the scan itself runs every four hours. */
 const POLL_MS = 60_000;
@@ -231,11 +231,11 @@ export function SignalsPanel(props: { panel: SignalsPanelState }) {
         <div class="menu sig-tg" onPointerDown={(e) => e.stopPropagation()}>
           <button classList={{ cur: state()?.notify }} data-tip="Once per scan, the patterns scoring 70 or more whose Stochastic RSI turned" onClick={() => void setNotify({ notify: !state()?.notify })}>
             <span>{tl('When a pattern scoring 70+ turns')}</span>
-            <span class="num">{state()?.notify ? 'on' : 'off'}</span>
+            <span class="num">{state()?.notify ? 'on' : tl('off')}</span>
           </button>
           <button classList={{ cur: state()?.notifyTouch }} data-tip="At once, when live price reaches the line of two drives — before the bars confirm a third" onClick={() => void setNotify({ touch: !state()?.notifyTouch })}>
             <span>{tl('When price reaches the line')}</span>
-            <span class="num">{state()?.notifyTouch ? 'on' : 'off'}</span>
+            <span class="num">{state()?.notifyTouch ? 'on' : tl('off')}</span>
           </button>
           <button
             classList={{ cur: state()?.notifyLimits }}
@@ -243,7 +243,7 @@ export function SignalsPanel(props: { panel: SignalsPanelState }) {
             onClick={() => void setNotify({ limits: !state()?.notifyLimits })}
           >
             <span>{tl('Limit entry for a bearish 55+ with Δ div')}</span>
-            <span class="num">{state()?.notifyLimits ? 'on' : 'off'}</span>
+            <span class="num">{state()?.notifyLimits ? 'on' : tl('off')}</span>
           </button>
         </div>
       </Show>
@@ -252,7 +252,7 @@ export function SignalsPanel(props: { panel: SignalsPanelState }) {
       </Show>
       <Show when={props.panel.view !== 'record'}>
       <div class="sig-sub">
-        <Show when={state()?.scannedAt} fallback={<span>{error() ?? 'The first scan runs a minute after the next four-hour close.'}</span>}>
+        <Show when={state()?.scannedAt} fallback={<span>{error() ?? tl('The first scan runs a minute after the next four-hour close.')}</span>}>
           {(at) => (
             <span>
               {tl('Scanned')} {formatHm(at())} {tl('· next')} {formatHm(state()!.nextAt)} · {state()!.markets} {tl('coins')}
@@ -269,7 +269,7 @@ export function SignalsPanel(props: { panel: SignalsPanelState }) {
               <button
                 class="sig-row"
                 classList={{ shown: isShown(p) }}
-                data-tip={`Price reached the line through two drives at ${price(t.touchPrice)} — a third drive as it happens, not yet confirmed by closed bars. Drives at ${t.drives.map((d) => price(d.price)).join(', ')} · ${pushesText(t.deltas)} · ${levelsText(t.levels)}`}
+                data-tip={tlf('Price reached the line through two drives at {0} — a third drive as it happens, not yet confirmed by closed bars. Drives at {1} · {2} · {3}', price(t.touchPrice), t.drives.map((d) => price(d.price)).join(', '), pushesText(t.deltas), levelsText(t.levels))}
                 onClick={() => open(p)}
               >
                 <span class={`sig-state ${t.side} line`}>
@@ -305,24 +305,24 @@ export function SignalsPanel(props: { panel: SignalsPanelState }) {
               <button
                 class="sig-row"
                 classList={{ shown: isShown(s), strong }}
-                data-tip={`Drives at ${s.drives.map((d) => price(d.price)).join(', ')} · ${pushesText(s.deltas)} · ${turned() ? `Stochastic RSI turned at ${price(s.turnPrice ?? s.price)}` : 'waiting for Stochastic RSI to turn'}${s.divergence ? ' · RSI weaker at the third drive' : ''}${s.levels ? ` · ${levelsText(s.levels)}` : ''} — open it on the chart`}
+                data-tip={tlf('Drives at {0} · {1} · {2}{3}{4} — open it on the chart', s.drives.map((d) => price(d.price)).join(', '), pushesText(s.deltas), turned() ? tlf('Stochastic RSI turned at {0}', price(s.turnPrice ?? s.price)) : tl('waiting for Stochastic RSI to turn'), s.divergence ? ' · RSI weaker at the third drive' : '', s.levels ? ` · ${levelsText(s.levels)}` : '')}
                 onClick={() => open({ ...s, enteredAt: s.turnedAt ?? undefined })}
               >
                 <span class={`sig-state ${s.side}`} classList={{ turned: turned() }}>
                   {s.side === 'bear' ? '▼' : '▲'}
-                  <span class="word"> {turned() ? 'TRIGGERED' : 'FORMING'}</span>
+                  <span class="word"> {turned() ? tl('TRIGGERED') : tl('FORMING')}</span>
                 </span>
                 <span class="sig-coin">
                   <b>{symbolOf(s.market)}</b>
                   <VenueTag market={s.market} />
                   <Show when={strong}>
-                    <span class="tf-chip strong" data-tip={`Three drives on ${s.timeframe === '1w' ? 'weekly' : 'daily'} bars: the strong kind. Opens the chart at ${frameName(s.timeframe)}.`}>
+                    <span class="tf-chip strong" data-tip={tlf('Three drives on {0} bars: the strong kind. Opens the chart at {1}.', s.timeframe === '1w' ? tl('weekly') : tl('daily'), frameName(s.timeframe))}>
                       ★ {frameName(s.timeframe)}
                     </span>
                   </Show>
                   <For each={higher}>
                     {(tf) => (
-                      <span class="tf-chip" data-tip={`This coin also has ${s.side === 'bear' ? 'bearish' : 'bullish'} three drives on ${tf === '1W' ? 'weekly' : 'daily'} bars, the same way`}>
+                      <span class="tf-chip" data-tip={tlf('This coin also has {0} three drives on {1} bars, the same way', s.side === 'bear' ? tl('bearish') : tl('bullish'), tf === '1W' ? tl('weekly') : tl('daily'))}>
                         +{tf}
                       </span>
                     )}
@@ -332,7 +332,7 @@ export function SignalsPanel(props: { panel: SignalsPanelState }) {
                 <span class="sig-score num">
                   <Show when={s.outcome}>{(o) => <span class={`sig-out ${o()}`} data-tip={`${OUTCOME[o()][2]} · ${pct(s.ret)}`}>{OUTCOME[o()][0]}</span>}</Show>
                   <Show when={s.deltaDivergence}>
-                    <span class="div delta" data-tip={`Delta divergence: takers bought less of the volume on the push into the third drive than into the second${s.deltaAgainst ? ', and the third drive\'s own bar was sold more than bought' : ''}`}>
+                    <span class="div delta" data-tip={tlf('Delta divergence: takers bought less of the volume on the push into the third drive than into the second{0}', s.deltaAgainst ? tl(', and the third drive\'s own bar was sold more than bought') : '')}>
                       ΔDIV
                     </span>
                   </Show>
@@ -378,19 +378,19 @@ export function SignalsPanel(props: { panel: SignalsPanelState }) {
               <button
                 class="sig-row ended"
                 classList={{ shown: isShown(touchPattern(t)) }}
-                data-tip={`Price reached the line at ${price(t.touchPrice)}; the trade from there ${t.outcome ? OUTCOME[t.outcome][2].toLowerCase() : 'ended'} · ${pct(t.ret)} — open it on the chart`}
+                data-tip={tlf('Price reached the line at {0}; the trade from there {1} · {2} — open it on the chart', price(t.touchPrice), t.outcome ? OUTCOME[t.outcome][2].toLowerCase() : tl('ended'), pct(t.ret))}
                 onClick={() => open(touchPattern(t))}
               >
                 <span class={`sig-out ${t.outcome}`}>
                   {t.outcome ? OUTCOME[t.outcome][0] : '·'}
-                  <span class="word"> {t.outcome ? OUTCOME[t.outcome][1].toUpperCase() : 'ENDED'}</span>
+                  <span class="word"> {t.outcome ? OUTCOME[t.outcome][1].toUpperCase() : tl('ENDED')}</span>
                 </span>
                 <span class="sig-coin">
                   <span class={t.side}>{t.side === 'bear' ? '▼' : '▲'}</span>
                   <b>{symbolOf(t.market)}</b>
                   <VenueTag market={t.market} />
                 </span>
-                <span class="sig-drives dim">{tl('at the line ·')} {t.outcome === 'stop' ? 'hit the stop' : t.outcome === 'expired' ? 'neither take-profit nor stop' : `reached ${t.outcome?.toUpperCase()}`}</span>
+                <span class="sig-drives dim">{tl('at the line ·')} {t.outcome === 'stop' ? tl('hit the stop') : t.outcome === 'expired' ? tl('neither take-profit nor stop') : tlf('reached {0}', t.outcome?.toUpperCase())}</span>
                 <span class="sig-score num" classList={{ bull: (t.ret ?? 0) > 0, bear: (t.ret ?? 0) < 0 }}>
                   {pct(t.ret)}
                 </span>
@@ -400,10 +400,10 @@ export function SignalsPanel(props: { panel: SignalsPanelState }) {
           </For>
           <For each={ended()}>
             {(s) => (
-              <button class="sig-row ended" classList={{ shown: isShown(s) }} data-tip={`${why(s)}${s.ret !== null && s.outcome ? ` · ${pct(s.ret)}` : ''} — open it on the chart`} onClick={() => open({ ...s, enteredAt: s.turnedAt ?? undefined })}>
+              <button class="sig-row ended" classList={{ shown: isShown(s) }} data-tip={tlf('{0}{1} — open it on the chart', why(s), s.ret !== null && s.outcome ? ` · ${pct(s.ret)}` : '')} onClick={() => open({ ...s, enteredAt: s.turnedAt ?? undefined })}>
                 <span class={`sig-out ${s.outcome ?? 'gone'}`}>
                   {s.outcome ? OUTCOME[s.outcome][0] : '·'}
-                  <span class="word"> {s.outcome ? OUTCOME[s.outcome][1].toUpperCase() : 'ENDED'}</span>
+                  <span class="word"> {s.outcome ? OUTCOME[s.outcome][1].toUpperCase() : tl('ENDED')}</span>
                 </span>
                 <span class="sig-coin">
                   <span class={s.side}>{s.side === 'bear' ? '▼' : '▲'}</span>
@@ -548,7 +548,7 @@ function Record(props: { stats: SignalStats | null; sides: ('bear' | 'bull')[]; 
   const day = (ms: number) => formatDateTime(ms).slice(0, 10);
   return (
     <div class="scroll sig-record">
-      <Show when={props.stats} fallback={<div class="empty">{props.error ?? 'Reading the record…'}</div>}>
+      <Show when={props.stats} fallback={<div class="empty">{props.error ?? tl('Reading the record…')}</div>}>
         {(st) => (
           <>
             <div class="sig-cap">
@@ -567,8 +567,8 @@ function Record(props: { stats: SignalStats | null; sides: ('bear' | 'bull')[]; 
             <div class="sig-cap">
               <b>{tl('Live')}</b>
               <span class="dim">
-                {st().live.since ? `since ${day(st().live.since!)}` : 'from the first pattern that turns'}
-                {st().live.open ? ` · ${st().live.open} still open` : ''}
+                {st().live.since ? tlf('since {0}', day(st().live.since!)) : tl('from the first pattern that turns')}
+                {st().live.open ? tlf(' · {0} still open', st().live.open) : ''}
               </span>
             </div>
             <Show when={st().live.groups.some((g) => g.n > 0)} fallback={<div class="sig-note dim">{tl('None has played out yet: a pattern is given')} {st().windowBars / 6} {tl('days.')}</div>}>
@@ -578,8 +578,8 @@ function Record(props: { stats: SignalStats | null; sides: ('bear' | 'bull')[]; 
               <b>Live · 1D & 1W</b>
               <span class="dim">
                 {tl('the strong kind, each weighed over')} {st().windowBars} {tl('of its own bars')}
-                {st().higher.since ? ` · since ${day(st().higher.since!)}` : ''}
-                {st().higher.open ? ` · ${st().higher.open} still open` : ''}
+                {st().higher.since ? tlf(' · since {0}', day(st().higher.since!)) : ''}
+                {st().higher.open ? tlf(' · {0} still open', st().higher.open) : ''}
               </span>
             </div>
             <Show when={st().higher.groups.some((g) => g.n > 0)} fallback={<div class="sig-note dim">{tl('None has played out yet: a daily pattern is given')} {st().windowBars} {tl('days, a weekly one as many weeks.')}</div>}>
@@ -597,7 +597,7 @@ function Record(props: { stats: SignalStats | null; sides: ('bear' | 'bull')[]; 
               <b>{tl('Limit entry · live')}</b>
               <span class="dim">
                 {tl('patterns first seen since')} {day(st().limits.since)}
-                {st().limits.open ? ` · ${st().limits.open} still open` : ''}
+                {st().limits.open ? tlf(' · {0} still open', st().limits.open) : ''}
               </span>
             </div>
             <Show when={st().limits.groups.some((g) => g.seen > 0)} fallback={<div class="sig-note dim">{tl('None has played out yet.')}</div>}>
@@ -613,8 +613,8 @@ function Record(props: { stats: SignalStats | null; sides: ('bear' | 'bull')[]; 
             <div class="sig-cap">
               <b>{tl('At the line · live')}</b>
               <span class="dim">
-                {st().touches.live.since ? `since ${day(st().touches.live.since!)}` : 'from the first touch'}
-                {st().touches.live.open ? ` · ${st().touches.live.open} still open` : ''}
+                {st().touches.live.since ? tlf('since {0}', day(st().touches.live.since!)) : tl('from the first touch')}
+                {st().touches.live.open ? tlf(' · {0} still open', st().touches.live.open) : ''}
               </span>
             </div>
             <Show when={st().touches.live.groups.some((g) => g.n > 0)} fallback={<div class="sig-note dim">{tl('None has played out yet.')}</div>}>
@@ -622,9 +622,9 @@ function Record(props: { stats: SignalStats | null; sides: ('bear' | 'bull')[]; 
             </Show>
             <For each={st().touches.recent.filter((t) => props.sides.includes(t.side))}>
               {(t) => (
-                <button class="sig-row played" classList={{ shown: isShown(touchPattern(t)) }} data-tip={`${t.became ? BECAME[t.became] : 'not yet known'} — open it on the chart`} onClick={() => props.onOpen(touchPattern(t))}>
+                <button class="sig-row played" classList={{ shown: isShown(touchPattern(t)) }} data-tip={tlf('{0} — open it on the chart', t.became ? BECAME[t.became] : tl('not yet known'))} onClick={() => props.onOpen(touchPattern(t))}>
                   <span class={`sig-out ${t.outcome ?? 'open'}`} data-tip={t.outcome ? TOUCH_OUTCOME[t.outcome] : 'Still open'}>
-                    {t.outcome ? `${OUTCOME[t.outcome][0]} ${OUTCOME[t.outcome][1]}` : '… Open'}
+                    {t.outcome ? `${OUTCOME[t.outcome][0]} ${OUTCOME[t.outcome][1]}` : tl('… Open')}
                   </span>
                   <span class="sig-coin">
                     <span class={t.side}>{t.side === 'bear' ? '▼' : '▲'}</span>
@@ -647,7 +647,7 @@ function Record(props: { stats: SignalStats | null; sides: ('bear' | 'bull')[]; 
               {(s) => (
                 <button class="sig-row played" classList={{ shown: isShown(s) }} data-tip="Open it on the chart" onClick={() => props.onOpen(s)}>
                   <span class={`sig-out ${s.outcome ?? 'open'}`} data-tip={s.outcome ? OUTCOME[s.outcome][2] : 'Still open'}>
-                    {s.outcome ? `${OUTCOME[s.outcome][0]} ${OUTCOME[s.outcome][1]}` : '… Open'}
+                    {s.outcome ? `${OUTCOME[s.outcome][0]} ${OUTCOME[s.outcome][1]}` : tl('… Open')}
                   </span>
                   <span class="sig-coin">
                     <span class={s.side}>{s.side === 'bear' ? '▼' : '▲'}</span>
@@ -700,16 +700,16 @@ function TouchTable(props: { groups: SignalTouchGroup[]; sides: ('bear' | 'bull'
           {(g) => (
             <tr class="head">
               <td>
-                <span class={g.side}>{g.side === 'bear' ? '▼ Bearish' : '▲ Bullish'}</span>
+                <span class={g.side}>{g.side === 'bear' ? tl('▼ Bearish') : tl('▲ Bullish')}</span>
               </td>
               <td class="num">{g.n}</td>
-              <td class="num" data-tip={`Of them, Stochastic RSI turned: ${share(g.turned, g.n)}`}>{share(g.pattern, g.n)}</td>
+              <td class="num" data-tip={tlf('Of them, Stochastic RSI turned: {0}', share(g.turned, g.n))}>{share(g.pattern, g.n)}</td>
               <td class="num">{share(g.win, g.n)}</td>
               <td class="num bull">{share(g.tp1, g.n)}</td>
               <td class="num bull">{share(g.tp2, g.n)}</td>
               <td class="num bull">{share(g.tp3, g.n)}</td>
-              <td class="num bear" data-tip={`Nothing in four days: ${share(g.expired, g.n)}`}>{share(g.stop, g.n)}</td>
-              <td class="num" classList={{ bull: g.ret > 0, bear: g.ret < 0 }} data-tip={`At best ${pct(g.best)}, at worst ${pct(g.worst)} on the way, on average`}>
+              <td class="num bear" data-tip={tlf('Nothing in four days: {0}', share(g.expired, g.n))}>{share(g.stop, g.n)}</td>
+              <td class="num" classList={{ bull: g.ret > 0, bear: g.ret < 0 }} data-tip={tlf('At best {0}, at worst {1} on the way, on average', pct(g.best), pct(g.worst))}>
                 {g.n ? pct(g.ret) : '—'}
               </td>
             </tr>
@@ -744,7 +744,7 @@ function Table(props: { groups: SignalGroup[]; sides: ('bear' | 'bull')[]; limit
             <tr classList={{ head: g.group === 'all' }}>
               <td>
                 <Show when={g.group === 'all'} fallback={<span class="dim">{GROUP_LABEL[g.group]}</span>}>
-                  <span class={g.side}>{g.side === 'bear' ? '▼ Bearish' : '▲ Bullish'}</span>
+                  <span class={g.side}>{g.side === 'bear' ? tl('▼ Bearish') : tl('▲ Bullish')}</span>
                 </Show>
               </td>
               <Show when={props.limits} fallback={<td class="num">{g.n}</td>}>
@@ -755,8 +755,8 @@ function Table(props: { groups: SignalGroup[]; sides: ('bear' | 'bull')[]; limit
               <td class="num bull">{share(g.tp1, g.n)}</td>
               <td class="num bull">{share(g.tp2, g.n)}</td>
               <td class="num bull">{share(g.tp3, g.n)}</td>
-              <td class="num bear" data-tip={`Neither take-profit nor stop: ${share(g.expired, g.n)}`}>{share(g.stop, g.n)}</td>
-              <td class="num" classList={{ bull: g.ret > 0, bear: g.ret < 0 }} data-tip={`At best ${pct(g.best)}, at worst ${pct(g.worst)} on the way, on average`}>
+              <td class="num bear" data-tip={tlf('Neither take-profit nor stop: {0}', share(g.expired, g.n))}>{share(g.stop, g.n)}</td>
+              <td class="num" classList={{ bull: g.ret > 0, bear: g.ret < 0 }} data-tip={tlf('At best {0}, at worst {1} on the way, on average', pct(g.best), pct(g.worst))}>
                 {g.n ? pct(g.ret) : '—'}
               </td>
             </tr>

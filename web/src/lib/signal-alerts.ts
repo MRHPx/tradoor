@@ -11,6 +11,7 @@ import { readPref, writePref } from './prefs';
 import { symbolOf } from './markets';
 import { toast } from './toasts';
 import { openPattern, signalPattern, touchPattern, type Openable } from './patterns';
+import { tlf } from './i18n';
 
 const POLL_MS = 60_000;
 const SEEN_KEY = 'signals-told';
@@ -95,7 +96,7 @@ export function watchSignals(): void {
     writePref(SEEN_KEY, JSON.stringify(kept));
     if (fresh.length > AT_MOST) {
       fresh.slice(0, AT_MOST - 1).forEach(tell);
-      toast({ tone: 'alert', title: `${fresh.length - AT_MOST + 1} more new signals`, body: 'In the Signal panel' }, 30_000);
+      toast({ tone: 'alert', title: tlf('{0} more new signals', fresh.length - AT_MOST + 1), body: 'In the Signal panel' }, 30_000);
     } else fresh.forEach(tell);
   };
   void check();

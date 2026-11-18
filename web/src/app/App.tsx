@@ -50,7 +50,7 @@ import {
   update,
 } from '../workspace/store';
 import { CAPTURE_KEY, chartControllers, closeOverlay, covered, cycleMagnet, isTypingTarget, journalOpen, MAGNET_KEY, mobile, mobileMenu, overlay, panelSteps, setJournalOpen, setOverlay, setTrainingOpen, TOOL_KEYS, TRAINING_CHART, trainingOpen } from './ui';
-import { tl } from '../lib/i18n';
+import { tl, tlf } from '../lib/i18n';
 
 // Dialogs opened now and then load when first opened: nobody needs them to see a chart.
 const SymbolSearch = lazy(() => import('../components/SymbolSearch').then((m) => ({ default: m.SymbolSearch })));
@@ -104,7 +104,7 @@ function commands(): Command[] {
       { group: 'Chart', label: 'Show all loaded history', run: () => chartControllers.get(chart.id)?.showRange(null) },
       { group: 'Chart style', label: 'Candles', run: () => patchPanel(chart.id, { tpo: '' }) },
       { group: 'Chart style', label: 'TPO settings…', run: () => setOverlay({ kind: 'tpoSettings', panelId: chart.id }) },
-      ...TPO_SPLITS.map((split) => ({ group: 'Chart style', label: `TPO — ${split.label}`, run: () => patchPanel(chart.id, { tpo: split.value }) })),
+      ...TPO_SPLITS.map((split) => ({ group: 'Chart style', label: `TPO — ${tl(split.label)}`, run: () => patchPanel(chart.id, { tpo: split.value }) })),
     );
   }
   const zones: [DropZone, string][] = [
@@ -315,7 +315,7 @@ function Health() {
       <span class="health" classList={{ bull: state() === 'ok', warn: state() === 'db', bear: state() === 'down', dim: state() === 'checking' }}>
         <Icon name="server" size={12} />
       </span>
-      <span>{state() === 'down' ? 'OFFLINE' : state() === 'db' ? 'NO DB' : 'SERVER'}</span>
+      <span>{state() === 'down' ? tl('OFFLINE') : state() === 'db' ? tl('NO DB') : tl('SERVER')}</span>
     </span>
   );
 }
@@ -325,7 +325,7 @@ function Clock() {
   const timer = setInterval(() => setNow(Date.now()), 1000);
   onCleanup(() => clearInterval(timer));
   return (
-    <span class="item num" data-tip={`Times are shown in ${timeZone() === LOCAL_ZONE ? `your local time (${deviceZone()})` : timeZone()} — change it in Settings`}>
+    <span class="item num" data-tip={tlf('Times are shown in {0} — change it in Settings', timeZone() === LOCAL_ZONE ? tlf('your local time ({0})', deviceZone()) : timeZone())}>
       <span class="dim">{zoneLabel()}</span>
       <span>{formatClock(now())}</span>
     </span>
@@ -373,7 +373,7 @@ const [messengerOpen, setMessengerOpen] = createSignal(false);
 function StatusBar() {
   return (
     <footer class="statusbar">
-      <span class="caps">{focusedPanel() ? panelTitle(focusedPanel()!) : 'no panel focused'}</span>
+      <span class="caps">{focusedPanel() ? panelTitle(focusedPanel()!) : tl('no panel focused')}</span>
       <For
         each={[
           ['a–z', 'symbol'],
@@ -390,12 +390,12 @@ function StatusBar() {
         )}
       </For>
       <span class="spacer" />
-      <span classList={{ warn: saveState() === 'local' || saveState() === 'conflict' }}>{SAVE_TEXT[saveState()]}</span>
+      <span classList={{ warn: saveState() === 'local' || saveState() === 'conflict' }}>{tl(SAVE_TEXT[saveState()])}</span>
       <button
         class="msgr-btn"
         classList={{ on: messengerOpen() }}
         data-tip="tradoor messenger — talk with everyone here"
-        aria-label={`tradoor messenger, ${online()} online`}
+        aria-label={tlf('tradoor messenger, {0} online', online())}
         aria-expanded={messengerOpen()}
         onClick={() => setMessengerOpen((v) => !v)}
       >
@@ -423,7 +423,7 @@ function Overlays() {
             return (
               <SymbolSearch
                 initial={o.initial}
-                title={panel?.type === 'watchlist' ? 'Add to watchlist' : 'Symbol'}
+                title={panel?.type === 'watchlist' ? tl('Add to watchlist') : tl('Symbol')}
                 current={panel && panel.type !== 'watchlist' ? marketOf(panel) : undefined}
                 ratios={panel?.type !== 'watchlist'}
                 timeframe={panel && panel.type !== 'watchlist' ? timeframeOf(panel) : undefined}
@@ -555,7 +555,7 @@ export function App() {
           <Icon name="indicators" size={12} /> <span>{tl('Training')}</span>
         </button>
         <span class="layout-at">
-          <button class="item" classList={{ on: topMenu() === 'layouts' }} data-tip={`Layouts: recommended, your own, and as a file — ${doc.name} in use`} onPointerDown={(e) => e.stopPropagation()} onClick={() => toggle('layouts')}>
+          <button class="item" classList={{ on: topMenu() === 'layouts' }} data-tip={tlf('Layouts: recommended, your own, and as a file — {0} in use', doc.name)} onPointerDown={(e) => e.stopPropagation()} onClick={() => toggle('layouts')}>
             <Icon name="layout" size={12} /> <span>{tl('Layouts')}</span>
           </button>
           <Show when={topMenu() === 'layouts'}>
