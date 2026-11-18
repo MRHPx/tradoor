@@ -1,126 +1,220 @@
-import { For } from 'solid-js';
+/**
+ * Keyboard and mouse: every shortcut, by section, with a search. Keys show as
+ * keycaps (`Ctrl` `S`), alternatives with "or", and what is done with the mouse
+ * as a dashed pill of its own, so a key and a click never look alike.
+ */
+import { createMemo, createSignal, For, Show } from 'solid-js';
 import { tl } from '../lib/i18n';
+import './help.css';
 
-const GROUPS: { title: string; keys: [string, string][] }[] = [
+/** A row: what it does, and how — key combos (any of them), or something done with the mouse. */
+interface Row {
+  what: string;
+  keys?: string[][];
+  mouse?: string;
+  /** Keys one after another on one modifier: Alt and T, H, J or R. */
+  letters?: { mod: string; list: string[] };
+}
+
+const k = (...combos: string[]): string[][] => combos.map((c) => c.split(' '));
+
+const SECTIONS: { id: string; title: string; rows: Row[] }[] = [
   {
+    id: 'workspace',
     title: 'Workspace',
-    keys: [
-      ['/  Ctrl K', 'Commands'],
-      ['?', 'This help'],
-      ['Ctrl S', 'Save the workspace now — it saves itself anyway'],
-      ['drag a tab', 'Dock it: centre or edge of a group'],
-      ['link icon on a tab', 'Link group — panels share a market'],
-      ['middle-click tab', 'Close the panel'],
+    rows: [
+      { what: 'Commands', keys: k('/', 'Ctrl K') },
+      { what: 'This help', keys: k('?') },
+      { what: 'Save the workspace now (it also saves itself)', keys: k('Ctrl S') },
+      { what: 'Dock a panel: to the centre or an edge of a group', mouse: 'drag a tab' },
+      { what: 'Link panels so they share one market', mouse: 'link icon on a tab' },
+      { what: 'Close a panel', mouse: 'middle-click its tab' },
     ],
   },
   {
+    id: 'chart',
     title: 'Chart',
-    keys: [
-      ['a–z', 'Search for a symbol'],
-      ['←  →', 'Shorter / longer timeframe'],
-      ['↑  ↓', 'Previous / next market in the watchlist, or the Signal list'],
-      ['wheel', 'Zoom time'],
-      ['drag', 'Pan time; up or down moves price'],
-      ['wheel or drag price axis', 'Scale price'],
-      ['AUTO', 'Price follows the bars again'],
-      ['Alt ↵', 'This chart alone over the layout, and back; or Maximize, under the chart'],
-      ['double-click price axis', 'Auto scale that pane'],
-      ['right-click', 'Chart menu'],
+    rows: [
+      { what: 'Search for a symbol', keys: k('a–z') },
+      { what: 'Shorter or longer timeframe', keys: k('←', '→') },
+      { what: 'Previous or next market in the watchlist, or the Signal list', keys: k('↑', '↓') },
+      { what: 'This chart alone over the layout, and back', keys: k('Alt ↵') },
+      { what: 'Zoom time', mouse: 'wheel' },
+      { what: 'Pan time; up or down moves the price', mouse: 'drag' },
+      { what: 'Scale the price', mouse: 'wheel or drag the price axis' },
+      { what: 'Auto scale that pane again', mouse: 'double-click the price axis' },
+      { what: 'Price follows the bars again', mouse: 'AUTO button' },
+      { what: 'Chart menu', mouse: 'right-click' },
     ],
   },
   {
-    title: 'Alerts',
-    keys: [
-      ['clock by the price axis', 'Add a crossing alert at the price under the pointer'],
-      ['hover an alert line', 'Its name, with delete'],
-      ['drag an alert line', 'Move it to another price'],
-      ['Alerts panel', 'Every alert, Active or Stopped — Triggered: restart, edit, delete; the Log lists each trigger'],
-    ],
-  },
-  {
-    title: 'Watchlist',
-    keys: [
-      ['right-click', 'Flag a market, add a section or a symbol'],
-      ['drag a row', 'Move it; a section moves with its markets'],
-      ['click a section', 'Fold it shut or open'],
-      ['double-click a section', 'Rename it'],
-    ],
-  },
-  {
+    id: 'drawing',
     title: 'Drawing',
-    keys: [
-      ['Ctrl Z', 'Undo the last drawing change'],
-      ['Ctrl Shift Z  Ctrl Y', 'Redo'],
-      ['esc', 'Cancel the tool, or deselect'],
-      ['Delete', 'Remove the selected drawing'],
-      ['Enter', 'Finish a path'],
-      ['double-click', 'Finish a path'],
-      ['double-click a drawing', 'Its settings: style, text, coordinates, visibility'],
-      ['shift', 'Keep a line level while drawing or dragging it'],
-      ['Alt T / H / J / R', 'Trendline, horizontal level, ray, zone'],
-      ['Alt C / F / N / M', 'Parallel channel, fib, note, measure'],
-      ['Alt L / S / B / P', 'Long, short, brush, path'],
-      ['Alt G', 'Magnet: off, weak, strong'],
-      ['Alt K', 'Copy a 4K picture of the chart — shift saves the file'],
-      ['hold Ctrl', 'A weak magnet while drawing, when it is off'],
+    rows: [
+      { what: 'Trendline, horizontal level, ray, zone', letters: { mod: 'Alt', list: ['T', 'H', 'J', 'R'] } },
+      { what: 'Parallel channel, fib, note, measure', letters: { mod: 'Alt', list: ['C', 'F', 'N', 'M'] } },
+      { what: 'Long, short, brush, path', letters: { mod: 'Alt', list: ['L', 'S', 'B', 'P'] } },
+      { what: 'Magnet: off, weak, strong', keys: k('Alt G') },
+      { what: 'Hold for a weak magnet while drawing, when it is off', keys: k('Ctrl') },
+      { what: 'Keep a line level while drawing or dragging it', keys: k('Shift') },
+      { what: 'Undo the last drawing change', keys: k('Ctrl Z') },
+      { what: 'Redo', keys: k('Ctrl Shift Z', 'Ctrl Y') },
+      { what: 'Cancel the tool, or deselect', keys: k('Esc') },
+      { what: 'Remove the selected drawing', keys: k('Delete') },
+      { what: 'Finish a path', keys: k('Enter') },
+      { what: 'Finish a path', mouse: 'double-click' },
+      { what: 'A drawing’s settings: style, text, coordinates, visibility', mouse: 'double-click it' },
+      { what: 'Copy a 4K picture of the chart (with Shift: save the file)', keys: k('Alt K') },
     ],
   },
   {
+    id: 'alerts',
+    title: 'Alerts',
+    rows: [
+      { what: 'A crossing alert at the price under the pointer', mouse: 'clock by the price axis' },
+      { what: 'An alert’s name, and delete', mouse: 'hover its line' },
+      { what: 'Move an alert to another price', mouse: 'drag its line' },
+      { what: 'Every alert: restart, edit, delete; the Log lists each trigger', mouse: 'Alerts panel' },
+    ],
+  },
+  {
+    id: 'watchlist',
+    title: 'Watchlist',
+    rows: [
+      { what: 'Flag a market, add a section or a symbol', mouse: 'right-click' },
+      { what: 'Move a row; a section moves with its markets', mouse: 'drag a row' },
+      { what: 'Fold a section shut or open', mouse: 'click it' },
+      { what: 'Rename a section', mouse: 'double-click it' },
+    ],
+  },
+  {
+    id: 'search',
     title: 'Symbol search',
-    keys: [
-      ['↑  ↓', 'Move'],
-      ['↵', 'Open'],
-      ['tab', 'All / perp / spot'],
-      ['bybit btc', 'Venue and kind words filter'],
-      ['esc', 'Close'],
+    rows: [
+      { what: 'Move through the results', keys: k('↑', '↓') },
+      { what: 'Open', keys: k('↵') },
+      { what: 'All, perpetuals or spot', keys: k('Tab') },
+      { what: 'Filter by exchange and kind', mouse: 'type “bybit btc”' },
+      { what: 'Close', keys: k('Esc') },
     ],
   },
 ];
 
+function Keys(props: { row: Row }) {
+  return (
+    <span class="hk-keys">
+      <Show when={props.row.keys}>
+        <For each={props.row.keys}>
+          {(combo, i) => (
+            <>
+              <Show when={i() > 0}>
+                <span class="hk-or">{tl('or')}</span>
+              </Show>
+              <span class="hk-combo">
+                <For each={combo}>{(key) => <kbd class="hk-cap">{key}</kbd>}</For>
+              </span>
+            </>
+          )}
+        </For>
+      </Show>
+      <Show when={props.row.letters}>
+        {(l) => (
+          <span class="hk-combo">
+            <kbd class="hk-cap">{l().mod}</kbd>
+            <span class="hk-plus">+</span>
+            <For each={l().list}>
+              {(c, i) => (
+                <>
+                  <Show when={i() > 0}>
+                    <span class="hk-slash">/</span>
+                  </Show>
+                  <kbd class="hk-cap">{c}</kbd>
+                </>
+              )}
+            </For>
+          </span>
+        )}
+      </Show>
+      <Show when={props.row.mouse}>{(m) => <span class="hk-mouse">{tl(m())}</span>}</Show>
+    </span>
+  );
+}
+
 export function Help(props: { onClose(): void }) {
+  const [query, setQuery] = createSignal('');
+  const [section, setSection] = createSignal('all');
+  const shown = createMemo(() => {
+    const words = query().trim().toLowerCase().split(/\s+/).filter(Boolean);
+    // A search finds a row by its words in English and in the page's language.
+    const text = (s: string | undefined) => (s ? `${s} ${tl(s)}` : '');
+    return SECTIONS.filter((s) => section() === 'all' || s.id === section())
+      .map((s) => ({
+        ...s,
+        rows: words.length ? s.rows.filter((r) => words.every((w) => `${text(s.title)} ${text(r.what)} ${text(r.mouse)} ${(r.keys ?? []).flat().join(' ')} ${r.letters ? r.letters.mod + r.letters.list.join('') : ''}`.toLowerCase().includes(w))) : s.rows,
+      }))
+      .filter((s) => s.rows.length);
+  });
+  let input!: HTMLInputElement;
   return (
     <div class="backdrop" onPointerDown={() => props.onClose()}>
       <div
-        class="dialog"
+        class="dialog hk"
         tabIndex={-1}
-        ref={(el) => queueMicrotask(() => el.focus())}
+        ref={() => queueMicrotask(() => input.focus())}
         onPointerDown={(e) => e.stopPropagation()}
         onKeyDown={(e) => {
-          if (e.key !== 'Escape' && e.key !== '?') return;
-          e.stopPropagation();
-          props.onClose();
+          if (e.key === 'Escape' || (e.key === '?' && e.target !== input)) {
+            e.stopPropagation();
+            props.onClose();
+          }
         }}
       >
         <header>
-          <span class="title caps">{tl('Keyboard')}</span>
-          <span class="spacer" />
+          <span class="title caps">{tl('Keyboard & mouse')}</span>
+          <input ref={input} class="q" placeholder={tl('Find a shortcut: undo, magnet, alert…')} value={query()} onInput={(e) => setQuery(e.currentTarget.value)} />
           <button class="x" onClick={() => props.onClose()}>
             {tl('esc ✕')}
           </button>
         </header>
-        <div class="keys">
-          <For each={GROUPS}>
-            {(g) => (
-              <div>
-                <h3 class="caps primary" style={{ margin: '0 0 6px', 'font-weight': '400' }}>
-                  {tl(g.title)}
-                </h3>
-                <dl>
-                  <For each={g.keys}>
-                    {([key, label]) => (
-                      <div>
-                        <dd>{label}</dd>
-                        <dt>
-                          <kbd>{key}</kbd>
-                        </dt>
+        <nav class="hk-sections" aria-label={tl('Sections')}>
+          <button classList={{ on: section() === 'all' }} onClick={() => setSection('all')}>
+            {tl('All')}
+          </button>
+          <For each={SECTIONS}>
+            {(s) => (
+              <button classList={{ on: section() === s.id }} onClick={() => setSection(s.id)}>
+                {tl(s.title)}
+              </button>
+            )}
+          </For>
+        </nav>
+        <div class="hk-body">
+          <div class="hk-cols">
+            <For each={shown()} fallback={<p class="empty">{tl('Nothing matches “')}{query()}”</p>}>
+              {(s) => (
+                <section class="hk-section">
+                  <h3>{tl(s.title)}</h3>
+                  <For each={s.rows}>
+                    {(r) => (
+                      <div class="hk-row">
+                        <span class="hk-what">{tl(r.what)}</span>
+                        <Keys row={r} />
                       </div>
                     )}
                   </For>
-                </dl>
-              </div>
-            )}
-          </For>
+                </section>
+              )}
+            </For>
+          </div>
         </div>
+        <footer>
+          <span>
+            <kbd class="hk-cap">{tl('key')}</kbd> {tl('on the keyboard')} · <span class="hk-mouse">{tl('mouse')}</span> {tl('with the pointer')}
+          </span>
+          <span>
+            <kbd class="hk-cap">?</kbd> {tl('opens this anywhere')}
+          </span>
+        </footer>
       </div>
     </div>
   );
