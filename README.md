@@ -58,7 +58,7 @@
 
 **🔓 Free and open.** AGPL-3.0, and one Docker image to host it yourself.
 
-> **A tool, not advice.** tradoor charts market data and works out technical studies from it. It is not a financial adviser or a broker, and every trade you make is your own decision. Read the [disclaimer](#disclaimer).
+> **A tool, not advice.** tradoor terminal charts market data and works out technical studies from it. It is not a financial adviser or a broker, and every trade you make is your own decision. Read the [disclaimer](#disclaimer).
 
 ## Features
 
@@ -333,12 +333,12 @@ The server reads the visitor's address from nginx's `X-Real-IP`, so it must only
 
 ## Disclaimer
 
-tradoor is software: a tool that charts market data and works out technical studies from it. It is not a financial adviser, an investment adviser, a broker or an exchange, and it is not licensed or registered as any of them.
+tradoor terminal ([tradoorterminal.com](https://tradoorterminal.com/)) is software: a tool that charts market data and works out technical studies from it. It is not a financial adviser, an investment adviser, a broker or an exchange, and it is not licensed or registered as any of them.
 
-- **Not advice.** Nothing tradoor shows is investment advice or a recommendation to buy, sell or hold anything: not its charts, indicators, market profile, signals, alerts or backtests, not the training account, and not the scripts people share in the Community. Signals and backtests tell you what a set of rules found in past data, and the past promises nothing about the future.
-- **Your money stays with you.** tradoor never holds your funds and is not a party to any trade you make on an exchange.
+- **Not advice.** Nothing tradoor terminal shows is investment advice or a recommendation to buy, sell or hold anything: not its charts, indicators, market profile, signals, alerts or backtests, not the training account, and not the scripts people share in the Community. Signals and backtests tell you what a set of rules found in past data, and the past promises nothing about the future.
+- **Your money stays with you.** tradoor terminal never holds your funds and is not a party to any trade you make on an exchange.
 - **Data as the exchanges send it.** Prices, order books, trades and liquidations come straight from the exchanges and can be late, incomplete or wrong, and the site itself can be slow or unavailable.
-- **Your decisions, your risk.** Trading crypto can lose all you put in, and with leverage it can happen fast. Every decision and every trade is yours, and so is its result. tradoor and its authors are not liable for any loss or damage that comes from using it.
+- **Your decisions, your risk.** Trading crypto can lose all you put in, and with leverage it can happen fast. Every decision and every trade is yours, and so is its result. tradoor terminal and its authors are not liable for any loss or damage that comes from using it.
 - **Where you live.** Not every exchange or product is allowed in every country. Making sure you may use them is up to you.
 - **As is.** The software comes with no warranty of any kind, as sections 15 and 16 of the [license](LICENSE) set out.
 
